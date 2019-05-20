@@ -21,14 +21,12 @@ public class ListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list);
 
         RecyclerView recyclerView = findViewById(R.id.list_activity);
-        Log.d("err", "test");
-
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new ListAdapter(testList()));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
     }
 
-    private java.util.List<String> testList() {
+    private List<String> testList() {
         List<String> data = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             data.add("TodoList n°"+i);
