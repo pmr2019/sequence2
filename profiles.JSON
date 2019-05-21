@@ -1,0 +1,1 @@
+[{"toDoLists":[{"id":0,"isArchived":false,"name":"Liste 1","taskList":[{"creationDate":"May 20, 2019 18:43:17","id":0,"isDone":false,"name":"Tache 1"},{"creationDate":"May 20, 2019 18:43:17","id":0,"isDone":false,"name":"Tache 2"}]},{"id":0,"isArchived":false,"name":"Liste 2","taskList":[]}],"username":"Oscar"},{"toDoLists":[],"username":"Victor"}]
