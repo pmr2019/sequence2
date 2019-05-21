@@ -26,10 +26,6 @@ public class TodoList implements Serializable {
         this.titreListeToDo = titreListeToDo;
     }
 
-    public boolean setItem(Item item) {
-        return this.liste.add(item);
-    }
-
     public void setLesItems(ArrayList<Item> items) {
         this.liste = items;
     }

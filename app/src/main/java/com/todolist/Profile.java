@@ -1,7 +1,10 @@
 package com.todolist;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Profile implements Serializable {
     private String login;
@@ -39,8 +42,23 @@ public class Profile implements Serializable {
         this.liste = liste;
     }
 
-    public void ajouteListe(TodoList uneListe) {
+    public void addList(TodoList uneListe) {
         this.liste.add(uneListe);
+    }
+
+    public TodoList getListByName(String list_name) {
+        for (int i = 0; i < liste.size(); i++) {
+            if (liste.get(i).getTitreListeToDo().equals(list_name)) {
+                return liste.get(i);
+            }
+        }
+        Log.d("profile", "" + list_name);
+        Log.d("profile", "" + liste.get(0).getTitreListeToDo());
+        return new TodoList();
+    }
+
+    public void addItem(String list_name, String item_name) {
+        this.getListByName(list_name).addItem(new Item(item_name));
     }
 
     @Override
