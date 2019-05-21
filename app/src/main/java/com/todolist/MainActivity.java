@@ -21,7 +21,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -39,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
         list_profile = new ArrayList<>();
 
         List<String> profiles = readPreference();
-        for (Iterator iter = profiles.iterator(); iter.hasNext(); ) {
-            list_profile.add(readProfilData((String) iter.next()));
+        for (String profile : profiles) {
+            list_profile.add(readProfilData(profile));
         }
         if (list_profile.size() > 0) {
             edt_pseudo.setText(list_profile.get(list_profile.size() - 1).getLogin());
@@ -62,12 +61,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void openListActivity(View v) {
         String pseudo = edt_pseudo.getText().toString();
-        Boolean flag = true;
+        boolean flag = true;
         Intent i;
         i = new Intent(MainActivity.this, ListActivity.class);
 
-        for (Iterator iter = list_profile.iterator(); iter.hasNext(); ){
-            Profile tmp = (Profile) iter.next();
+        for (Profile tmp : list_profile) {
             if (pseudo.equals(tmp.getLogin())) {
                 i.putExtra("profile", tmp);
                 saveProfilData(tmp, pseudo);
@@ -84,8 +82,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (pseudo.isEmpty()){
-            Toast toast = new Toast(this);
-            toast.makeText(this, "Please enter your pseudo", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Please enter your pseudo", Toast.LENGTH_LONG).show();
         } else {
             startActivity(i);
         }
@@ -94,12 +91,11 @@ public class MainActivity extends AppCompatActivity {
     public void saveProfilData(Profile profile, String pseudo) {
         final GsonBuilder builder = new GsonBuilder();
         final Gson gson = builder.create();
-        String filename = pseudo;
         String fileContents = gson.toJson(profile);
         FileOutputStream fileOutputStream;
 
         try {
-            fileOutputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+            fileOutputStream = openFileOutput(pseudo, Context.MODE_PRIVATE);
             fileOutputStream.write(fileContents.getBytes());
             fileOutputStream.close();
         } catch (FileNotFoundException e) {
@@ -110,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public Profile readProfilData(String filename) {
-        String jsonRead = "";
+        StringBuilder jsonRead = new StringBuilder();
         Profile profile;
         final GsonBuilder builder = new GsonBuilder();
         final Gson gson = builder.create();
@@ -119,11 +115,11 @@ public class MainActivity extends AppCompatActivity {
             inputStream = openFileInput(filename);
             int content;
             while ((content = inputStream.read()) != -1) {
-                jsonRead = jsonRead + (char) content;
+                jsonRead.append((char) content);
             }
             inputStream.close();
 
-            profile = gson.fromJson(jsonRead, Profile.class); // cast Profile
+            profile = gson.fromJson(jsonRead.toString(), Profile.class); // cast Profile
 
             return profile;
         } catch (FileNotFoundException e) {

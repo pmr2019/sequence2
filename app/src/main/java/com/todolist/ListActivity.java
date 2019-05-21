@@ -3,7 +3,6 @@ package com.todolist;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +26,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class ListActivity extends AppCompatActivity {
@@ -55,8 +53,8 @@ public class ListActivity extends AppCompatActivity {
     private List<String> data_list(Profile profile) {
         List<String> data = new ArrayList<>();
         TodoList tmp;
-        for (Iterator iter = profile.getListe().iterator(); iter.hasNext(); ) {
-            tmp = (TodoList) iter.next();
+        for (TodoList list : profile.getListe()) {
+            tmp = list;
             data.add(tmp.getTitreListeToDo());
         }
         return data;
@@ -65,8 +63,7 @@ public class ListActivity extends AppCompatActivity {
     public void newList(View v) {
         String list_name = edt_list.getText().toString();
         if (list_name.isEmpty()){
-            Toast toast = new Toast(this);
-            toast.makeText(this, "Please enter list name", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Please enter list name", Toast.LENGTH_LONG).show();
         } else {
             profile.addList(new TodoList(list_name));
             recyclerView.setAdapter(new ListAdapter(data_list(profile)));
@@ -77,7 +74,7 @@ public class ListActivity extends AppCompatActivity {
 
     class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder>{
         private final List<String> lists;
-        public ListAdapter(List<String> lists) {
+        ListAdapter(List<String> lists) {
             this.lists = lists;
         }
 
@@ -104,14 +101,14 @@ public class ListActivity extends AppCompatActivity {
         class ListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
             private final TextView textView;
 
-            public ListViewHolder(@NonNull View itemView) {
+            ListViewHolder(@NonNull View itemView) {
                 super(itemView);
                 textView = itemView.findViewById(R.id.list_name);
 
                 itemView.setOnClickListener(this);
             }
 
-            public void bind(String data) {
+            void bind(String data) {
                 textView.setText(data);
             }
 
@@ -130,12 +127,11 @@ public class ListActivity extends AppCompatActivity {
     public void saveProfilData(Profile profile, String pseudo) {
         final GsonBuilder builder = new GsonBuilder();
         final Gson gson = builder.create();
-        String filename = pseudo;
         String fileContents = gson.toJson(profile);
         FileOutputStream fileOutputStream;
 
         try {
-            fileOutputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+            fileOutputStream = openFileOutput(pseudo, Context.MODE_PRIVATE);
             fileOutputStream.write(fileContents.getBytes());
             fileOutputStream.close();
         } catch (FileNotFoundException e) {

@@ -2,7 +2,6 @@ package com.todolist;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +25,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class ItemActivity extends AppCompatActivity {
@@ -65,8 +63,7 @@ public class ItemActivity extends AppCompatActivity {
     public void newItem(View v) {
         String item_name = edt_item.getText().toString();
         if (item_name.isEmpty()) {
-            Toast toast = new Toast(this);
-            toast.makeText(this, "Please enter item name", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Please enter item name", Toast.LENGTH_LONG).show();
         } else {
             profile.addItem(list_name_selected, item_name);
             recyclerView.setAdapter(new ItemAdapter(data_item(profile, list_name_selected)));
@@ -77,7 +74,7 @@ public class ItemActivity extends AppCompatActivity {
 
     class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder>{
         private final List<String> items;
-        public ItemAdapter(List<String> items) {this.items = items;}
+        ItemAdapter(List<String> items) {this.items = items;}
 
         @NonNull
         @Override
@@ -102,12 +99,12 @@ public class ItemActivity extends AppCompatActivity {
         class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
             private final CheckBox checkBox;
 
-            public ItemViewHolder(@NonNull View itemView) {
+            ItemViewHolder(@NonNull View itemView) {
                 super(itemView);
                 checkBox = itemView.findViewById(R.id.item_name);
             }
 
-            public void bind(String data) {
+            void bind(String data) {
                 checkBox.setText(data);
             }
 
@@ -115,8 +112,7 @@ public class ItemActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                     //TODO save checkbox checked
-                    Toast t = new Toast(ItemActivity.this);
-                    t.makeText(ItemActivity.this, "Item " + items.get(getAdapterPosition()), Toast.LENGTH_LONG);
+                    Toast.makeText(ItemActivity.this, "Item " + items.get(getAdapterPosition()), Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -125,12 +121,11 @@ public class ItemActivity extends AppCompatActivity {
     public void saveProfilData(Profile profile, String pseudo) {
         final GsonBuilder builder = new GsonBuilder();
         final Gson gson = builder.create();
-        String filename = pseudo;
         String fileContents = gson.toJson(profile);
         FileOutputStream fileOutputStream;
 
         try {
-            fileOutputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+            fileOutputStream = openFileOutput(pseudo, Context.MODE_PRIVATE);
             fileOutputStream.write(fileContents.getBytes());
             fileOutputStream.close();
         } catch (FileNotFoundException e) {
