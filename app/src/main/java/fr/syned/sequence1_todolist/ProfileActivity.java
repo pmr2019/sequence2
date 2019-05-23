@@ -2,6 +2,7 @@ package fr.syned.sequence1_todolist;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -13,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -21,10 +23,8 @@ import static fr.syned.sequence1_todolist.MainActivity.EXTRA_PROFILE;
 public class ProfileActivity extends AppCompatActivity {
 
     EditText textViewToDoListName;
-    FloatingActionButton buttonAddToDoList;
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager layoutManager;
+    private ToDoListAdapter toDoListAdapter;
     private Profile profile;
 
     @Override
@@ -37,21 +37,11 @@ public class ProfileActivity extends AppCompatActivity {
         profile = (Profile) getIntent().getSerializableExtra(EXTRA_PROFILE);
 
         textViewToDoListName = findViewById(R.id.text_view_todolist_name);
-
-        recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
-
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-        recyclerView.setHasFixedSize(true);
-
-        // use a linear layout manager
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-
-        // specify an adapter (see also next example)
-        mAdapter = new ToDoListAdapter(profile.getToDoLists());
-        recyclerView.setAdapter(mAdapter);
-
+        recyclerView = findViewById(R.id.todolists);
+        toDoListAdapter = new ToDoListAdapter(profile.getToDoLists());
+        recyclerView.setAdapter(toDoListAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
     }
 
     @Override
@@ -78,10 +68,13 @@ public class ProfileActivity extends AppCompatActivity {
 
     public void onClickAddBtn(View view) {
         Log.i("TAG", "onClickAddBtn: " + textViewToDoListName.getText().toString());
-        profile.addToDoList(textViewToDoListName.getText().toString());
-        Log.i("TAG", profile.getToDoLists().toString());
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra(EXTRA_PROFILE, profile);
-        setResult(Activity.RESULT_OK, intent);
+        if (!textViewToDoListName.getText().toString().matches("")) {
+            profile.addToDoList(textViewToDoListName.getText().toString());
+            toDoListAdapter.notifyDataSetChanged();
+            textViewToDoListName.setText(null);
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra(EXTRA_PROFILE, profile);
+            setResult(Activity.RESULT_OK, intent);
+        }
     }
 }

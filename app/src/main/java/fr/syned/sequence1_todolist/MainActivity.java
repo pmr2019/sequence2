@@ -59,20 +59,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-//    private ArrayList<Profile> getFromJson() {
-//        Type profilesListType = new TypeToken<ArrayList<Profile>>(){}.getType();
-//        ArrayList<Profile> profilesList = gson.fromJson(filename, profilesListType);
-//        if (profilesList != null) {
-//            for (Profile p : profilesList) {
-//                autoCompleteAdapter.add(p.getUsername());
-//            }
-//        }
-//        return profilesList;
-//    }
-
     private List<Profile> getProfilesFromFile() {
         Gson gson = new Gson();
-        //BufferedReader reader;
         String json = "";
         List<Profile> profileList = null;
         try {
@@ -153,26 +141,28 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Profile returnedProfile = (Profile)data.getSerializableExtra(EXTRA_PROFILE);
-        for (Profile p : profilesList) {
-            if (p.getUsername().equals(returnedProfile.getUsername())) {
-                p.setToDoLists(returnedProfile.getToDoLists());
+        if (data != null) {
+            Profile returnedProfile = (Profile) data.getSerializableExtra(EXTRA_PROFILE);
+            for (Profile p : profilesList) {
+                if (p.getUsername().equals(returnedProfile.getUsername())) {
+                    p.setToDoLists(returnedProfile.getToDoLists());
+                }
             }
-        }
 
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String fileContent = gson.toJson(profilesList);
-        FileOutputStream outputStream;
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            String fileContent = gson.toJson(profilesList);
+            FileOutputStream outputStream;
 
-        try {
-            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-            outputStream.write(fileContent.getBytes());
-            outputStream.close();
-            Log.i(TAG, "Saving JSON file.");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+                outputStream.write(fileContent.getBytes());
+                outputStream.close();
+                Log.i(TAG, "Saving JSON file.");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
