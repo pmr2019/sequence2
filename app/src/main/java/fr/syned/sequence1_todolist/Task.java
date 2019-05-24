@@ -33,4 +33,13 @@ public class Task implements Serializable {
     public UUID getId() {
         return id;
     }
+
+    public boolean toggleCheckbox() {
+        this.isDone = !isDone;
+        return isDone;
+    }
+
+    public boolean isDone() {
+        return isDone;
+    }
 }

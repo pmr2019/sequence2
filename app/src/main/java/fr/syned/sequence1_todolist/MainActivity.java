@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_USERNAME = "fr.syned.sequence1_todolist.USERNAME";
     public static final String EXTRA_PROFILE = "fr.syned.sequence1_todolist.PROFILE";
     public static final String EXTRA_TODOLIST = "fr.syned.sequence1_todolist.TODOLIST";
+    public static final String EXTRA_TASK = "fr.syned.sequence1_todolist.TASK";
+
     public static final int PICK_CONTACT_REQUEST = 1;
     private static final String TAG = "ToDoList Application";
 
@@ -77,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         if (profilesList != null) {
             Log.i(TAG, "getProfilesFromFile: ");
             for (Profile p : profilesList) {
+                p.onDeserialization();
                 autoCompleteAdapter.add(p.getUsername());
             }
         }

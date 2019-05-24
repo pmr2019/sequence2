@@ -25,7 +25,7 @@ import static fr.syned.sequence1_todolist.MainActivity.EXTRA_TODOLIST;
 
 public class ToDoListActivity extends AppCompatActivity {
 
-    private ToDoList toDoList;
+    public static ToDoList toDoList;
     EditText textViewTaskName;
     private RecyclerView recyclerView;
     private TaskAdapter taskAdapter;

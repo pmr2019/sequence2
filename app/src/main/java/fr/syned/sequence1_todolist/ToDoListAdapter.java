@@ -7,12 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.UUID;
 
 public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoListViewHolder> {
     private List<ToDoList> mDataset;
@@ -25,14 +25,13 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
     @Override
     public ToDoListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View v = inflater.inflate(R.layout.todolist_item, parent, false);
+        View v = inflater.inflate(R.layout.item_todolist, parent, false);
         return new ToDoListViewHolder(v, parent.getContext());
     }
 
     @Override
     public void onBindViewHolder(@NonNull ToDoListViewHolder holder, int position) {
-        holder.bind(mDataset.get(position).getName());
-
+        holder.bind(mDataset.get(position));
     }
 
     @Override
@@ -42,7 +41,8 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
 
     public static class ToDoListViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView textView;
+        private TextView textView;
+        private UUID uuid;
 
         public ToDoListViewHolder(@NonNull View v, final Context mContext) {
             super(v);
@@ -55,8 +55,7 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
 //                        Toast.makeText(v.getContext(), "Clicked on " + getAdapterPosition(), Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(v.getContext(), ToDoListActivity.class);
                         ToDoList selectedToDoList;
-                        String toDoListName = textView.getText().toString();
-                        selectedToDoList = ProfileActivity.profile.getToDoList(toDoListName);
+                        selectedToDoList = ProfileActivity.profile.getToDoList(uuid);
                         intent.putExtra(MainActivity.EXTRA_TODOLIST, selectedToDoList);
                         ((Activity) mContext).startActivityForResult(intent, MainActivity.PICK_CONTACT_REQUEST);
                     }
@@ -64,8 +63,9 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
             });
         }
 
-        public void bind(String item) {
-            textView.setText(item);
+        public void bind(ToDoList toDoList) {
+            textView.setText(toDoList.getName());
+            this.uuid = toDoList.getId();
         }
     }
 

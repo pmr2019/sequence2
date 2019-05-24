@@ -18,6 +18,8 @@ import android.widget.LinearLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.List;
+
 import static fr.syned.sequence1_todolist.MainActivity.EXTRA_PROFILE;
 import static fr.syned.sequence1_todolist.MainActivity.EXTRA_TODOLIST;
 
@@ -81,16 +83,11 @@ public class ProfileActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data != null) {
             ToDoList returnedToDoList = (ToDoList) data.getSerializableExtra(EXTRA_TODOLIST);
-            for (ToDoList tdl : profile.getToDoLists()) {
-                if (tdl.getId().equals(returnedToDoList.getId())) {
-                    profile.removeToDoList(tdl);
-                    profile.addToDoList(returnedToDoList);
-                    toDoListAdapter.notifyDataSetChanged();
-                }
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra(EXTRA_PROFILE, profile);
-                setResult(Activity.RESULT_OK, intent);
-            }
+            profile.replaceToDoList(profile.getToDoList(returnedToDoList.getId()), returnedToDoList);
+            toDoListAdapter.notifyDataSetChanged();
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra(EXTRA_PROFILE, profile);
+            setResult(Activity.RESULT_OK, intent);
         }
     }
 }
