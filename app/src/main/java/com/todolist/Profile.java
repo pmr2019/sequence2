@@ -52,8 +52,6 @@ public class Profile implements Serializable {
                 return liste.get(i);
             }
         }
-        Log.d("profile", "" + list_name);
-        Log.d("profile", "" + liste.get(0).getTitreListeToDo());
         return new TodoList();
     }
 
@@ -63,9 +61,6 @@ public class Profile implements Serializable {
 
     @Override
     public String toString() {
-        return "Profile{" +
-                "login='" + login + '\'' +
-                ", liste=" + liste +
-                '}';
+        return "Profile " + login;
     }
 }

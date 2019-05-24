@@ -51,7 +51,7 @@ public class TodoList implements Serializable {
     public String toString() {
         return "TodoList{" +
                 "titreListeToDo='" + titreListeToDo + '\'' +
-                ", liste=" + liste +
+                "\nliste=" + liste +
                 '}';
     }
 }

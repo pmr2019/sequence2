@@ -2,11 +2,13 @@ package com.todolist;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -21,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -42,13 +45,20 @@ public class ItemActivity extends AppCompatActivity {
         edt_item = findViewById(R.id.edt_item);
         btn_item = findViewById(R.id.btn_item);
 
-        profile = (Profile) getIntent().getSerializableExtra("profile");
-        list_name_selected = getIntent().getStringExtra("list");
+        profile = readProfilData(getIntent().getStringExtra("profile"));
 
         recyclerView = findViewById(R.id.item_activity);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new ItemAdapter(data_item(profile, list_name_selected)));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        profile = readProfilData(getIntent().getStringExtra("profile"));
+        list_name_selected = getIntent().getStringExtra("list");
+        recyclerView.setAdapter(new ItemAdapter(data_item(profile, list_name_selected)));
     }
 
     private List<String> data_item(Profile profile, String list_name_selected) {
@@ -96,7 +106,7 @@ public class ItemActivity extends AppCompatActivity {
             return items.size();
         }
 
-        class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        class ItemViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener {
             private final CheckBox checkBox;
 
             ItemViewHolder(@NonNull View itemView) {
@@ -106,14 +116,12 @@ public class ItemActivity extends AppCompatActivity {
 
             void bind(String data) {
                 checkBox.setText(data);
+                checkBox.setOnCheckedChangeListener(this);
             }
 
             @Override
-            public void onClick(View v) {
-                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                    //TODO save checkbox checked
-                    Toast.makeText(ItemActivity.this, "Item " + items.get(getAdapterPosition()), Toast.LENGTH_LONG).show();
-                }
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.d("item", "changed" + items.get(getAdapterPosition()));
             }
         }
     }
@@ -133,5 +141,30 @@ public class ItemActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Profile readProfilData(String filename) {
+        StringBuilder jsonRead = new StringBuilder();
+        Profile profile;
+        final GsonBuilder builder = new GsonBuilder();
+        final Gson gson = builder.create();
+        try {
+            FileInputStream inputStream;
+            inputStream = openFileInput(filename);
+            int content;
+            while ((content = inputStream.read()) != -1) {
+                jsonRead.append((char) content);
+            }
+            inputStream.close();
+
+            profile = gson.fromJson(jsonRead.toString(), Profile.class); // cast Profile
+
+            return profile;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new Profile();
     }
 }

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,7 +27,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     EditText edt_pseudo;
     Button btn_pseudo;
-    ArrayList<Profile> list_profile;
+    List<String> profiles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,14 +36,10 @@ public class MainActivity extends AppCompatActivity {
 
         edt_pseudo = findViewById(R.id.edt_pseudo);
         btn_pseudo = findViewById(R.id.btn_pseudo);
-        list_profile = new ArrayList<>();
 
-        List<String> profiles = readPreference();
-        for (String profile : profiles) {
-            list_profile.add(readProfilData(profile));
-        }
-        if (list_profile.size() > 0) {
-            edt_pseudo.setText(list_profile.get(list_profile.size() - 1).getLogin());
+        profiles = readPreference();
+        if (profiles.size() > 0) {
+            edt_pseudo.setText(profiles.get(profiles.size() - 1));
         }
     }
 
@@ -50,6 +47,16 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
+
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//        profiles = readPreference();
+//        if (list_profile.size() > 0) {
+//            edt_pseudo.setText(list_profile.get(list_profile.size() - 1).getLogin());
+//        }
+//        Log.d("test", ""+ list_profile);
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -61,29 +68,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void openListActivity(View v) {
         String pseudo = edt_pseudo.getText().toString();
-        boolean flag = true;
-        Intent i;
-        i = new Intent(MainActivity.this, ListActivity.class);
-
-        for (Profile tmp : list_profile) {
-            if (pseudo.equals(tmp.getLogin())) {
-                i.putExtra("profile", tmp);
-                saveProfilData(tmp, pseudo);
-                flag = false;
-                break;
-            }
-        }
-        if (flag) {
-            Profile p = new Profile(pseudo, new ArrayList<TodoList>());
-            list_profile.add(p);
-            i.putExtra("profile", p);
-            saveProfilData(p, pseudo);
-            savePreference(list_profile);
-        }
 
         if (pseudo.isEmpty()){
             Toast.makeText(this, "Please enter your pseudo", Toast.LENGTH_LONG).show();
         } else {
+            Intent i = new Intent(MainActivity.this, ListActivity.class);
+            if (!profiles.contains(pseudo)) {
+                Profile p = new Profile(pseudo, new ArrayList<TodoList>());
+                profiles.add(pseudo);
+                saveProfilData(p, pseudo);
+                savePreference(profiles);
+            }
+            i.putExtra("profile", pseudo);
             startActivity(i);
         }
     }
@@ -130,13 +126,13 @@ public class MainActivity extends AppCompatActivity {
         return new Profile();
     }
 
-    public void savePreference(ArrayList<Profile> profiles) {
+    public void savePreference(List<String> profiles) {
         SharedPreferences preferences = getSharedPreferences("profile", MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
 
         editor.putInt("profile_number", profiles.size());
         for (int i = 0; i < profiles.size(); i++) {
-            editor.putString("" + i, profiles.get(i).getLogin());
+            editor.putString("" + i, profiles.get(i));
         }
 
         editor.apply();

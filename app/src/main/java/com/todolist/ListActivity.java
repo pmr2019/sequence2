@@ -3,6 +3,7 @@ package com.todolist;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -42,12 +44,19 @@ public class ListActivity extends AppCompatActivity {
         edt_list = findViewById(R.id.edt_list);
         btn_list = findViewById(R.id.btn_list);
 
-        profile = (Profile) getIntent().getSerializableExtra("profile");
+        profile = readProfilData(getIntent().getStringExtra("profile"));
 
         recyclerView = findViewById(R.id.list_activity);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new ListAdapter(data_list(profile)));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        profile = readProfilData(getIntent().getStringExtra("profile"));
+        recyclerView.setAdapter(new ListAdapter(data_list(profile)));
     }
 
     private List<String> data_list(Profile profile) {
@@ -116,7 +125,7 @@ public class ListActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                     Intent i = new Intent(ListActivity.this, ItemActivity.class);
-                    i.putExtra("profile", profile);
+                    i.putExtra("profile", profile.getLogin());
                     i.putExtra("list", lists.get(getAdapterPosition()));
                     startActivity(i);
                 }
@@ -139,5 +148,30 @@ public class ListActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Profile readProfilData(String filename) {
+        StringBuilder jsonRead = new StringBuilder();
+        Profile profile;
+        final GsonBuilder builder = new GsonBuilder();
+        final Gson gson = builder.create();
+        try {
+            FileInputStream inputStream;
+            inputStream = openFileInput(filename);
+            int content;
+            while ((content = inputStream.read()) != -1) {
+                jsonRead.append((char) content);
+            }
+            inputStream.close();
+
+            profile = gson.fromJson(jsonRead.toString(), Profile.class); // cast Profile
+
+            return profile;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new Profile();
     }
 }
