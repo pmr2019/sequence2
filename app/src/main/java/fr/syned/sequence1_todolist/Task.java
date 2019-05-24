@@ -24,4 +24,8 @@ public class Task implements Serializable {
         this();
         this.name = name;
     }
+
+    public String getName() {
+        return name;
+    }
 }

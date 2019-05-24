@@ -2,6 +2,7 @@ package fr.syned.sequence1_todolist;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ToDoList implements Serializable {
 
@@ -31,5 +32,9 @@ public class ToDoList implements Serializable {
 
     public void addTask(String name) {
         this.taskList.add(new Task(name));
+    }
+
+    public List<Task> getTasks() {
+        return taskList;
     }
 }

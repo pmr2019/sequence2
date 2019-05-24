@@ -39,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String EXTRA_USERNAME = "fr.syned.sequence1_todolist.USERNAME";
     public static final String EXTRA_PROFILE = "fr.syned.sequence1_todolist.PROFILE";
-    static final int PICK_CONTACT_REQUEST = 1;
+    public static final String EXTRA_TODOLIST = "fr.syned.sequence1_todolist.TODOLIST";
+    public static final int PICK_CONTACT_REQUEST = 1;
     private static final String TAG = "ToDoList Application";
 
     private List<Profile> profilesList;

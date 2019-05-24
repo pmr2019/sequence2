@@ -37,4 +37,11 @@ public class Profile implements Serializable {
     public void setToDoLists(ArrayList<ToDoList> toDoLists) {
         this.toDoLists = toDoLists;
     }
+
+    public ToDoList getToDoList(String toDoListName) {
+        for (ToDoList tdl : toDoLists) {
+            if (tdl.getName().matches(toDoListName)) return tdl;
+        }
+        return null;
+    }
 }

@@ -1,14 +1,18 @@
 package fr.syned.sequence1_todolist;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,30 +20,38 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import static fr.syned.sequence1_todolist.MainActivity.EXTRA_PROFILE;
+import static fr.syned.sequence1_todolist.MainActivity.EXTRA_TODOLIST;
 
-public class ProfileActivity extends AppCompatActivity {
+public class ToDoListActivity extends AppCompatActivity {
 
-    EditText textViewToDoListName;
+    private ToDoList toDoList;
+    EditText textViewTaskName;
     private RecyclerView recyclerView;
-    private ToDoListAdapter toDoListAdapter;
-    static public Profile profile;
+    private TaskAdapter taskAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.activity_todolist);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        profile = (Profile) getIntent().getSerializableExtra(EXTRA_PROFILE);
+//        FloatingActionButton fab = findViewById(R.id.btn_add_task);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
 
-        textViewToDoListName = findViewById(R.id.text_view_todolist_name);
-        recyclerView = findViewById(R.id.todolists);
-        toDoListAdapter = new ToDoListAdapter(profile.getToDoLists());
-        recyclerView.setAdapter(toDoListAdapter);
+        toDoList = (ToDoList) getIntent().getSerializableExtra(EXTRA_TODOLIST);
+
+        textViewTaskName = findViewById(R.id.text_view_task_name);
+        recyclerView = findViewById(R.id.tasks);
+        taskAdapter = new TaskAdapter(toDoList.getTasks());
+        recyclerView.setAdapter(taskAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
     }
@@ -67,13 +79,13 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void onClickAddBtn(View view) {
-        Log.i("TAG", "onClickAddBtn: " + textViewToDoListName.getText().toString());
-        if (!textViewToDoListName.getText().toString().matches("")) {
-            profile.addToDoList(textViewToDoListName.getText().toString());
-            toDoListAdapter.notifyDataSetChanged();
-            textViewToDoListName.setText(null);
+        Log.i("TAG", "onClickAddBtn: " + textViewTaskName.getText().toString());
+        if (!textViewTaskName.getText().toString().matches("")) {
+            toDoList.addTask(textViewTaskName.getText().toString());
+            taskAdapter.notifyDataSetChanged();
+            textViewTaskName.setText(null);
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra(EXTRA_PROFILE, profile);
+            intent.putExtra(EXTRA_PROFILE, toDoList);
             setResult(Activity.RESULT_OK, intent);
         }
     }
