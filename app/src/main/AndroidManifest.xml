@@ -11,9 +11,11 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
             android:name=".ToDoListActivity"
-            android:label="@string/title_activity_to_do_list"
-            android:theme="@style/NoActionBar"></activity>
-        <activity android:name=".ProfileActivity" />
+            android:label="Tasks"
+            android:theme="@style/NoActionBar"/>
+        <activity
+            android:name=".ProfileActivity"
+            android:label="ToDo Lists"/>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"

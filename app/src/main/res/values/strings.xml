@@ -6,4 +6,6 @@
     <string name="ajouter_une_liste">Ajouter une liste...</string>
     <string name="title_activity_to_do_list">ToDoListActivity</string>
     <string name="ajouter_une_tache">Ajouter une tâche...</string>
+    <string name="todo_listes">ToDo Listes</string>
+    <string name="taches">Tâches</string>
 </resources>

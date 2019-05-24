@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -28,7 +29,9 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,10 +69,8 @@ public class MainActivity extends AppCompatActivity {
         List<Profile> profileList = null;
         try {
             FileInputStream inputStream = openFileInput(filename);
-            int content;
-            while ((content = inputStream.read()) != -1) json += (char) content;
-            inputStream.close();
-            profileList = gson.fromJson(json, new TypeToken<List<Profile>>() {}.getType());
+            BufferedReader br = new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream), StandardCharsets.UTF_8));
+            profileList = gson.fromJson(br, new TypeToken<List<Profile>>() {}.getType());
         } catch (IOException e) {
             e.printStackTrace();
         }
