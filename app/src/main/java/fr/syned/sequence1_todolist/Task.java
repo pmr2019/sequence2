@@ -3,10 +3,11 @@ package fr.syned.sequence1_todolist;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 public class Task implements Serializable {
 
-    private int id;
+    private UUID id;
     private String name;
     private String description;
     private String label;
@@ -15,7 +16,7 @@ public class Task implements Serializable {
     private Date doneDate;
 
     public Task() {
-        this.id = 0;
+        this.id = UUID.randomUUID();
         this.isDone = false;
         this.creationDate = Calendar.getInstance().getTime();
     }
@@ -27,5 +28,9 @@ public class Task implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public UUID getId() {
+        return id;
     }
 }

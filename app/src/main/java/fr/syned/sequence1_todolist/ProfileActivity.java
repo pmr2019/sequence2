@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import static fr.syned.sequence1_todolist.MainActivity.EXTRA_PROFILE;
+import static fr.syned.sequence1_todolist.MainActivity.EXTRA_TODOLIST;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -67,7 +68,6 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void onClickAddBtn(View view) {
-        Log.i("TAG", "onClickAddBtn: " + textViewToDoListName.getText().toString());
         if (!textViewToDoListName.getText().toString().matches("")) {
             profile.addToDoList(textViewToDoListName.getText().toString());
             toDoListAdapter.notifyDataSetChanged();
@@ -75,6 +75,22 @@ public class ProfileActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra(EXTRA_PROFILE, profile);
             setResult(Activity.RESULT_OK, intent);
+        }
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (data != null) {
+            ToDoList returnedToDoList = (ToDoList) data.getSerializableExtra(EXTRA_TODOLIST);
+            for (ToDoList tdl : profile.getToDoLists()) {
+                if (tdl.getId().equals(returnedToDoList.getId())) {
+                    profile.removeToDoList(tdl);
+                    profile.addToDoList(returnedToDoList);
+                    toDoListAdapter.notifyDataSetChanged();
+                }
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtra(EXTRA_PROFILE, profile);
+                setResult(Activity.RESULT_OK, intent);
+            }
         }
     }
 }

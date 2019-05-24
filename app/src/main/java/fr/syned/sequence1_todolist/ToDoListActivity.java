@@ -47,6 +47,7 @@ public class ToDoListActivity extends AppCompatActivity {
 //        });
 
         toDoList = (ToDoList) getIntent().getSerializableExtra(EXTRA_TODOLIST);
+        Log.i("TAG", "onCreate, toDoList: " + toDoList);
 
         textViewTaskName = findViewById(R.id.text_view_task_name);
         recyclerView = findViewById(R.id.tasks);
@@ -79,13 +80,12 @@ public class ToDoListActivity extends AppCompatActivity {
     }
 
     public void onClickAddBtn(View view) {
-        Log.i("TAG", "onClickAddBtn: " + textViewTaskName.getText().toString());
         if (!textViewTaskName.getText().toString().matches("")) {
             toDoList.addTask(textViewTaskName.getText().toString());
             taskAdapter.notifyDataSetChanged();
             textViewTaskName.setText(null);
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra(EXTRA_PROFILE, toDoList);
+            Intent intent = new Intent(this, ProfileActivity.class);
+            intent.putExtra(EXTRA_TODOLIST, toDoList);
             setResult(Activity.RESULT_OK, intent);
         }
     }

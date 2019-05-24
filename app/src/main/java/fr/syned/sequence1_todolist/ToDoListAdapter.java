@@ -52,7 +52,7 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
                 @Override
                 public void onClick(View v) {
                     if(getAdapterPosition() != RecyclerView.NO_POSITION) {
-                        Toast.makeText(v.getContext(), "Clicked on " + getAdapterPosition(), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(v.getContext(), "Clicked on " + getAdapterPosition(), Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(v.getContext(), ToDoListActivity.class);
                         ToDoList selectedToDoList;
                         String toDoListName = textView.getText().toString();

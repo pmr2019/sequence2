@@ -44,4 +44,8 @@ public class Profile implements Serializable {
         }
         return null;
     }
+
+    public void removeToDoList(ToDoList tdl) {
+        toDoLists.remove(tdl);
+    }
 }
