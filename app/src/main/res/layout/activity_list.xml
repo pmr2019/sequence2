@@ -10,13 +10,15 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="9"
+        android:background="#FFCCCC"
         ></androidx.recyclerview.widget.RecyclerView>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:background="#FFFFCC">
 
         <EditText
             android:id="@+id/edt_list"
