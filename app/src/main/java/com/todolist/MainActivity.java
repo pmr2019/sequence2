@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         if (getIntent().getStringExtra("profile") != null) {
-            edt_pseudo.setText(profiles.get(valueOf(getIntent().getStringExtra("profile")) - 1));
+            edt_pseudo.setText(getIntent().getStringExtra("profile"));
         }
     }
 
