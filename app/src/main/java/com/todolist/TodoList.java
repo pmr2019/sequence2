@@ -38,13 +38,12 @@ public class TodoList implements Serializable {
         this.liste.add(i);
     }
 
-    public Item rechercherItem(String description) {
-        for (Iterator i = this.liste.iterator(); i.hasNext(); ) {
-            if (((Item) i).getDescription() == description) {
-                return (Item) i;
+    public void setItemStatus(String item_selected, boolean isChecked){
+        for (Item i : liste) {
+            if (i.getDescription().equals(item_selected)){
+                i.setFait(isChecked);
             }
         }
-        return null;
     }
 
     @Override

@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Integer.valueOf;
+
 public class MainActivity extends AppCompatActivity {
     EditText edt_pseudo;
     Button btn_pseudo;
@@ -48,15 +50,15 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        profiles = readPreference();
-//        if (list_profile.size() > 0) {
-//            edt_pseudo.setText(list_profile.get(list_profile.size() - 1).getLogin());
-//        }
-//        Log.d("test", ""+ list_profile);
-//    }
+    //TODO on restart, present intent from setting activity
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (getIntent().getStringExtra("profile") != null) {
+            edt_pseudo.setText(profiles.get(valueOf(getIntent().getStringExtra("profile")) - 1));
+        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

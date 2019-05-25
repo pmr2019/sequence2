@@ -49,7 +49,7 @@ public class ItemActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.item_activity);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new ItemAdapter(data_item(profile, list_name_selected)));
+        recyclerView.setAdapter(new ItemAdapter(data_item(profile, list_name_selected), checked_item(profile, list_name_selected)));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
     }
 
@@ -58,14 +58,23 @@ public class ItemActivity extends AppCompatActivity {
         super.onStart();
         profile = readProfilData(getIntent().getStringExtra("profile"));
         list_name_selected = getIntent().getStringExtra("list");
-        recyclerView.setAdapter(new ItemAdapter(data_item(profile, list_name_selected)));
+        recyclerView.setAdapter(new ItemAdapter(data_item(profile, list_name_selected), checked_item(profile, list_name_selected)));
     }
 
     private List<String> data_item(Profile profile, String list_name_selected) {
         List<String> data = new ArrayList<>();
         List<Item> items = profile.getListByName(list_name_selected).getLesItems();
+        for (Item i : items) {
+            data.add(i.getDescription());
+        }
+        return data;
+    }
+
+    private boolean[] checked_item(Profile profile, String list_name_selected) {
+        List<Item> items = profile.getListByName(list_name_selected).getLesItems();
+        boolean[] data = new boolean[items.size()];
         for (int i = 0; i < items.size(); i++) {
-            data.add(items.get(i).getDescription());
+            data[i] = items.get(i).getFait();
         }
         return data;
     }
@@ -76,7 +85,7 @@ public class ItemActivity extends AppCompatActivity {
             Toast.makeText(this, "Please enter item name", Toast.LENGTH_LONG).show();
         } else {
             profile.addItem(list_name_selected, item_name);
-            recyclerView.setAdapter(new ItemAdapter(data_item(profile, list_name_selected)));
+            recyclerView.setAdapter(new ItemAdapter(data_item(profile, list_name_selected), checked_item(profile, list_name_selected)));
             edt_item.setText("");
             saveProfilData(profile, profile.getLogin());
         }
@@ -84,7 +93,11 @@ public class ItemActivity extends AppCompatActivity {
 
     class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder>{
         private final List<String> items;
-        ItemAdapter(List<String> items) {this.items = items;}
+        private final boolean[] checked;
+        ItemAdapter(List<String> items, boolean[] checked) {
+            this.items = items;
+            this.checked = checked;
+        }
 
         @NonNull
         @Override
@@ -96,9 +109,10 @@ public class ItemActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
-            String data = items.get(position);
+            String data1 = items.get(position);
+            boolean data2 = checked[position];
 
-            holder.bind(data);
+            holder.bind(data1, data2);
         }
 
         @Override
@@ -114,14 +128,16 @@ public class ItemActivity extends AppCompatActivity {
                 checkBox = itemView.findViewById(R.id.item_name);
             }
 
-            void bind(String data) {
-                checkBox.setText(data);
+            void bind(String data1, boolean data2) {
+                checkBox.setText(data1);
+                checkBox.setChecked(data2);
                 checkBox.setOnCheckedChangeListener(this);
             }
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.d("item", "changed" + items.get(getAdapterPosition()));
+                profile.getListByName(list_name_selected).setItemStatus(items.get(getAdapterPosition()), isChecked);
+                saveProfilData(profile, profile.getLogin());
             }
         }
     }
