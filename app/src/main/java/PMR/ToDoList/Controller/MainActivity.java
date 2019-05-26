@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
         edtPseudo = (EditText) findViewById(R.id.edtPseudo);
         btnPseudo = (Button) findViewById(R.id.btnPseudo);
         txtPseudo = (TextView) findViewById(R.id.txtPseudo);
+
         toolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(R.menu.menupseudo, menu);
         return true;
     }
+
 
 
 }
