@@ -3,10 +3,6 @@
 
     <item
         android:id="@+id/action_settings"
-        android:title="Préférences"/>
-
-    <item
-        android:id="@+id/action_account"
-        android:title="Compte"/>
+        android:title="Settings"/>
 
 </menu>

@@ -38,7 +38,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="3"
-            android:hint="Ajouter une TodoList..."
+            android:hint="Ajouter une Tâche..."
             android:textSize="20dp"
             android:layout_marginRight="20dp"
             />
