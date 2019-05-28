@@ -10,8 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".Controller.ShowListActivity"></activity>
-        <activity android:name=".Controller.ChoixListActivity" />
+        <activity android:name=".Controller.TasksActivity"></activity>
+        <activity android:name=".Controller.ToDoListActivity">
+        </activity>
         <activity android:name=".Controller.SettingsActivity" />
         <activity android:name=".Controller.MainActivity">
             <intent-filter>
@@ -20,6 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

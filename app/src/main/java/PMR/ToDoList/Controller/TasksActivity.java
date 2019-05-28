@@ -6,11 +6,11 @@ import android.os.Bundle;
 
 import PMR.ToDoList.R;
 
-public class ChoixListActivity extends AppCompatActivity {
+public class TasksActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_choix_list);
+        setContentView(R.layout.activity_show_list);
     }
 }
