@@ -10,14 +10,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+import PMR.ToDoList.Model.ToDoList;
 import PMR.ToDoList.R;
-import PMR.ToDoList.View.ToDoListView;
 
 public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoListViewHolder> {
 
-    private ArrayList<ToDoListView> toDoLists;
+    private ArrayList<ToDoList> toDoLists;
 
-    public ToDoListAdapter(ArrayList<ToDoListView> toDoLists){
+    public ToDoListAdapter(ArrayList<ToDoList> toDoLists){
 
         this.toDoLists=toDoLists;
     }
@@ -32,8 +32,8 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
 
     @Override
     public void onBindViewHolder(@NonNull ToDoListViewHolder holder, int position) {
-        ToDoListView todoListView = toDoLists.get(position);
-        holder.textToDoList.setText(todoListView.getNomTodoList());
+        ToDoList toDoList = toDoLists.get(position);
+        holder.nameToDoList.setText(toDoList.getNameToDoList());
     }
 
     @Override
@@ -43,11 +43,11 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
 
     public static class ToDoListViewHolder extends RecyclerView.ViewHolder{
 
-        public TextView textToDoList;
+        public TextView nameToDoList;
 
         public ToDoListViewHolder(@NonNull View itemView) {
             super(itemView);
-            textToDoList = itemView.findViewById(R.id.textTodoList);
+            nameToDoList = itemView.findViewById(R.id.textTodoList);
         }
     }
 

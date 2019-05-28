@@ -4,48 +4,56 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Controller.TasksActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".Controller.ToDoListActivity"
+    >
 
     <include
         android:id="@+id/toolbar"
         layout="@layout/toolbar"/>
 
+
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvTask"
+        android:id="@+id/rvTodoList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="10"
+        android:scrollbars="vertical"
+        android:layout_weight="1"
         />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="50dp"
+        android:layout_weight="0"
         android:orientation="horizontal"
-        android:layout_marginBottom="15dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:layout_marginTop="15dp"
+        android:gravity="bottom"
         >
 
         <EditText
-            android:id="@+id/textInsertTask"
+            android:id="@+id/textInsertTodoList"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="3"
-            android:hint="Ajouter une Tâche"
-            android:textSize="25dp"
+            android:hint="Ajouter une TodoList..."
+            android:textSize="20dp"
+            android:layout_marginRight="20dp"
             />
 
         <Button
-            android:id="@+id/btnInsertTask"
+            android:id="@+id/btnInsertTodoList"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Ok"
             android:textSize="20dp"
+            android:layout_marginRight="10dp"
             />
 
 
     </LinearLayout>
+
 </LinearLayout>

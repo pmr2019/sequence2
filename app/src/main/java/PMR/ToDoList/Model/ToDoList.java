@@ -2,7 +2,6 @@ package PMR.ToDoList.Model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.io.Serializable;
 
 public class ToDoList {
 
@@ -24,7 +23,7 @@ public class ToDoList {
         tasks = new ArrayList<Task>();
     }
 
-    public String getTitreListeToDo() {
+    public String getNameToDoList() {
         return nameToDoList;
     }
 
@@ -74,7 +73,7 @@ public class ToDoList {
     @Override
     public String toString() {
         String retour;
-        retour = "Liste : " + this.getTitreListeToDo()+ "Items : " + this.getLesItems().toString();
+        retour = "Liste : " + this.getNameToDoList()+ "Items : " + this.getLesItems().toString();
         return retour;
     }
 }

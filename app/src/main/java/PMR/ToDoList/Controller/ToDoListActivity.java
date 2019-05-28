@@ -8,35 +8,30 @@ import android.os.Bundle;
 
 import java.util.ArrayList;
 
+import PMR.ToDoList.Model.ToDoList;
 import PMR.ToDoList.R;
-import PMR.ToDoList.View.TaskView;
-import PMR.ToDoList.View.ToDoListView;
 
 public class ToDoListActivity extends AppCompatActivity {
+
+    private androidx.appcompat.widget.Toolbar toolbar;
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    private ArrayList<ToDoListView> toDoListList;
+    private ArrayList<ToDoList> toDoListList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_choix_list);
+        setContentView(R.layout.activity_todolist);
+
+        toolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         toDoListList=new ArrayList<>();
-        toDoListList.add(new ToDoListView("Todo1"));
-        toDoListList.add(new ToDoListView("Todo2"));
-        toDoListList.add(new ToDoListView("Todo3"));
-        toDoListList.add(new ToDoListView("Todo3"));
-        toDoListList.add(new ToDoListView("Todo3"));
-        toDoListList.add(new ToDoListView("Todo3"));
-        toDoListList.add(new ToDoListView("Todo3"));
-        toDoListList.add(new ToDoListView("Todo3"));
-        toDoListList.add(new ToDoListView("Todo3"));
-        toDoListList.add(new ToDoListView("Todo3"));
-        toDoListList.add(new ToDoListView("Todo3"));
+        toDoListList.add(new ToDoList("Todo1Todo3Todo3Todo3Todo3Todo3"));
+
 
         mRecyclerView = findViewById(R.id.rvTodoList);
         mRecyclerView.setHasFixedSize(true);
