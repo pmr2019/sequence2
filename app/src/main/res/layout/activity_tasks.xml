@@ -14,7 +14,7 @@
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvTodoList"
+        android:id="@+id/rvTask"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:scrollbars="vertical"
@@ -34,7 +34,7 @@
         >
 
         <EditText
-            android:id="@+id/textInsertTodoList"
+            android:id="@+id/textInsertTask"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="3"
@@ -44,7 +44,7 @@
             />
 
         <Button
-            android:id="@+id/btnInsertTodoList"
+            android:id="@+id/btnInsertTask"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
