@@ -17,6 +17,13 @@
 
         >
 
+        <CheckBox
+            android:id="@+id/checkBoxTask"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
+            />
+
         <TextView
             android:id="@+id/textTask"
             android:layout_width="0dp"
@@ -24,8 +31,8 @@
             android:layout_weight="1"
             android:layout_margin="4dp"
             android:gravity="center_vertical"
-            android:paddingLeft="10dp"
             android:textSize="20dp"
+            android:text="salut"
             />
 
         <ImageView

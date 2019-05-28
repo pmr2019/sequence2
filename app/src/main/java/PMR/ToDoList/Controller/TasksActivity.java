@@ -13,6 +13,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import PMR.ToDoList.Model.Task;
+import PMR.ToDoList.Model.ToDoList;
 import PMR.ToDoList.R;
 
 public class TasksActivity extends AppCompatActivity {
@@ -28,9 +29,12 @@ public class TasksActivity extends AppCompatActivity {
     //PARTIE DONNEES
     private ArrayList<Task> tasks;
 
-    //INSERT TODOLIST
+    //INSERT TASK
     private Button btnInsertTask;
     private EditText textInsertTask;
+
+    //TO DO LIST DE LA TACHE
+    private ToDoList todolist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,16 +78,28 @@ public class TasksActivity extends AppCompatActivity {
 
         taskAdapter.setOnItemClickListener(new TasksAdapter.OnItemClickListener() {
             @Override
+
             //BOUTON QUAND ON CLIQUE SUR UNE CARD
             public void onItemClick(int position) {
                 //On récupère la TODOLIST en question
-                tasks.get(position).setDescription("clicked");
-                taskAdapter.notifyItemChanged(position);            }
+                Toast toast=Toast.makeText(getApplicationContext(),tasks.get(position).getFait().toString(),Toast.LENGTH_SHORT);
+                toast.show();
+            }
+
             //BOUTON QUAND ON CLIQUE SUR DELETE
             @Override
             public void onDeleteClick(int position) {
                 tasks.remove(position);
                 taskAdapter.notifyItemRemoved(position);
+            }
+
+            //BOUTON QUAND ON CLIQUE SUR UNE CHECKBOX
+            @Override
+            public void onCheckBoxClick(int position) {
+                if (tasks.get(position).getFait()) {
+                    tasks.get(position).setFait(false);
+                }
+                else tasks.get(position).setFait(true);
             }
         });
     }

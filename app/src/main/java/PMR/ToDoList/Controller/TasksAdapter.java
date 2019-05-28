@@ -3,6 +3,7 @@ package PMR.ToDoList.Controller;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -30,6 +31,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
     public interface OnItemClickListener {
         void onItemClick(int position);
         void onDeleteClick(int position);
+        void onCheckBoxClick(int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener){
@@ -48,6 +50,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
         Task task = tasks.get(position);
         holder.nameTask.setText(task.getDescription());
+        holder.checkBoxTask.setChecked(task.getFait());
     }
 
     @Override
@@ -61,11 +64,13 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
 
         public TextView nameTask;
         public ImageView btnDeleteTask;
+        public CheckBox checkBoxTask;
 
         public TaskViewHolder(@NonNull View itemView, final OnItemClickListener taskListener) {
             super(itemView);
             nameTask = itemView.findViewById(R.id.textTask);
             btnDeleteTask=itemView.findViewById(R.id.btnDeleteTask);
+            checkBoxTask=itemView.findViewById(R.id.checkBoxTask);
 
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -87,6 +92,18 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION){
                             taskListener.onDeleteClick(position);
+                        }
+                    }
+                }
+            });
+
+            checkBoxTask.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (taskListener !=null){
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION){
+                            taskListener.onCheckBoxClick(position);
                         }
                     }
                 }

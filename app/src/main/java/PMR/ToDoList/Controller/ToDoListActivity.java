@@ -14,6 +14,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import PMR.ToDoList.Model.ToDoList;
+import PMR.ToDoList.Model.User;
 import PMR.ToDoList.R;
 
 public class ToDoListActivity extends AppCompatActivity {
@@ -32,6 +33,9 @@ public class ToDoListActivity extends AppCompatActivity {
     //INSERT TODOLIST
     private Button btnInsertToDoList;
     private EditText textInsertToDoList;
+
+    //USER DE LA TACHE
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
