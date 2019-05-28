@@ -55,8 +55,8 @@ public class ToDoListActivity extends AppCompatActivity {
                 textInsertToDoList.setText("");
 
                 if (!nameToDoList.equals("")){
-                    insertTodoList(nameToDoList);
-                }
+                    toDoLists.add(new ToDoList(nameToDoList));
+                    toDoListAdapter.notifyItemInserted(toDoListAdapter.getItemCount()-1);                }
             }
         });
 
@@ -76,9 +76,8 @@ public class ToDoListActivity extends AppCompatActivity {
             @Override
             //BOUTON QUAND ON CLIQUE SUR UNE CARD
             public void onItemClick(int position) {
-                //On récupère la TODOLIST en question
-                accessTasksActivity(position);
-            }
+                Intent intent=new Intent(ToDoListActivity.this,TasksActivity.class);
+                startActivity(intent);            }
             //BOUTON QUAND ON CLIQUE SUR DELETE
             @Override
             public void onDeleteClick(int position) {
@@ -92,24 +91,4 @@ public class ToDoListActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
-
-
-    public void insertTodoList(String nameToDoList){
-        toDoLists.add(new ToDoList(nameToDoList));
-        toDoListAdapter.notifyItemInserted(toDoListAdapter.getItemCount()-1);
-    }
-
-
-
-    // FONCTION QUI FAIT DES TRUCS QUAND ON CLIQUE SUR UNE TO DO LIST
-    //ELLE PREND EN ARGUMENT LA POSITION DE LA TO DO LIST DANS LA LISTE DES TO DO LISTS
-
-    public void accessTasksActivity(int position){
-        //toDoLists.get(position).setTitreListeToDo("clicked");
-        //toDoListAdapter.notifyItemChanged(position);
-
-        Intent intent=new Intent(ToDoListActivity.this,TasksActivity.class);
-        startActivity(intent);
-    }
-
 }
