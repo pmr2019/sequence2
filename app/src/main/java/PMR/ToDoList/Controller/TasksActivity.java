@@ -45,6 +45,9 @@ public class TasksActivity extends AppCompatActivity {
 
         tasks =new ArrayList<>();
 
+        tasks.add(new Task("toDo1"));
+        tasks.add(new Task("toDo2"));
+
         buildRecyclerView(tasks);
 
         btnInsertTask=findViewById(R.id.btnInsertTask);

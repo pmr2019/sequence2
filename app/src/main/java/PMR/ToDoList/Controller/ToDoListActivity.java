@@ -46,6 +46,10 @@ public class ToDoListActivity extends AppCompatActivity {
 
         toDoLists =new ArrayList<>();
 
+        toDoLists.add(new ToDoList("toDo1"));
+        toDoLists.add(new ToDoList("toDo2"));
+
+
         buildRecyclerView(toDoLists);
 
         btnInsertToDoList=findViewById(R.id.btnInsertToDoList);

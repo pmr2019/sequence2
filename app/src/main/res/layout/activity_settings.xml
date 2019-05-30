@@ -5,10 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Controller.SettingsActivity">
+    tools:context=".Controller.ToDoListActivity"
+    >
 
     <include
         android:id="@+id/toolbar"
         layout="@layout/toolbar"/>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvTodoList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scrollbars="vertical"
+        android:layout_weight="1"
+        />
+
+
 
 </LinearLayout>
