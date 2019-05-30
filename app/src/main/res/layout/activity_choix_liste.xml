@@ -5,17 +5,13 @@
     android:layout_width="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <LinearLayout
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/edtliste"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent">
+        tools:ignore="MissingConstraints"
+        android:layout_height=""></androidx.recyclerview.widget.RecyclerView>
 
-        <include layout="@layout/liste"/>
-
-    </LinearLayout>
     <EditText
         android:id="@+id/edtliste"
         android:layout_width="296dp"
