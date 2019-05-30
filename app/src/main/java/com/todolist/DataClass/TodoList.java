@@ -1,8 +1,9 @@
-package com.todolist;
+package com.todolist.DataClass;
+
+import com.todolist.DataClass.Item;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class TodoList implements Serializable {
     private String titreListeToDo;
@@ -37,6 +38,8 @@ public class TodoList implements Serializable {
     public void addItem(Item i) {
         this.liste.add(i);
     }
+
+    public void removeItem(int i) { this.liste.remove(i); }
 
     public void setItemStatus(String item_selected, boolean isChecked){
         for (Item i : liste) {

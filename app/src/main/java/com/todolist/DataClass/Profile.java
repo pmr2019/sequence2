@@ -1,10 +1,11 @@
-package com.todolist;
+package com.todolist.DataClass;
 
 import android.util.Log;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collection;
+import java.util.Collections;
 
 public class Profile implements Serializable {
     private String login;
@@ -46,6 +47,12 @@ public class Profile implements Serializable {
         this.liste.add(uneListe);
     }
 
+    public void removeList(int index) { this.liste.remove(index); }
+
+    public void swapList(int fromPosition, int toPosition) {
+        Collections.swap(liste, fromPosition, toPosition);
+    }
+
     public TodoList getListByName(String list_name) {
         for (int i = 0; i < liste.size(); i++) {
             if (liste.get(i).getTitreListeToDo().equals(list_name)) {
@@ -57,6 +64,10 @@ public class Profile implements Serializable {
 
     public void addItem(String list_name, String item_name) {
         this.getListByName(list_name).addItem(new Item(item_name));
+    }
+
+    public void removeItem(String list_name, int index) {
+        this.getListByName(list_name).removeItem(index);
     }
 
     @Override

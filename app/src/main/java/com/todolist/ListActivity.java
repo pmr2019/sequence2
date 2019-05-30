@@ -9,19 +9,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.todolist.DataClass.Profile;
+import com.todolist.DataClass.TodoList;
+import com.todolist.TouchHelper.ItemTouchHelperAdapter;
+import com.todolist.TouchHelper.ItemTouchHelperCallback;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -35,6 +38,8 @@ public class ListActivity extends AppCompatActivity {
     EditText edt_list;
     Button btn_list;
     RecyclerView recyclerView;
+    ListAdapter listAdapter;
+    List<String> data_list;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,17 +51,16 @@ public class ListActivity extends AppCompatActivity {
 
         profile = readProfilData(getIntent().getStringExtra("profile"));
 
+        data_list = data_list(profile);
         recyclerView = findViewById(R.id.list_activity);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new ListAdapter(data_list(profile)));
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
-    }
+        listAdapter = new ListAdapter(data_list);
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        profile = readProfilData(getIntent().getStringExtra("profile"));
-        recyclerView.setAdapter(new ListAdapter(data_list(profile)));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        recyclerView.setAdapter(listAdapter);
+
+        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(listAdapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(recyclerView);
     }
 
     private List<String> data_list(Profile profile) {
@@ -75,16 +79,26 @@ public class ListActivity extends AppCompatActivity {
             Toast.makeText(this, "Please enter list name", Toast.LENGTH_LONG).show();
         } else {
             profile.addList(new TodoList(list_name));
-            recyclerView.setAdapter(new ListAdapter(data_list(profile)));
-            edt_list.setText("");
             saveProfilData(profile, profile.getLogin());
+            listAdapter.addData(list_name);
+            edt_list.setText("");
         }
     }
 
-    class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder>{
+    class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> implements ItemTouchHelperAdapter {
         private final List<String> lists;
         ListAdapter(List<String> lists) {
             this.lists = lists;
+        }
+
+        public void addData(String list) {
+            lists.add(list);
+            notifyItemInserted(lists.size());
+        }
+
+        public void removeData(int position) {
+            lists.remove(position);
+            notifyItemRemoved(position);
         }
 
         @NonNull
@@ -104,10 +118,27 @@ public class ListActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return lists.size();
+            return lists == null? 0 : lists.size();
         }
 
-        class ListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        @Override
+        public void onItemDissmiss(int position) {
+            profile.removeList(position);
+            removeData(position);
+            saveProfilData(profile, profile.getLogin());
+        }
+
+        @Override
+        public void onItemMove(int fromPosition, int toPosition) {
+            String tmp = lists.get(fromPosition);
+            lists.remove(fromPosition);
+            lists.add(toPosition > fromPosition ? toPosition - 1 : toPosition, tmp);
+            profile.swapList(fromPosition, toPosition);
+            saveProfilData(profile, profile.getLogin());
+            notifyItemMoved(fromPosition,toPosition);
+        }
+
+        class ListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
             private final TextView textView;
 
             ListViewHolder(@NonNull View itemView) {

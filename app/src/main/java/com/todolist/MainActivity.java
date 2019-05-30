@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +15,8 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.todolist.DataClass.Profile;
+import com.todolist.DataClass.TodoList;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -49,8 +50,6 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
-
-    //TODO on restart, present intent from setting activity
 
     @Override
     protected void onStart() {

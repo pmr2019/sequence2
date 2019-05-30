@@ -2,7 +2,6 @@ package com.todolist;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,18 +9,21 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.todolist.DataClass.Item;
+import com.todolist.DataClass.Profile;
+import com.todolist.TouchHelper.ItemTouchHelperAdapter;
+import com.todolist.TouchHelper.ItemTouchHelperCallback;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -36,6 +38,7 @@ public class ItemActivity extends AppCompatActivity {
     EditText edt_item;
     Button btn_item;
     RecyclerView recyclerView;
+    ItemAdapter itemAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,9 +51,13 @@ public class ItemActivity extends AppCompatActivity {
         profile = readProfilData(getIntent().getStringExtra("profile"));
 
         recyclerView = findViewById(R.id.item_activity);
+        itemAdapter = new ItemAdapter(data_item(profile, list_name_selected), checked_item(profile, list_name_selected));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new ItemAdapter(data_item(profile, list_name_selected), checked_item(profile, list_name_selected)));
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
+        recyclerView.setAdapter(itemAdapter);
+
+        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(itemAdapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(recyclerView);
     }
 
     @Override
@@ -91,7 +98,7 @@ public class ItemActivity extends AppCompatActivity {
         }
     }
 
-    class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder>{
+    class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder> implements ItemTouchHelperAdapter {
         private final List<String> items;
         private final boolean[] checked;
         ItemAdapter(List<String> items, boolean[] checked) {
@@ -118,6 +125,19 @@ public class ItemActivity extends AppCompatActivity {
         @Override
         public int getItemCount() {
             return items.size();
+        }
+
+        @Override
+        public void onItemDissmiss(int position) {
+            items.remove(position);
+            profile.removeItem(list_name_selected, position);
+            notifyItemRemoved(position);
+            saveProfilData(profile, profile.getLogin());
+        }
+
+        @Override
+        public void onItemMove(int fromPosition, int toPosition) {
+
         }
 
         class ItemViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener {
