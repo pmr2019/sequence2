@@ -70,6 +70,10 @@ public class Profile implements Serializable {
         this.getListByName(list_name).removeItem(index);
     }
 
+    public void swapItem(int fromPosition, int toPosition, String list_name) {
+        getListByName(list_name).swapItem(fromPosition, toPosition);
+    }
+
     @Override
     public String toString() {
         return "Profile " + login;

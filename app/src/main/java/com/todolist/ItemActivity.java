@@ -2,6 +2,7 @@ package com.todolist;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,8 @@ public class ItemActivity extends AppCompatActivity {
     Button btn_item;
     RecyclerView recyclerView;
     ItemAdapter itemAdapter;
+    List<String> data_item;
+    List<Boolean> checked_item;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,23 +52,18 @@ public class ItemActivity extends AppCompatActivity {
         btn_item = findViewById(R.id.btn_item);
 
         profile = readProfilData(getIntent().getStringExtra("profile"));
+        list_name_selected = getIntent().getStringExtra("list");
 
         recyclerView = findViewById(R.id.item_activity);
-        itemAdapter = new ItemAdapter(data_item(profile, list_name_selected), checked_item(profile, list_name_selected));
+        data_item = data_item(profile, list_name_selected);
+        checked_item = checked_item(profile, list_name_selected);
+        itemAdapter = new ItemAdapter(data_item, checked_item);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(itemAdapter);
 
         ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(itemAdapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(recyclerView);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        profile = readProfilData(getIntent().getStringExtra("profile"));
-        list_name_selected = getIntent().getStringExtra("list");
-        recyclerView.setAdapter(new ItemAdapter(data_item(profile, list_name_selected), checked_item(profile, list_name_selected)));
     }
 
     private List<String> data_item(Profile profile, String list_name_selected) {
@@ -77,11 +75,11 @@ public class ItemActivity extends AppCompatActivity {
         return data;
     }
 
-    private boolean[] checked_item(Profile profile, String list_name_selected) {
+    private List<Boolean> checked_item(Profile profile, String list_name_selected) {
         List<Item> items = profile.getListByName(list_name_selected).getLesItems();
-        boolean[] data = new boolean[items.size()];
+        List<Boolean> data = new ArrayList<>();
         for (int i = 0; i < items.size(); i++) {
-            data[i] = items.get(i).getFait();
+            data.add(items.get(i).getFait());
         }
         return data;
     }
@@ -92,16 +90,19 @@ public class ItemActivity extends AppCompatActivity {
             Toast.makeText(this, "Please enter item name", Toast.LENGTH_LONG).show();
         } else {
             profile.addItem(list_name_selected, item_name);
-            recyclerView.setAdapter(new ItemAdapter(data_item(profile, list_name_selected), checked_item(profile, list_name_selected)));
+//            recyclerView.setAdapter(new ItemAdapter(data_item(profile, list_name_selected), checked_item(profile, list_name_selected)));
             edt_item.setText("");
             saveProfilData(profile, profile.getLogin());
+            data_item.add(item_name);
+            checked_item.add(false);
+            itemAdapter.notifyItemInserted(data_item.size());
         }
     }
 
     class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder> implements ItemTouchHelperAdapter {
         private final List<String> items;
-        private final boolean[] checked;
-        ItemAdapter(List<String> items, boolean[] checked) {
+        private final List<Boolean> checked;
+        ItemAdapter(List<String> items, List<Boolean> checked) {
             this.items = items;
             this.checked = checked;
         }
@@ -117,7 +118,7 @@ public class ItemActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
             String data1 = items.get(position);
-            boolean data2 = checked[position];
+            boolean data2 = checked.get(position);
 
             holder.bind(data1, data2);
         }
@@ -137,7 +138,12 @@ public class ItemActivity extends AppCompatActivity {
 
         @Override
         public void onItemMove(int fromPosition, int toPosition) {
-
+            String tmp = items.get(fromPosition);
+            items.remove(fromPosition);
+            items.add(toPosition > fromPosition ? toPosition - 1 : toPosition, tmp);
+            profile.swapItem(fromPosition, toPosition, list_name_selected);
+            saveProfilData(profile, profile.getLogin());
+            notifyItemMoved(fromPosition,toPosition);
         }
 
         class ItemViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener {

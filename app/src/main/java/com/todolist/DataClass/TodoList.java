@@ -4,6 +4,7 @@ import com.todolist.DataClass.Item;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class TodoList implements Serializable {
     private String titreListeToDo;
@@ -40,6 +41,10 @@ public class TodoList implements Serializable {
     }
 
     public void removeItem(int i) { this.liste.remove(i); }
+
+    public void swapItem(int fromPosition, int toPosition) {
+        Collections.swap(liste, fromPosition, toPosition);
+    }
 
     public void setItemStatus(String item_selected, boolean isChecked){
         for (Item i : liste) {

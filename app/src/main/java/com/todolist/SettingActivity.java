@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.todolist.TouchHelper.ItemTouchHelperAdapter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +49,7 @@ public class SettingActivity extends AppCompatActivity {
         return profiles;
     }
 
-    class SettingAdapter extends RecyclerView.Adapter<SettingAdapter.SettingViewHolder>{
+    class SettingAdapter extends RecyclerView.Adapter<SettingAdapter.SettingViewHolder> implements ItemTouchHelperAdapter {
         private final List<String> profiles;
         SettingAdapter(List<String> profiles) { this.profiles = profiles; }
 
@@ -69,6 +71,17 @@ public class SettingActivity extends AppCompatActivity {
         @Override
         public int getItemCount() {
             return profiles.size();
+        }
+
+        @Override
+        public void onItemDissmiss(int postion) {
+            profiles.remove(postion);
+            //TODO delete profile
+        }
+
+        @Override
+        public void onItemMove(int fromPosition, int toPosition) {
+
         }
 
         class SettingViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
