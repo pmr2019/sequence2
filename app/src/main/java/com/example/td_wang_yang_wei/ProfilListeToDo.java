@@ -8,23 +8,26 @@ public class ProfilListeToDo implements Serializable {
     private List<ListeToDo> mesListeToDo;
     private String login;
 
-    public ProfilListeToDo(List<ListeToDo> mesListeToDo, String login) {
+    public ProfilListeToDo() {
+        this.mesListeToDo = new ArrayList<>();
+    }
+
+
+    public ProfilListeToDo(String login,List<ListeToDo> mesListeToDo) {
         this.mesListeToDo = mesListeToDo;
         this.login = login;
     }
+
+    public ProfilListeToDo(List<ListeToDo> mesListeToDo) {
+        this.mesListeToDo = mesListeToDo;
+    }
+
 
     public ProfilListeToDo(String login) {
         this.login = login;
         this.mesListeToDo = new ArrayList<>();
     }
 
-    public ProfilListeToDo() {
-        this.mesListeToDo = new ArrayList<>();
-    }
-
-    public ProfilListeToDo(List<ListeToDo> mesListeToDo) {
-        this.mesListeToDo = mesListeToDo;
-    }
 
     public List<ListeToDo> getMesListeToDo() {
         return mesListeToDo;

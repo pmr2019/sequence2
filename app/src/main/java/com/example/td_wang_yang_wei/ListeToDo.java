@@ -13,11 +13,6 @@ public class ListeToDo implements Serializable {
         lesItems = new ArrayList<ItemToDo>();
     }
 
-    public ListeToDo(String titreListeToDo, List<ItemToDo> lesItems) {
-        this.titreListeToDo = titreListeToDo;
-        lesItems = new ArrayList<ItemToDo>();
-        this.lesItems = lesItems;
-    }
 
     public ListeToDo(String titreListeToDo) {
         this.titreListeToDo = titreListeToDo;
@@ -39,10 +34,12 @@ public class ListeToDo implements Serializable {
     public void setLesItems(List<ItemToDo> lesItems) {
         this.lesItems = lesItems;
     }
+
     public void ajouterItem(ItemToDo unItem)
     {
         this.lesItems.add(unItem);
     }
+
     public Boolean validerItem(String s)
     {
         int indice = -1;
