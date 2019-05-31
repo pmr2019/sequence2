@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private FileOutputStream outputStream; //permet de sérialiser correctement user
 
     private void alerter(String s) {
-        Toast myToast = Toast.makeText(this,s,Toast.LENGTH_SHORT);
+        Toast myToast = Toast.makeText(this, s, Toast.LENGTH_SHORT);
         myToast.show();
     }
 
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
+    public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menupseudo, menu);
         return true;
@@ -76,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
             case R.id.menu_settings:
 
                 Intent toSettings = new Intent(MainActivity.this,SettingsActivity.class);
-                sauvegarderUserToJsonFile();
                 startActivity(toSettings);
                 break;
 
@@ -87,13 +87,12 @@ public class MainActivity extends AppCompatActivity {
     //Partie GSON
     //Ecrire des données dans la mémoire interne du téléphone
 
-    public void sauvegarderUserToJsonFile(){
+    public void sauvegarderUserToJsonFile() {
 
         final GsonBuilder builder = new GsonBuilder(); //assure la qualité des données Json
         final Gson gson = builder.create();
         String fileName = "pseudos"; //nom du fichier Json
         String fileContents = gson.toJson(this.user);
-
 
         try {
             outputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
@@ -103,10 +102,12 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
-
-
-
 }
+
+
+
+
+
+

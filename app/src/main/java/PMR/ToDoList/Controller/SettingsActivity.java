@@ -11,7 +11,13 @@ import android.widget.EditText;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import PMR.ToDoList.Model.ToDoList;
@@ -92,4 +98,6 @@ public class SettingsActivity extends AppCompatActivity {
         } catch (Exception e) {
         }
     }
+
+
 }
