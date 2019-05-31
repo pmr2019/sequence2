@@ -48,16 +48,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
 
-        //afficher des informations lors on clique les elements
         switch (v.getId()){
             //cliquer le button
             case R.id.btnOK:
             String pseudo = edtPseudo.getText().toString();
+            if(pseudo.equals("")){
+                alerter("tapez votre nom");
+            }else {
             alerter("Pseudo: " + pseudo);
+            Intent liste=new Intent(this,ChoixListeActivity.class);
+            startActivity(liste);}
+            break;
             //cliquer le champ de saisie
             case R.id.edtPseudo:
                 alerter("saisir ton pseudo");
-
+            break;
          }
 
     }
@@ -72,19 +77,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.action_account :
+
                 alerter("Menu Compte");
                 Intent account=new Intent(this,SettingsActivity.class);
                 Bundle data = new Bundle();
                 data.putString("pseudo",edtPseudo.getText().toString());
                 account.putExtras(data);
-                // Changement d'activité
                 startActivity(account);
-                break;
 
-        }
         return super.onOptionsItemSelected(item);
     }
 }
