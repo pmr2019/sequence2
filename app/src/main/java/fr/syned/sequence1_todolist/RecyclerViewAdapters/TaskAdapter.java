@@ -10,6 +10,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     public TaskViewHolder onCreateViewHolder (@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View v = inflater.inflate(R.layout.item_task, parent, false);
-        return new TaskAdapter.TaskViewHolder(v, parent.getContext());
+        return new TaskAdapter.TaskViewHolder(v);
     }
 
     @Override
@@ -48,12 +49,14 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
         UUID uuid;
 
+        public CardView cardView;
         public TextView textView;
         public CheckBox checkBox;
 
-        public TaskViewHolder(@NonNull View v, final Context mContext) {
+        public TaskViewHolder(@NonNull View v) {
             super(v);
-            textView = v.findViewById(R.id.task_name);
+            cardView = v.findViewById(R.id.card_view);
+            textView = v.findViewById(R.id.text);
             checkBox = v.findViewById(R.id.checkbox);
 
             checkBox.setOnClickListener(new View.OnClickListener() {
@@ -70,7 +73,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                 }
             });
 
-            textView.setOnClickListener(new View.OnClickListener() {
+            cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Task selectedTask = ToDoListActivity.toDoList.getTask(uuid);

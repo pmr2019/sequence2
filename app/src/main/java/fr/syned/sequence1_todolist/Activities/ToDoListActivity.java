@@ -54,7 +54,7 @@ public class ToDoListActivity extends BaseActivity {
         taskAdapter = new TaskAdapter(toDoList.getTasks());
         recyclerView.setAdapter(taskAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
+//        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
     }
 
     @Override

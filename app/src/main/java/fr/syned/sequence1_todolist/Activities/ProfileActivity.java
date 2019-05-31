@@ -1,8 +1,10 @@
 package fr.syned.sequence1_todolist.Activities;
 
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -44,8 +46,10 @@ public class ProfileActivity extends BaseActivity {
         recyclerView = findViewById(R.id.todolists);
         toDoListAdapter = new ToDoListAdapter(profile.getToDoLists());
         recyclerView.setAdapter(toDoListAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+//        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+//        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
     }
 
     @Override
@@ -53,7 +57,13 @@ public class ProfileActivity extends BaseActivity {
         return R.layout.activity_profile;
     }
 
-//    @Override
+    @Override
+    protected void onResume() {
+        super.onResume();
+        toDoListAdapter.notifyDataSetChanged();
+    }
+
+    //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
 //        // Inflate the menu; this adds items to the action bar if it is present.
 //        getMenuInflater().inflate(R.menu.menu_main, menu);
