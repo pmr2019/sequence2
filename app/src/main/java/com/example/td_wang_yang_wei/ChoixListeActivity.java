@@ -25,8 +25,8 @@ public class ChoixListeActivity extends AppCompatActivity implements View.OnClic
         recyclerView = findViewById(R.id.list);
         btnListe.setOnClickListener(this);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        recyclerView.setAdapter(new ListeAdapter());
+        //recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+
 
 
 

@@ -10,7 +10,7 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/edtliste"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints"></androidx.recyclerview.widget.RecyclerView>
+        tools:ignore="MissingConstraints"/>
 
     <EditText
         android:id="@+id/edtliste"
@@ -22,6 +22,8 @@
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent" />
+
+
 
     <Button
         android:id="@+id/btnListe"
