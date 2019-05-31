@@ -32,8 +32,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
- //       Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
         btnOk=findViewById(R.id.btnOK);
         edtPseudo=findViewById(R.id.edtPseudo);
         btnOk.setOnClickListener(this);
@@ -45,11 +43,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onStart() {
         super.onStart();
         alerter("onStart");
-
-        SharedPreferences settings =
-                PreferenceManager.getDefaultSharedPreferences(this);
-
-        edtPseudo.setText(settings.getString("pseudo",""));
     }
 
     @Override
@@ -84,18 +77,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.action_account :
                 alerter("Menu Compte");
                 Intent account=new Intent(this,SettingsActivity.class);
-
-
                 Bundle data = new Bundle();
                 data.putString("pseudo",edtPseudo.getText().toString());
                 account.putExtras(data);
-
                 // Changement d'activité
                 startActivity(account);
-
-                break;
-            case R.id.action_preference:
-                alerter("Menu Prefernce");
                 break;
 
         }

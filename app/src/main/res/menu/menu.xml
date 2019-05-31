@@ -6,7 +6,5 @@
         android:id="@+id/action_account"
         android:title="Account">
     </item>
-    <item
-        android:id="@+id/action_preference"
-        android:title="Preferences" />
+
 </menu>
