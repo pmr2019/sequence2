@@ -20,10 +20,14 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import static fr.syned.sequence1_todolist.MainActivity.EXTRA_PROFILE;
-import static fr.syned.sequence1_todolist.MainActivity.EXTRA_TODOLIST;
+import java.util.UUID;
 
-public class ToDoListActivity extends AppCompatActivity {
+import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_TODOLIST;
+import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_UUID;
+import static fr.syned.sequence1_todolist.CustomApplication.profilesList;
+import static fr.syned.sequence1_todolist.ProfileActivity.profile;
+
+public class ToDoListActivity extends BaseActivity {
 
     public static ToDoList toDoList;
     EditText textViewTaskName;
@@ -31,11 +35,11 @@ public class ToDoListActivity extends AppCompatActivity {
     private TaskAdapter taskAdapter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_todolist);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        setContentView(R.layout.activity_todolist);
+//        toolbar = findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
 
 //        FloatingActionButton fab = findViewById(R.id.btn_add_task);
 //        fab.setOnClickListener(new View.OnClickListener() {
@@ -46,8 +50,11 @@ public class ToDoListActivity extends AppCompatActivity {
 //            }
 //        });
 
-        toDoList = (ToDoList) getIntent().getSerializableExtra(EXTRA_TODOLIST);
+//        toDoList = (ToDoList) getIntent().getSerializableExtra(EXTRA_TODOLIST);
+        toDoList = profile.getToDoList((UUID) getIntent().getSerializableExtra(EXTRA_UUID));
         Log.i("TAG", "onCreate, toDoList: " + toDoList);
+
+        super.toolbar.setSubtitle(toDoList.getName());
 
         textViewTaskName = findViewById(R.id.text_view_task_name);
         recyclerView = findViewById(R.id.tasks);
@@ -58,35 +65,40 @@ public class ToDoListActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    protected int getLayoutResourceId() {
+        return R.layout.activity_todolist;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_main, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
     public void onClickAddBtn(View view) {
         if (!textViewTaskName.getText().toString().matches("")) {
             toDoList.addTask(textViewTaskName.getText().toString());
             taskAdapter.notifyDataSetChanged();
             textViewTaskName.setText(null);
-            Intent intent = new Intent(this, ProfileActivity.class);
-            intent.putExtra(EXTRA_TODOLIST, toDoList);
-            setResult(Activity.RESULT_OK, intent);
+//            Intent intent = new Intent(this, ProfileActivity.class);
+//            intent.putExtra(EXTRA_TODOLIST, toDoList);
+//            setResult(Activity.RESULT_OK, intent);
         }
     }
 }

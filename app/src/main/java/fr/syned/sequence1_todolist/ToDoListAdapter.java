@@ -14,6 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import java.util.UUID;
 
+import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_PROFILE;
+import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_TODOLIST;
+import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_UUID;
+import static fr.syned.sequence1_todolist.CustomApplication.PICK_CONTACT_REQUEST;
+import static fr.syned.sequence1_todolist.ProfileActivity.profile;
+
 public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoListViewHolder> {
     private List<ToDoList> mDataset;
 
@@ -53,11 +59,12 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
                 public void onClick(View v) {
                     if(getAdapterPosition() != RecyclerView.NO_POSITION) {
 //                        Toast.makeText(v.getContext(), "Clicked on " + getAdapterPosition(), Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(v.getContext(), ToDoListActivity.class);
-                        ToDoList selectedToDoList;
-                        selectedToDoList = ProfileActivity.profile.getToDoList(uuid);
-                        intent.putExtra(MainActivity.EXTRA_TODOLIST, selectedToDoList);
-                        ((Activity) mContext).startActivityForResult(intent, MainActivity.PICK_CONTACT_REQUEST);
+//                        Intent intent = new Intent(v.getContext(), ToDoListActivity.class);
+//                        ToDoList selectedToDoList;
+//                        selectedToDoList = ProfileActivity.profile.getToDoList(uuid);
+//                        intent.putExtra(EXTRA_TODOLIST, selectedToDoList);
+//                        ((Activity) mContext).startActivityForResult(intent, PICK_CONTACT_REQUEST);
+                        v.getContext().startActivity(new Intent(v.getContext(), ToDoListActivity.class).putExtra(EXTRA_UUID, uuid).putExtra(EXTRA_PROFILE, ((ProfileActivity)v.getContext()).profile));
                     }
                 }
             });

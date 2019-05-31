@@ -18,8 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import java.util.UUID;
 
-import static fr.syned.sequence1_todolist.MainActivity.EXTRA_TASK;
-import static fr.syned.sequence1_todolist.MainActivity.EXTRA_TODOLIST;
+import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_TODOLIST;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
     private List<Task> mDataset;
@@ -66,9 +65,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                     if (selectedTask.isDone()) textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                     else textView.setPaintFlags(textView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                     Log.i("TAG", "onClick on checkBox: " + selectedTask.isDone());
-                    Intent intent = new Intent(v.getContext(), ProfileActivity.class);
-                    intent.putExtra(EXTRA_TODOLIST, ToDoListActivity.toDoList);
-                    ((Activity) v.getContext()).setResult(Activity.RESULT_OK, intent);
+//                    Intent intent = new Intent(v.getContext(), ProfileActivity.class);
+//                    intent.putExtra(EXTRA_TODOLIST, ToDoListActivity.toDoList);
+//                    ((Activity) v.getContext()).setResult(Activity.RESULT_OK, intent);
                 }
             });
 
@@ -80,9 +79,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                     if (selectedTask.isDone()) textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                     else textView.setPaintFlags(textView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                     Log.i("TAG", "onClick on textView: " + selectedTask.isDone());
-                    Intent intent = new Intent(v.getContext(), ProfileActivity.class);
-                    intent.putExtra(EXTRA_TODOLIST, ToDoListActivity.toDoList);
-                    ((Activity) v.getContext()).setResult(Activity.RESULT_OK, intent);
+//                    Intent intent = new Intent(v.getContext(), ProfileActivity.class);
+//                    intent.putExtra(EXTRA_TODOLIST, ToDoListActivity.toDoList);
+//                    ((Activity) v.getContext()).setResult(Activity.RESULT_OK, intent);
                 }
             });
         }
