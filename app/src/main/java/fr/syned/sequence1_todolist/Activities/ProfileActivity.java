@@ -1,26 +1,19 @@
-package fr.syned.sequence1_todolist;
+package fr.syned.sequence1_todolist.Activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import fr.syned.sequence1_todolist.Model.Profile;
+import fr.syned.sequence1_todolist.R;
+import fr.syned.sequence1_todolist.RecyclerViewAdapters.ToDoListAdapter;
 
-import java.util.List;
-
-import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_PROFILE;
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_USERNAME;
 import static fr.syned.sequence1_todolist.CustomApplication.profilesList;
 

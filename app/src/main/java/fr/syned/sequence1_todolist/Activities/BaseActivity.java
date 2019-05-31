@@ -1,4 +1,4 @@
-package fr.syned.sequence1_todolist;
+package fr.syned.sequence1_todolist.Activities;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -15,6 +15,8 @@ import com.google.gson.GsonBuilder;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import fr.syned.sequence1_todolist.R;
 
 import static fr.syned.sequence1_todolist.CustomApplication.TAG;
 import static fr.syned.sequence1_todolist.CustomApplication.filename;

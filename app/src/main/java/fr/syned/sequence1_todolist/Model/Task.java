@@ -1,4 +1,4 @@
-package fr.syned.sequence1_todolist;
+package fr.syned.sequence1_todolist.Model;
 
 import java.io.Serializable;
 import java.util.Calendar;

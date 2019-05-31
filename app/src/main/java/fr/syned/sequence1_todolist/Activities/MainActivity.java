@@ -1,28 +1,17 @@
-package fr.syned.sequence1_todolist;
+package fr.syned.sequence1_todolist.Activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import fr.syned.sequence1_todolist.Model.Profile;
+import fr.syned.sequence1_todolist.R;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_PROFILE;
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_USERNAME;
 import static fr.syned.sequence1_todolist.CustomApplication.TAG;
 import static fr.syned.sequence1_todolist.CustomApplication.profilesList;

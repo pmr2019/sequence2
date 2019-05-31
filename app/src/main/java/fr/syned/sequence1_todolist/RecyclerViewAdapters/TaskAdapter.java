@@ -1,15 +1,12 @@
-package fr.syned.sequence1_todolist;
+package fr.syned.sequence1_todolist.RecyclerViewAdapters;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,7 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import java.util.UUID;
 
-import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_TODOLIST;
+import fr.syned.sequence1_todolist.Activities.ToDoListActivity;
+import fr.syned.sequence1_todolist.R;
+import fr.syned.sequence1_todolist.Model.Task;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
     private List<Task> mDataset;
