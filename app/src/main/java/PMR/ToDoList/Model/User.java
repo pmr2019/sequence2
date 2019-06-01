@@ -1,15 +1,18 @@
 package PMR.ToDoList.Model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.io.Serializable;
 
-public class User {
+public class User implements Parcelable {
 
-    private List<ToDoList> ToDoLists;
+    private ArrayList<ToDoList> ToDoLists;
     private String login;
 
-    public User(List<ToDoList> mesListeToDo, String login) {
+    public User(ArrayList<ToDoList> mesListeToDo, String login) {
         this.ToDoLists = mesListeToDo;
         this.login = login;
     }
@@ -19,15 +22,33 @@ public class User {
         this.ToDoLists = new ArrayList<>();
     }
 
-    public User(List<ToDoList> mesListeToDo) {
+    public User(ArrayList<ToDoList> mesListeToDo) {
         this.ToDoLists = mesListeToDo;
     }
 
-    public List<ToDoList> getMesListeToDo() {
+    protected User(Parcel in) {
+        login = in.readString();
+        ToDoLists = new ArrayList<>();
+        in.readList(ToDoLists, ToDoList.class.getClassLoader());
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
+
+    public ArrayList<ToDoList> getMesListeToDo() {
         return ToDoLists;
     }
 
-    public void setMesListeToDo(List<ToDoList> mesListeToDo) {
+    public void setMesListeToDo(ArrayList<ToDoList> mesListeToDo) {
         this.ToDoLists = mesListeToDo;
     }
 
@@ -53,4 +74,14 @@ public class User {
     }
 
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(login);
+        parcel.writeList(ToDoLists);
+    }
 }

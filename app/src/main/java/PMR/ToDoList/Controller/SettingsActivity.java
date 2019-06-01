@@ -4,25 +4,37 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
 
 import PMR.ToDoList.Model.ToDoList;
 import PMR.ToDoList.Model.User;
 import PMR.ToDoList.R;
+
+import static android.content.Intent.EXTRA_USER;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -33,10 +45,9 @@ public class SettingsActivity extends AppCompatActivity {
     private RecyclerView settingRecyclerView;
     private SettingsAdapter settingsAdapter;
     private RecyclerView.LayoutManager settingLayoutManager;
-    private User userSettings;
 
     //PARTIE DONNEES
-    private ArrayList<User> settings;
+    private ArrayList<User> settings = new ArrayList<User>();
 
 
     @Override
@@ -46,13 +57,9 @@ public class SettingsActivity extends AppCompatActivity {
 
         buildToolbar();
 
-        settings =new ArrayList<>();
+        for (User u : getUsersFromFile())
+            settings.add(u);
 
-        settings.add(new User("John"));
-        settings.add(new User("Fred"));
-
-        readUserFromJsonFile();
-        settings.add(userSettings);
 
         buildRecyclerView(settings);
     }
@@ -70,6 +77,7 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onDeleteClick(int position) {
                 settings.remove(position);
+                sauvegarderUserToJsonFile(settings);
                 settingsAdapter.notifyItemRemoved(position);
             }
         });
@@ -82,7 +90,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     //Partie GSON
 
-    public void readUserFromJsonFile() {
+/*    public void readUserFromJsonFile() {
         String sJasonLu = "";
         final GsonBuilder builder = new GsonBuilder();
         final Gson gson = builder.create();
@@ -97,7 +105,48 @@ public class SettingsActivity extends AppCompatActivity {
             userSettings = (User) gson.fromJson(sJasonLu, User.class);
         } catch (Exception e) {
         }
-    }
+    }*/
 
+    public ArrayList<User> getUsersFromFile() {
+        Gson gson = new Gson();
+        String json = "";
+        ArrayList<User> usersList = null;
+        try {
+            FileInputStream inputStream = openFileInput("pseudos");
+            BufferedReader br = new BufferedReader(new InputStreamReader(
+                    new BufferedInputStream(inputStream), StandardCharsets.UTF_8));
+            usersList = gson.fromJson(br, new TypeToken<List<User>>() {}.getType());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //partie suggestions editText
+/*        if (usersList != null) {
+            Log.i(TAG, "getUsersFromFile: ");
+            for (User p : usersList) {
+                p.onDeserialization();
+                autoCompleteAdapter.add(p.getUsername());
+            }
+        }*/
+
+        return usersList;
+    }
+    public void sauvegarderUserToJsonFile(ArrayList myList) {
+
+        final GsonBuilder builder = new GsonBuilder(); //assure la qualité des données Json
+        final Gson gson = builder.setPrettyPrinting().create();
+        String fileName = "pseudos"; //nom du fichier Json
+        FileOutputStream outputStream; //permet de sérialiser correctement user
+
+        String fileContents = gson.toJson(myList);
+
+        try {
+            outputStream = openFileOutput("pseudos", Context.MODE_PRIVATE);
+            outputStream.write(fileContents.getBytes());
+            outputStream.close();
+            Log.i("TODO_Romain", "Sauvegarde du fichier Json");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }

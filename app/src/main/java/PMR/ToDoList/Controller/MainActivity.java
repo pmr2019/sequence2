@@ -17,23 +17,38 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import PMR.ToDoList.Model.User;
 import PMR.ToDoList.R;
 
+import static android.content.Intent.EXTRA_USER;
+
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "Romain";
     private EditText edtPseudo;
     private Button btnPseudo;
     private TextView txtPseudo;
     private androidx.appcompat.widget.Toolbar toolbar;
-    private User user;
-    private FileOutputStream outputStream; //permet de sérialiser correctement user
+
+
+    private ArrayList<User> myUsersList;
 
     private void alerter(String s) {
         Toast myToast = Toast.makeText(this, s, Toast.LENGTH_SHORT);
@@ -51,15 +66,45 @@ public class MainActivity extends AppCompatActivity {
         toolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        myUsersList = getUsersFromFile();
+
         btnPseudo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ToDoListActivity.class);
-                user = new User(edtPseudo.getText().toString());
-                sauvegarderUserToJsonFile();
-                startActivity(intent);
+                User myUser = null;
+                String login = edtPseudo.getText().toString();
+                Boolean autorisation = true;
+                if (edtPseudo.getText().toString().matches("")) {
+                    alerter("Entrez votre pseudo");
+                    autorisation = false;
+
+                }
+                else if (myUsersList!=null) {
+                    for (User u : myUsersList) {
+                        if (u.getLogin().equals(login)) {
+                            myUser = u;
+                            alerter("Ce pseudo existe déjà");
+                        }
+                    }
+                }
+
+                else if (myUsersList==null){
+                    myUsersList = new ArrayList<>();
+                }
+                if (myUser==null){              //si le pseudo n'existait pas
+                    myUser = new User(login);
+                    myUsersList.add(myUser);
+
+                    sauvegarderUserToJsonFile(myUsersList);
+                }
+                if (autorisation) {
+                    intent.putExtra(EXTRA_USER, myUser); //transfert le login myUser à l'activité 2
+                    startActivity(intent);
+                }
             }
         });
+
     }
 
     @Override
@@ -87,21 +132,48 @@ public class MainActivity extends AppCompatActivity {
     //Partie GSON
     //Ecrire des données dans la mémoire interne du téléphone
 
-    public void sauvegarderUserToJsonFile() {
+    public void sauvegarderUserToJsonFile(ArrayList myList) {
 
         final GsonBuilder builder = new GsonBuilder(); //assure la qualité des données Json
-        final Gson gson = builder.create();
+        final Gson gson = builder.setPrettyPrinting().create();
         String fileName = "pseudos"; //nom du fichier Json
-        String fileContents = gson.toJson(this.user);
+        FileOutputStream outputStream; //permet de sérialiser correctement user
+
+        String fileContents = gson.toJson(myList);
 
         try {
-            outputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
+            outputStream = openFileOutput("pseudos", Context.MODE_PRIVATE);
             outputStream.write(fileContents.getBytes());
             outputStream.close();
             Log.i("TODO_Romain", "Sauvegarde du fichier Json");
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    //Fonction recréant à chaque ouverture de l'appli une liste de users
+    public ArrayList<User> getUsersFromFile() {
+        Gson gson = new Gson();
+        String json = "";
+        ArrayList<User> usersList = null;
+        try {
+            FileInputStream inputStream = openFileInput("pseudos");
+            BufferedReader br = new BufferedReader(new InputStreamReader(
+                                new BufferedInputStream(inputStream), StandardCharsets.UTF_8));
+            usersList = gson.fromJson(br, new TypeToken<List<User>>() {}.getType());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //partie suggestions editText
+/*        if (usersList != null) {
+            Log.i(TAG, "getUsersFromFile: ");
+            for (User p : usersList) {
+                p.onDeserialization();
+                autoCompleteAdapter.add(p.getUsername());
+            }
+        }*/
+
+        return usersList;
     }
 
 }
