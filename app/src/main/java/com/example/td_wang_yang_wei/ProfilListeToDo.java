@@ -9,23 +9,26 @@ public class ProfilListeToDo implements Serializable {
     private String login;
 
     public ProfilListeToDo() {
+        this.login="Default";
         this.mesListeToDo = new ArrayList<>();
     }
 
 
     public ProfilListeToDo(String login,List<ListeToDo> mesListeToDo) {
+        super();
         this.mesListeToDo = mesListeToDo;
         this.login = login;
     }
 
     public ProfilListeToDo(List<ListeToDo> mesListeToDo) {
+        super();
         this.mesListeToDo = mesListeToDo;
     }
 
 
     public ProfilListeToDo(String login) {
+        super();
         this.login = login;
-        this.mesListeToDo = new ArrayList<>();
     }
 
 
@@ -44,6 +47,7 @@ public class ProfilListeToDo implements Serializable {
     public void setLogin(String login) {
         this.login = login;
     }
+
     public void ajouteListe(ListeToDo uneListe)
     {
         this.mesListeToDo.add(uneListe);

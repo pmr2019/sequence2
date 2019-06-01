@@ -1,8 +1,10 @@
 package com.example.td_wang_yang_wei;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.Menu;
@@ -17,6 +19,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public List <String>profiles;
 
 
-    private void alerter(String s) {
+    public void alerter(String s) {
         Log.i(Cat,s);
         Toast myToast = Toast.makeText(this,s,Toast.LENGTH_SHORT);
         myToast.show();
@@ -45,8 +50,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         btnOk.setOnClickListener(this);
         edtPseudo.setOnClickListener(this);
-
-
+        profiles=getProfiles();
+        if(profiles.size()>0){
+            edtPseudo.setText(profiles.get(profiles.size()-1));
+        }
     }
 
 
@@ -55,9 +62,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         super.onStart();
         alerter("onStart");
-        profiles=getProfiles();
-        if(profiles.size()>0){
-            edtPseudo.setText(profiles.get(profiles.size()-1));
+
+
+        if (getIntent().getStringExtra("profile") != null) {
+            edtPseudo.setText(getIntent().getStringExtra("profile"));
         }
     }
 
@@ -77,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     alerter("Pseudo: " + pseudo);
                     if(!profiles.contains(pseudo)){
                         setProfile(pseudo);
-                        ProfilListeToDo profile=new ProfilListeToDo(pseudo);
+                        ProfilListeToDo profile=new ProfilListeToDo(pseudo,new ArrayList<ListeToDo>());
                         saveProfileData(profile,pseudo);
                     }
                     ConvertToListe(pseudo);
@@ -119,14 +127,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void saveProfileData(ProfilListeToDo p, String pseudo){
-        final GsonBuilder builder = new GsonBuilder();
-        final Gson gson = builder.create();
+        Gson gson=new Gson();
         String fileContents = gson.toJson(p);
         SharedPreferences preferences = getSharedPreferences(pseudo, MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString("content",fileContents);
+        editor.commit();
     }
-
+//    public void saveProfileData(ProfilListeToDo profile, String pseudo) {
+//        final GsonBuilder builder = new GsonBuilder();
+//        final Gson gson = builder.create();
+//        String fileContents = gson.toJson(profile);
+//        FileOutputStream fileOutputStream;
+//
+//        try {
+//            fileOutputStream = openFileOutput(pseudo, Context.MODE_PRIVATE);
+//            fileOutputStream.write(fileContents.getBytes());
+//            fileOutputStream.close();
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -140,9 +163,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 alerter("Menu Compte");
                 Intent account=new Intent(this,SettingsActivity.class);
-                Bundle data = new Bundle();
-                data.putString("pseudo",edtPseudo.getText().toString());
-                account.putExtras(data);
                 startActivity(account);
 
         return super.onOptionsItemSelected(item);
