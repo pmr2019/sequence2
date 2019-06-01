@@ -3,7 +3,6 @@ package com.todolist;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,20 +62,21 @@ public class ListActivity extends AppCompatActivity {
         touchHelper.attachToRecyclerView(recyclerView);
     }
 
+    // Return a list of todolists' names in a profile class
+    // to dispaly in the Recycler view
     private List<String> data_list(Profile profile) {
         List<String> data = new ArrayList<>();
-        TodoList tmp;
         for (TodoList list : profile.getListe()) {
-            tmp = list;
-            data.add(tmp.getTitreListeToDo());
+            data.add(list.getTitreListeToDo());
         }
         return data;
     }
 
+    // Function bind to the "OK" button as onClick event for a new list
     public void newList(View v) {
         String list_name = edt_list.getText().toString();
         if (list_name.isEmpty()){
-            Toast.makeText(this, "Please enter list name", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Please enter list name", Toast.LENGTH_SHORT).show();
         } else {
             profile.addList(new TodoList(list_name));
             saveProfilData(profile, profile.getLogin());
@@ -91,12 +91,12 @@ public class ListActivity extends AppCompatActivity {
             this.lists = lists;
         }
 
-        public void addData(String list) {
+        void addData(String list) {
             lists.add(list);
             notifyItemInserted(lists.size());
         }
 
-        public void removeData(int position) {
+        void removeData(int position) {
             lists.remove(position);
             notifyItemRemoved(position);
         }
@@ -121,6 +121,8 @@ public class ListActivity extends AppCompatActivity {
             return lists == null? 0 : lists.size();
         }
 
+        // Function declared in the interface "ItemTouchHelperAdapter"
+        // Triggered when item swiped to left
         @Override
         public void onItemDissmiss(int position) {
             profile.removeList(position);
@@ -128,6 +130,8 @@ public class ListActivity extends AppCompatActivity {
             saveProfilData(profile, profile.getLogin());
         }
 
+        // Function declared in the interface "ItemTouchHelperAdapter"
+        // Triggered when item dragged to other position
         @Override
         public void onItemMove(int fromPosition, int toPosition) {
             String tmp = lists.get(fromPosition);

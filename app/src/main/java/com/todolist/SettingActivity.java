@@ -14,17 +14,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.todolist.TouchHelper.ItemTouchHelperAdapter;
+import com.todolist.TouchHelper.ItemTouchHelperCallback;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SettingActivity extends AppCompatActivity {
     List<String> profiles;
     RecyclerView recyclerView;
+    SettingAdapter settingAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,10 +37,27 @@ public class SettingActivity extends AppCompatActivity {
 
         profiles = readPreference();
 
+        settingAdapter = new SettingAdapter(profiles);
         recyclerView = findViewById(R.id.setting_activity);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new SettingAdapter(profiles));
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
+        recyclerView.setAdapter(settingAdapter);
+
+        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(settingAdapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    public void savePreference(List<String> profiles) {
+        SharedPreferences preferences = getSharedPreferences("profile", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        editor.putInt("profile_number", profiles.size());
+        for (int i = 0; i < profiles.size(); i++) {
+            editor.putString("" + i, profiles.get(i));
+        }
+
+        editor.apply();
+        editor.commit();
     }
 
     public List<String> readPreference() {
@@ -75,8 +96,11 @@ public class SettingActivity extends AppCompatActivity {
 
         @Override
         public void onItemDissmiss(int postion) {
+            File f = new File(getFilesDir() + "/" + profiles.get(postion));
+            f.delete();
             profiles.remove(postion);
-            //TODO delete profile
+            savePreference(profiles);
+            notifyItemRemoved(postion);
         }
 
         @Override

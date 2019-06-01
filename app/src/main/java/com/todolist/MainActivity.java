@@ -25,8 +25,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Integer.valueOf;
-
 public class MainActivity extends AppCompatActivity {
     EditText edt_pseudo;
     Button btn_pseudo;
@@ -46,11 +44,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Initialize the preference menu
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
 
+    // Show the profile selected by user when redirect to this activity
     @Override
     protected void onStart() {
         super.onStart();
@@ -67,11 +67,13 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    // Open an existing list activity or create a new one
+    // regarding if the pseudo exist or not in the preference
     public void openListActivity(View v) {
         String pseudo = edt_pseudo.getText().toString();
 
         if (pseudo.isEmpty()){
-            Toast.makeText(this, "Please enter your pseudo", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Please enter your pseudo", Toast.LENGTH_SHORT).show();
         } else {
             Intent i = new Intent(MainActivity.this, ListActivity.class);
             if (!profiles.contains(pseudo)) {
@@ -85,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Function to save data as json file
+    // Each Profile class has its own json file named by its login
     public void saveProfilData(Profile profile, String pseudo) {
         final GsonBuilder builder = new GsonBuilder();
         final Gson gson = builder.create();
@@ -102,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Read data and return a Profile class by using its login
     public Profile readProfilData(String filename) {
         StringBuilder jsonRead = new StringBuilder();
         Profile profile;
@@ -127,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
         return new Profile();
     }
 
+    // Save logins and number as preference
     public void savePreference(List<String> profiles) {
         SharedPreferences preferences = getSharedPreferences("profile", MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
@@ -140,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
         editor.commit();
     }
 
+    // Return an array list of profiles' logins;
     public List<String> readPreference() {
         SharedPreferences preferences = getSharedPreferences("profile", MODE_PRIVATE);
         List<String> profiles = new ArrayList<>();
