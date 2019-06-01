@@ -6,4 +6,44 @@
     android:layout_height="match_parent"
     tools:context=".ShowListeActivity">
 
+    <LinearLayout
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/list_show"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+            app:layout_constraintTop_toTopOf="parent"></androidx.recyclerview.widget.RecyclerView>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+
+        <EditText
+            android:id="@+id/edit_item"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:text="Entrez votre item"></EditText>
+
+        <Button
+            android:id="@+id/button_item"
+            android:layout_width="99dp"
+            android:layout_height="wrap_content"
+            android:text="OK" />
+
+    </LinearLayout>
+    </LinearLayout>
+
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
