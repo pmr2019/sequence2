@@ -2,19 +2,20 @@ package fr.syned.sequence1_todolist.Activities;
 
 import android.os.Bundle;
 
-import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import java.util.UUID;
 
+import fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters.SwipeItemTouchHelper;
 import fr.syned.sequence1_todolist.R;
-import fr.syned.sequence1_todolist.RecyclerViewAdapters.TaskAdapter;
+import fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters.TaskAdapter;
 import fr.syned.sequence1_todolist.Model.ToDoList;
 
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_UUID;
@@ -55,6 +56,8 @@ public class ToDoListActivity extends BaseActivity {
         recyclerView.setAdapter(taskAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 //        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeItemTouchHelper(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, recyclerView));
+        itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
     @Override

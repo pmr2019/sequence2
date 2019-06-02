@@ -1,6 +1,5 @@
-package fr.syned.sequence1_todolist.RecyclerViewAdapters;
+package fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
@@ -13,9 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.w3c.dom.Text;
+import com.google.android.material.snackbar.Snackbar;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -31,6 +29,9 @@ import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_UUID;
 
 public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoListViewHolder> {
     private List<ToDoList> mDataset;
+
+    private int removedPosition = 0;
+    private ToDoList removedToDoList;
 
     public ToDoListAdapter(List<ToDoList> dataset) {
         mDataset = dataset;
@@ -59,7 +60,7 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
         private CardView cardView;
         private TextView title;
         private UUID uuid;
-        ArrayList<View> subList = new ArrayList<>();
+        private ArrayList<View> subList = new ArrayList<>();
         TextView ellipsis;
 
         public ToDoListViewHolder(@NonNull View v) {
@@ -67,7 +68,7 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
 
             cardView = v.findViewById(R.id.card_view);
             title = cardView.findViewById(R.id.title);
-
+            // TODO: implement nested RecyclerView instead.
             subList.add(cardView.findViewById(R.id.sub0));
             subList.add(cardView.findViewById(R.id.sub1));
             subList.add(cardView.findViewById(R.id.sub2));
@@ -116,6 +117,28 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
             }
             if (tasks.size() > 10) ellipsis.setVisibility(View.VISIBLE);
         }
+
+    }
+
+    public void removeItem(RecyclerView.ViewHolder viewHolder) {
+        removedPosition = viewHolder.getAdapterPosition();
+        removedToDoList = mDataset.get(viewHolder.getAdapterPosition());
+
+        mDataset.remove(viewHolder.getAdapterPosition());
+        notifyItemRemoved(viewHolder.getAdapterPosition());
+
+        Snackbar.make(viewHolder.itemView, removedToDoList.getName() + " deleted.",Snackbar.LENGTH_LONG).setAction("UNDO", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                restoreLastItem(removedPosition, removedToDoList);
+            }
+        }).show();
+    }
+
+    public void restoreLastItem(int position, ToDoList toDoList) {
+        mDataset.add(position, toDoList);
+        notifyItemInserted(position);
+
     }
 
 }

@@ -1,6 +1,5 @@
-package fr.syned.sequence1_todolist.RecyclerViewAdapters;
+package fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters;
 
-import android.content.Context;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -22,6 +23,9 @@ import fr.syned.sequence1_todolist.Model.Task;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
     private List<Task> mDataset;
+
+    private int removedPosition = 0;
+    private Task removedTask;
 
     public TaskAdapter(List<Task> dataset) {
         mDataset = dataset;
@@ -49,7 +53,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
         UUID uuid;
 
-        public CardView cardView;
+        public static CardView cardView;
         public TextView textView;
         public CheckBox checkBox;
 
@@ -97,5 +101,25 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
             this.uuid = task.getId();
         }
+    }
+    public void removeItem(RecyclerView.ViewHolder viewHolder) {
+        removedPosition = viewHolder.getAdapterPosition();
+        removedTask = mDataset.get(viewHolder.getAdapterPosition());
+
+        mDataset.remove(viewHolder.getAdapterPosition());
+        notifyItemRemoved(viewHolder.getAdapterPosition());
+
+        Snackbar.make(viewHolder.itemView, removedTask.getName() + " deleted.",Snackbar.LENGTH_LONG).setAction("UNDO", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                restoreLastItem(removedPosition, removedTask);
+            }
+        }).show();
+    }
+
+    public void restoreLastItem(int position, Task task) {
+        mDataset.add(position, task);
+        notifyItemInserted(position);
+
     }
 }

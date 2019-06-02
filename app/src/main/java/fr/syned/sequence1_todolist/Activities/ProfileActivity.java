@@ -1,20 +1,18 @@
 package fr.syned.sequence1_todolist.Activities;
 
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
+import fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters.SwipeItemTouchHelper;
 import fr.syned.sequence1_todolist.Model.Profile;
 import fr.syned.sequence1_todolist.R;
-import fr.syned.sequence1_todolist.RecyclerViewAdapters.ToDoListAdapter;
+import fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters.ToDoListAdapter;
 
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_USERNAME;
 import static fr.syned.sequence1_todolist.CustomApplication.profilesList;
@@ -50,6 +48,8 @@ public class ProfileActivity extends BaseActivity {
 //        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 //        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 //        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeItemTouchHelper(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, recyclerView));
+        itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
     @Override
@@ -60,6 +60,7 @@ public class ProfileActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        // TODO: à faire seulement quand un changement a été fait...
         toDoListAdapter.notifyDataSetChanged();
     }
 
