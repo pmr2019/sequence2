@@ -22,22 +22,11 @@ public class Profile implements Serializable {
         onDeserialization();
     }
 
-    public Profile(Profile profile) {
-        this.username = profile.getUsername();
-        this.toDoLists = profile.getToDoLists();
-        onDeserialization();
-    }
-
     public void onDeserialization() {
         toDoListMap = new HashMap<>();
         for (ToDoList tdl : toDoLists) {
             toDoListMap.put(tdl.getId(), tdl);
         }
-    }
-
-    public void addToDoList(ToDoList toDoList) {
-        this.toDoLists.add(toDoList);
-        this.toDoListMap.put(toDoList.getId(), toDoList);
     }
 
     public void addToDoList(String name) {
@@ -54,24 +43,9 @@ public class Profile implements Serializable {
         return toDoLists;
     }
 
-    public void setToDoLists(ArrayList<ToDoList> toDoLists) {
-        this.toDoLists = toDoLists;
-        onDeserialization();
-    }
 
     public ToDoList getToDoList(UUID toDoListId) {
         return toDoListMap.get(toDoListId);
-    }
-
-    public void removeToDoList(ToDoList tdl) {
-        toDoLists.remove(tdl);
-        toDoListMap.remove(tdl.getId());
-    }
-
-    public void replaceToDoList(ToDoList oldTdl, ToDoList newTdl) {
-        Collections.replaceAll(toDoLists, oldTdl, newTdl);
-        toDoListMap.remove(oldTdl.getId());
-        toDoListMap.put(newTdl.getId(), newTdl);
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {

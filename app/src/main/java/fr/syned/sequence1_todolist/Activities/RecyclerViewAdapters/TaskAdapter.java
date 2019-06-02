@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.UUID;
 
 import fr.syned.sequence1_todolist.Activities.ToDoListActivity;
-import fr.syned.sequence1_todolist.R;
 import fr.syned.sequence1_todolist.Model.Task;
+import fr.syned.sequence1_todolist.R;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
     private List<Task> mDataset;
@@ -71,9 +71,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                     if (selectedTask.isDone()) textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                     else textView.setPaintFlags(textView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                     Log.i("TAG", "onClick on checkBox: " + selectedTask.isDone());
-//                    Intent intent = new Intent(v.getContext(), ProfileActivity.class);
-//                    intent.putExtra(EXTRA_TODOLIST, ToDoListActivity.toDoList);
-//                    ((Activity) v.getContext()).setResult(Activity.RESULT_OK, intent);
                 }
             });
 
@@ -85,9 +82,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                     if (selectedTask.isDone()) textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                     else textView.setPaintFlags(textView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                     Log.i("TAG", "onClick on textView: " + selectedTask.isDone());
-//                    Intent intent = new Intent(v.getContext(), ProfileActivity.class);
-//                    intent.putExtra(EXTRA_TODOLIST, ToDoListActivity.toDoList);
-//                    ((Activity) v.getContext()).setResult(Activity.RESULT_OK, intent);
                 }
             });
         }
@@ -109,6 +103,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         mDataset.remove(viewHolder.getAdapterPosition());
         notifyItemRemoved(viewHolder.getAdapterPosition());
 
+        // TODO: Faire en sorte que la snackbar ne masque pas l'EditText et le FloatingActionButton
         Snackbar.make(viewHolder.itemView, removedTask.getName() + " deleted.",Snackbar.LENGTH_LONG).setAction("UNDO", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,6 +115,5 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     public void restoreLastItem(int position, Task task) {
         mDataset.add(position, task);
         notifyItemInserted(position);
-
     }
 }

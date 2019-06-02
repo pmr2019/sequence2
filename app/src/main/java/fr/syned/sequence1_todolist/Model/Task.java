@@ -36,6 +36,8 @@ public class Task implements Serializable {
 
     public boolean toggleCheckbox() {
         this.isDone = !isDone;
+        if (isDone) doneDate = Calendar.getInstance().getTime();
+        else doneDate = null;
         return isDone;
     }
 

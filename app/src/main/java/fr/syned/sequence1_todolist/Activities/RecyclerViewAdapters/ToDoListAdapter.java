@@ -1,15 +1,14 @@
 package fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters;
 
 import android.content.Intent;
-import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -21,8 +20,8 @@ import java.util.UUID;
 import fr.syned.sequence1_todolist.Activities.ProfileActivity;
 import fr.syned.sequence1_todolist.Activities.ToDoListActivity;
 import fr.syned.sequence1_todolist.Model.Task;
-import fr.syned.sequence1_todolist.R;
 import fr.syned.sequence1_todolist.Model.ToDoList;
+import fr.syned.sequence1_todolist.R;
 
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_PROFILE;
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_UUID;
@@ -60,39 +59,22 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
         private CardView cardView;
         private TextView title;
         private UUID uuid;
-        private ArrayList<View> subList = new ArrayList<>();
-        TextView ellipsis;
+        private RecyclerView nestedRecyclerView;
+        private TextView ellipsis;
 
         public ToDoListViewHolder(@NonNull View v) {
             super(v);
 
             cardView = v.findViewById(R.id.card_view);
             title = cardView.findViewById(R.id.title);
-            // TODO: implement nested RecyclerView instead.
-            subList.add(cardView.findViewById(R.id.sub0));
-            subList.add(cardView.findViewById(R.id.sub1));
-            subList.add(cardView.findViewById(R.id.sub2));
-            subList.add(cardView.findViewById(R.id.sub3));
-            subList.add(cardView.findViewById(R.id.sub4));
-            subList.add(cardView.findViewById(R.id.sub5));
-            subList.add(cardView.findViewById(R.id.sub6));
-            subList.add(cardView.findViewById(R.id.sub7));
-            subList.add(cardView.findViewById(R.id.sub8));
-            subList.add(cardView.findViewById(R.id.sub9));
-
+            nestedRecyclerView = v.findViewById(R.id.nested_recyclerview);
             ellipsis = cardView.findViewById(R.id.ellipsis);
 
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if(getAdapterPosition() != RecyclerView.NO_POSITION) {
-//                        Toast.makeText(v.getContext(), "Clicked on " + getAdapterPosition(), Toast.LENGTH_SHORT).show();
-//                        Intent intent = new Intent(v.getContext(), ToDoListActivity.class);
-//                        ToDoList selectedToDoList;
-//                        selectedToDoList = ProfileActivity.profile.getToDoList(uuid);
-//                        intent.putExtra(EXTRA_TODOLIST, selectedToDoList);
-//                        ((Activity) mContext).startActivityForResult(intent, PICK_CONTACT_REQUEST);
-                        v.getContext().startActivity(new Intent(v.getContext(), ToDoListActivity.class).putExtra(EXTRA_UUID, uuid).putExtra(EXTRA_PROFILE, ((ProfileActivity)v.getContext()).profile));
+                        v.getContext().startActivity(new Intent(v.getContext(), ToDoListActivity.class).putExtra(EXTRA_UUID, uuid));
                     }
                 }
             });
@@ -101,21 +83,18 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
         public void bind(ToDoList toDoList) {
             title.setText(toDoList.getName());
             this.uuid = toDoList.getId();
-            List<Task> tasks = toDoList.getTasks();
-            TextView taskName;
-            CheckBox checkBox;
-            View sub;
-            for (int i = 0; i < Math.min(tasks.size(), 10); i++) {
-                sub = subList.get(i);
-                taskName = sub.findViewById(R.id.text);
-                taskName.setText(tasks.get(i).getName());
-                checkBox = sub.findViewById(R.id.checkbox);
-                checkBox.setChecked(tasks.get(i).isDone());
-                if (tasks.get(i).isDone()) taskName.setPaintFlags(taskName.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                else taskName.setPaintFlags(taskName.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-                sub.setVisibility(View.VISIBLE);
-            }
-            if (tasks.size() > 10) ellipsis.setVisibility(View.VISIBLE);
+            List<Task> tasks = new ArrayList<>();
+            if (toDoList.getTasks().size() > 10) {
+                for (int i = 0; i < 10; i++) {
+                    tasks.add(toDoList.getTasks().get(i));
+                }
+            } else tasks = toDoList.getTasks();
+            SubTaskAdapter subTaskAdapter = new SubTaskAdapter(tasks);
+            nestedRecyclerView.setAdapter(subTaskAdapter);
+            nestedRecyclerView.setLayoutManager(new LinearLayoutManager(nestedRecyclerView.getContext()));
+            nestedRecyclerView.setLayoutFrozen(true);
+            if (toDoList.getTasks().size() > 10) ellipsis.setVisibility(View.VISIBLE);
+            else ellipsis.setVisibility(View.GONE);
         }
 
     }
@@ -127,6 +106,7 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
         mDataset.remove(viewHolder.getAdapterPosition());
         notifyItemRemoved(viewHolder.getAdapterPosition());
 
+        // TODO: Faire en sorte que la snackbar ne masque pas l'EditText et le FloatingActionButton
         Snackbar.make(viewHolder.itemView, removedToDoList.getName() + " deleted.",Snackbar.LENGTH_LONG).setAction("UNDO", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,7 +118,6 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
     public void restoreLastItem(int position, ToDoList toDoList) {
         mDataset.add(position, toDoList);
         notifyItemInserted(position);
-
     }
 
 }

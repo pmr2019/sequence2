@@ -1,4 +1,5 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -27,46 +28,12 @@
                 android:text="ToDoListe Name"
                 android:textSize="20sp"
                 android:textStyle="bold"/>
-            <include android:id="@+id/sub0"
-                layout="@layout/subitem_task"
-                android:visibility="gone"
-                tools:visibility="visible"/>
-            <include android:id="@+id/sub1"
-                layout="@layout/subitem_task"
-                tools:visibility="visible"
-                android:visibility="gone"/>
-            <include android:id="@+id/sub2"
-                layout="@layout/subitem_task"
-                tools:visibility="visible"
-                android:visibility="gone"/>
-            <include android:id="@+id/sub3"
-                layout="@layout/subitem_task"
-                tools:visibility="visible"
-                android:visibility="gone"/>
-            <include android:id="@+id/sub4"
-                layout="@layout/subitem_task"
-                tools:visibility="visible"
-                android:visibility="gone"/>
-            <include android:id="@+id/sub5"
-                layout="@layout/subitem_task"
-                tools:visibility="visible"
-                android:visibility="gone"/>
-            <include android:id="@+id/sub6"
-                layout="@layout/subitem_task"
-                tools:visibility="visible"
-                android:visibility="gone"/>
-            <include android:id="@+id/sub7"
-                layout="@layout/subitem_task"
-                tools:visibility="visible"
-                android:visibility="gone"/>
-            <include android:id="@+id/sub8"
-                layout="@layout/subitem_task"
-                tools:visibility="visible"
-                android:visibility="gone"/>
-            <include android:id="@+id/sub9"
-                layout="@layout/subitem_task"
-                tools:visibility="visible"
-                android:visibility="gone"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/nested_recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
             <TextView
                 android:id="@+id/ellipsis"
                 android:layout_width="match_parent"
@@ -78,6 +45,5 @@
                 android:visibility="gone"
                 tools:visibility="visible"/>
         </LinearLayout>
-
     </androidx.cardview.widget.CardView>
 </LinearLayout>

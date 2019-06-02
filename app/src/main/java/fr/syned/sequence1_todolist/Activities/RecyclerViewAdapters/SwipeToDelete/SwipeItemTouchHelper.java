@@ -1,4 +1,4 @@
-package fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters;
+package fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters.SwipeToDelete;
 
 import android.widget.Toast;
 
@@ -6,7 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import fr.syned.sequence1_todolist.Model.ToDoList;
+import fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters.TaskAdapter;
+import fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters.ToDoListAdapter;
 
 public class SwipeItemTouchHelper extends ItemTouchHelper.SimpleCallback {
 
