@@ -74,24 +74,27 @@ public class ChoixListeActivity extends AppCompatActivity {
     }
 
     public void addnewlist(View v) {
-            String liste = edtListe.getText().toString();
-            if (liste.equals("")) {
-                alerter("tapez la nouvelle liste");
-            } else {
-                    ListeToDo nouveauList = new ListeToDo(liste);
-                    profile.ajouteListe(nouveauList);
-                    saveProfileData(profile, profile.getLogin());
-                    ListeData=getListedeNom(profile);
-                    recyclerView.setAdapter(new ListeAdapter(ListeData));
-                    edtListe.setText("");
-                }
+        String liste = edtListe.getText().toString();
+        if (liste.equals("")) {
+            alerter("tapez la nouvelle liste");
+        } else {
+            if(eviterMemeNom(liste)){
+                alerter("Déjà existe");
+            }else {
+            ListeToDo nouveauList = new ListeToDo(liste);
+            profile.ajouteListe(nouveauList);
+            saveProfileData(profile, profile.getLogin());
+            ListeData=getListedeNom(profile);
+            recyclerView.setAdapter(new ListeAdapter(ListeData));
+            edtListe.setText("");
+        }}
 
-            }
+    }
 
     public boolean eviterMemeNom(String nomliste){
 
         for(String i:ListeData){
-            if(i==nomliste)
+            if(i.equals(nomliste))
                 return true;
         }
         return false;
@@ -106,7 +109,6 @@ public class ChoixListeActivity extends AppCompatActivity {
             data.add(tmp.getTitreListeToDo());
         }
         return data;
-
     }
 
     public void saveProfileData(ProfilListeToDo profile, String pseudo) {
@@ -121,8 +123,8 @@ public class ChoixListeActivity extends AppCompatActivity {
     public ProfilListeToDo readProfilData(String pseudo) {
 
         ProfilListeToDo profile;
-         GsonBuilder builder = new GsonBuilder();
-         Gson gson = builder.create();
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
         //Gson gson=new Gson();
         SharedPreferences profileData = getSharedPreferences(pseudo, MODE_PRIVATE);
         String content=profileData.getString("content","");
@@ -185,7 +187,7 @@ public class ChoixListeActivity extends AppCompatActivity {
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                     Intent i = new Intent(ChoixListeActivity.this, ShowListeActivity.class);
                     i.putExtra("profile", profile.getLogin());
-                    i.putExtra("list", lists.get(getAdapterPosition()));
+                    i.putExtra("liste", lists.get(getAdapterPosition()));
                     startActivity(i);
                 }
             }

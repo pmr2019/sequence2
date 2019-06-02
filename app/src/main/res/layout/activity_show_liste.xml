@@ -28,12 +28,13 @@
             android:id="@+id/edit_item"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:text="Entrez votre item"></EditText>
+            android:hint="Entrez votre item"></EditText>
 
         <Button
             android:id="@+id/button_item"
             android:layout_width="99dp"
             android:layout_height="wrap_content"
+            android:onClick="addnewitem"
             android:text="OK" />
 
     </LinearLayout>

@@ -40,16 +40,13 @@ public class ListeToDo implements Serializable {
         this.lesItems.add(unItem);
     }
 
-    public Boolean validerItem(String s)
+    public void validerItem(String item,Boolean isChecked)
     {
-        int indice = -1;
-
-        if ((indice = rechercherItem(s)) >=0)
-        {
-            this.lesItems.get(indice).setFait(Boolean.TRUE);
-            return Boolean.TRUE;
+        for (ItemToDo i : lesItems) {
+            if (i.getDescription().equals(item)){
+                i.setFait(isChecked);
+            }
         }
-        return Boolean.FALSE;
     }
 
 
