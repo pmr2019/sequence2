@@ -28,10 +28,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,7 +59,6 @@ public class ChoixListeActivity extends AppCompatActivity {
 
         profile=readProfilData(getIntent().getStringExtra("profile"));
         ListeData=getListedeNom(profile);
-        alerter(""+ListeData.size());
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -86,7 +81,8 @@ public class ChoixListeActivity extends AppCompatActivity {
                     ListeToDo nouveauList = new ListeToDo(liste);
                     profile.ajouteListe(nouveauList);
                     saveProfileData(profile, profile.getLogin());
-                    listeAdapter.AjouterItem(liste);
+                    ListeData=getListedeNom(profile);
+                    recyclerView.setAdapter(new ListeAdapter(ListeData));
                     edtListe.setText("");
                 }
 
@@ -155,11 +151,6 @@ public class ChoixListeActivity extends AppCompatActivity {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             View view = inflater.inflate(R.layout.liste,parent,false);
             return new ListeAdapter.MyViewHolder(view);
-        }
-
-        private void AjouterItem(String listname){
-            lists.add(0,listname);
-            notifyItemInserted(0);
         }
 
         @Override
