@@ -30,18 +30,21 @@ import java.util.List;
 
 public class ShowListeActivity extends AppCompatActivity {
 
+    //pour recevoir le class ProfileListeToDo et enregistrer les nouveaux donnnes
     private ProfilListeToDo profile;
     private String liste;
 
+    //recevoir le EditText Button et RecyclerView
     private RecyclerView recyclerView;
-
 
     private EditText edtItem;
     private String Cat="ShowListe";
     ItemAdapter itemAdapter;
 
+    //Transpoteur de liste de item
     List<Item> ItemsData;
 
+    //alerter pour savoir le processus de la programme et alerter les utilisateurs
     public void alerter(String s) {
         Log.i(Cat,s);
         Toast myToast = Toast.makeText(this,s,Toast.LENGTH_SHORT);
@@ -55,19 +58,26 @@ public class ShowListeActivity extends AppCompatActivity {
 
         edtItem = findViewById(R.id.edit_item);
 
+        //obtenir le Profile selon le nom qui est transmet de MainActicity
         profile = readProfilData(getIntent().getStringExtra("profile"));
+
+        //obtenir la liste de noms des listes dans le profile
         liste = getIntent().getStringExtra("liste");
 
+        //obtenir list de item
         ItemsData = ItemsData(profile,liste);
 
+        //creer Adapter
         itemAdapter = new ItemAdapter(ItemsData);
 
+        //afficher la liste de noms dans le RecyclerView
         recyclerView = findViewById(R.id.list_show);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(itemAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
     }
 
+    //creer le nouveau class pour afficher
     class Item {
         private String description;
         private Boolean fait;
@@ -86,6 +96,7 @@ public class ShowListeActivity extends AppCompatActivity {
         }
     }
 
+    //obtenir la lists de Item
     public List<Item> ItemsData(ProfilListeToDo profile, String liste){
 
         List<Item> data = new ArrayList<>();
@@ -96,6 +107,7 @@ public class ShowListeActivity extends AppCompatActivity {
         return data;
     }
 
+    //ajouter nouveau item
     public void addnewitem(View v) {
         String item = edtItem.getText().toString();
         if (item.equals("")) {
@@ -115,6 +127,8 @@ public class ShowListeActivity extends AppCompatActivity {
             }
         }
     }
+
+    //éviter ajouter le item qui a le meme nom avec les autres
     public boolean EviterMemeNom(String nom){
         for(Item i:ItemsData){
             if(nom.equals(i.getDescription()))
@@ -123,6 +137,7 @@ public class ShowListeActivity extends AppCompatActivity {
         return false;
     }
 
+    //sauvegarder le profile
     public void saveProfileData(ProfilListeToDo profile, String pseudo) {
         Gson gson=new Gson();
         String fileContents = gson.toJson(profile);
@@ -132,6 +147,7 @@ public class ShowListeActivity extends AppCompatActivity {
         editor.commit();
     }
 
+    //obtenir le proflie selon le nom
     public ProfilListeToDo readProfilData(String pseudo) {
 
         ProfilListeToDo profile;
@@ -144,7 +160,7 @@ public class ShowListeActivity extends AppCompatActivity {
 
         return profile;
     }
-
+    //construire ItemAdapter
     class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
         private final List<Item> ItemsData;
         ItemAdapter(List<Item> ItemsData) {
@@ -173,6 +189,8 @@ public class ShowListeActivity extends AppCompatActivity {
                 return 0;
             else return ItemsData.size();
         }
+
+        //creer MyviewHolder dans le class Adapter
         class MyViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener{
 
             private final CheckBox checkBox;
@@ -187,6 +205,7 @@ public class ShowListeActivity extends AppCompatActivity {
                 checkBox.setChecked(data.getFait());
             }
 
+            
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 profile.rechercherListe(liste).validerItem(ItemsData.get(getAdapterPosition()).getDescription(), isChecked);
