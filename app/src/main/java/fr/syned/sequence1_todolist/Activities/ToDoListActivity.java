@@ -18,6 +18,7 @@ import fr.syned.sequence1_todolist.R;
 
 import static fr.syned.sequence1_todolist.Activities.ProfileActivity.profile;
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_UUID;
+import static fr.syned.sequence1_todolist.CustomApplication.profilesList;
 
 public class ToDoListActivity extends BaseActivity {
 
@@ -56,5 +57,11 @@ public class ToDoListActivity extends BaseActivity {
             taskAdapter.notifyDataSetChanged();
             textViewTaskName.setText(null);
         }
+    }
+    @Override
+    public void onResume() {
+
+        super.onResume();
+        if(!profilesList.contains(profile)) this.finish();
     }
 }
