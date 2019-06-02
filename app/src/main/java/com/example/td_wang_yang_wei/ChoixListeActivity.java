@@ -92,7 +92,6 @@ public class ChoixListeActivity extends AppCompatActivity {
 
             }
 
-   // }
     public boolean eviterMemeNom(String nomliste){
 
         for(String i:ListeData){
@@ -140,12 +139,7 @@ public class ChoixListeActivity extends AppCompatActivity {
 
 
 
-//
 
-//
-
-//        }
-//    }
 
     class ListeAdapter extends RecyclerView.Adapter<ListeAdapter.MyViewHolder>{
 
