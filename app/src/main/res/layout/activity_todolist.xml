@@ -28,7 +28,7 @@
         android:layout_marginBottom="8dp"
         android:autofillHints="TaskName"
         android:ems="10"
-        android:hint="@string/ajouter_une_tache"
+        android:hint="@string/add_new_task"
         android:inputType="textCapSentences"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_add_task"

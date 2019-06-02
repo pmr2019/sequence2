@@ -119,5 +119,4 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
         mDataset.add(position, toDoList);
         notifyItemInserted(position);
     }
-
 }
