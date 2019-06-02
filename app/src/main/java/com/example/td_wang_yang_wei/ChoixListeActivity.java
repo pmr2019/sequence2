@@ -2,6 +2,7 @@ package com.example.td_wang_yang_wei;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,17 +58,17 @@ public class ChoixListeActivity extends AppCompatActivity {
         edtListe = findViewById(R.id.edtliste);
         btnListe = findViewById(R.id.btnListe);
 
-        recyclerView = findViewById(R.id.recyclerView);
+
 
 
         profile=readProfilData(getIntent().getStringExtra("profile"));
         ListeData=getListedeNom(profile);
+        alerter(""+ListeData.size());
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this,RecyclerView.VERTICAL,false));
-
-        listeAdapter=new ListeAdapter(ListeData);
-        recyclerView.setAdapter(listeAdapter);
-
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(new ListeAdapter(ListeData));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
 
     }
 
@@ -76,49 +78,32 @@ public class ChoixListeActivity extends AppCompatActivity {
         myToast.show();
     }
 
-
-
     public void addnewlist(View v) {
             String liste = edtListe.getText().toString();
             if (liste.equals("")) {
                 alerter("tapez la nouvelle liste");
             } else {
-                ListeToDo nouveauList = new ListeToDo(liste);
-                profile.ajouteListe(nouveauList);
-                saveProfileData(profile, profile.getLogin());
-                listeAdapter.AjouterItem(liste);
-                edtListe.setText("");
-//                    if(eviterMemeNom(liste)){
-//                        alerter("Le nom est déjà exist!");
-//                    }else{
-//                        ListeToDo nouveauList=new ListeToDo(liste);
-//                        profil.ajouteListe(nouveauList);
-//                        saveProfileData(profil,nomProfil);
-//                }
+                    ListeToDo nouveauList = new ListeToDo(liste);
+                    profile.ajouteListe(nouveauList);
+                    saveProfileData(profile, profile.getLogin());
+                    listeAdapter.AjouterItem(liste);
+                    edtListe.setText("");
+                }
 
             }
-        }
+
    // }
     public boolean eviterMemeNom(String nomliste){
-        List<ListeToDo> listExist=profile.getMesListeToDo();
-        for(ListeToDo i:listExist){
-            if(i.getTitreListeToDo()==nomliste)
+
+        for(String i:ListeData){
+            if(i==nomliste)
                 return true;
         }
         return false;
     }
+
     public List<String> getListedeNom(ProfilListeToDo profile){
-//        List<String> nom = new ArrayList<>();
-//        ListeToDo tmp;
-//        if(profile.getMesListeToDo()==null)
-//        return nom;
-//        else {
-//        for (ListeToDo list : profile.getMesListeToDo()) {
-//            tmp = list;
-//            nom.add(tmp.getTitreListeToDo());
-//        }
-//        return nom;
-//        }
+
         List<String> data = new ArrayList<>();
         ListeToDo tmp;
         for (ListeToDo list : profile.getMesListeToDo()){
@@ -129,18 +114,6 @@ public class ChoixListeActivity extends AppCompatActivity {
 
     }
 
-
-//    public void saveProfileData(ProfilListeToDo p, String pseudo){
-//        final GsonBuilder builder = new GsonBuilder();
-//        final Gson gson = builder.create();
-//        JsonObject json = new JsonObject(p);
-//        String fileContents = gson.toJson(json);
-//        SharedPreferences preferences = getSharedPreferences(pseudo, MODE_PRIVATE);
-//        SharedPreferences.Editor editor = preferences.edit();
-//        editor.putString("content",fileContents);
-//        editor.commit();
-//    }
-
     public void saveProfileData(ProfilListeToDo profile, String pseudo) {
         Gson gson=new Gson();
         String fileContents = gson.toJson(profile);
@@ -149,6 +122,7 @@ public class ChoixListeActivity extends AppCompatActivity {
         editor.putString("content",fileContents);
         editor.commit();
     }
+
     public ProfilListeToDo readProfilData(String pseudo) {
 
         ProfilListeToDo profile;
@@ -163,40 +137,23 @@ public class ChoixListeActivity extends AppCompatActivity {
         return profile;
     }
 
-//    public ProfilListeToDo readProfilData(String filename) {
-//        StringBuilder jsonRead = new StringBuilder();
-//        ProfilListeToDo profile;
-//        final GsonBuilder builder = new GsonBuilder();
-//        final Gson gson = builder.create();
-//        try {
-//            FileInputStream inputStream;
-//            inputStream = openFileInput(filename);
-//            int content;
-//            while ((content = inputStream.read()) != -1) {
-//                jsonRead.append((char) content);
-//            }
-//            inputStream.close();
+
+
+
 //
-//            profile = gson.fromJson(jsonRead.toString(), ProfilListeToDo.class); // cast Profile
+
 //
-//            return profile;
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
+
 //        }
-//        return new ProfilListeToDo();
 //    }
 
-    public class ListeAdapter extends RecyclerView.Adapter<ListeAdapter.MyViewHolder>{
+    class ListeAdapter extends RecyclerView.Adapter<ListeAdapter.MyViewHolder>{
 
         private final List<String> lists;
 
         ListeAdapter(List<String> lists) {
             this.lists = lists;
         }
-
-
 
         @NonNull
         @Override
@@ -212,25 +169,30 @@ public class ChoixListeActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull MyViewHolder viewholder, int position) {
-            MyViewHolder holder=viewholder;
-            String donne=lists.get(position);
-            holder.nomDeListe.setText(donne);
+        public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+            String data = lists.get(position);
+
+            holder.bind(data);
         }
 
         @Override
         public int getItemCount() {
             if(lists==null)
-            return 0;
+                return 0;
             else return lists.size();
         }
+        class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-            private final TextView nomDeListe;
-            public MyViewHolder(@NonNull View itemView) {
+            private final TextView textView;
+
+            MyViewHolder(@NonNull View itemView) {
                 super(itemView);
-                nomDeListe=findViewById(R.id.nomDeListe);
+                textView = itemView.findViewById(R.id.nom_Liste);
                 itemView.setOnClickListener(this);
+            }
+
+            void bind(String data) {
+                textView.setText(data);
             }
 
             @Override

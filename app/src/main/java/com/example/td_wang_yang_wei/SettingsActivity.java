@@ -72,16 +72,6 @@ public class SettingsActivity extends AppCompatActivity {
             else return profiles.size();
         }
 
-//        @Override
-//        public void onItemDissmiss(int postion) {
-//            profiles.remove(postion);
-//            //TODO delete profile
-//        }
-//
-//        @Override
-//        public void onItemMove(int fromPosition, int toPosition) {
-//
-//        }
 
         class SettingViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
             private final TextView textView;
@@ -93,7 +83,9 @@ public class SettingsActivity extends AppCompatActivity {
                 itemView.setOnClickListener(this);
             }
 
-            void bind(String data) { textView.setText(data); }
+            void bind(String data) {
+                textView.setText(data);
+            }
 
             @Override
             public void onClick(View v) {
