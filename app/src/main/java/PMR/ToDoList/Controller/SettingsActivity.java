@@ -34,6 +34,7 @@ import PMR.ToDoList.Model.ToDoList;
 import PMR.ToDoList.Model.User;
 import PMR.ToDoList.R;
 
+import static PMR.ToDoList.Controller.MainActivity.myUsersList;
 import static android.content.Intent.EXTRA_USER;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -47,7 +48,7 @@ public class SettingsActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager settingLayoutManager;
 
     //PARTIE DONNEES
-    private ArrayList<User> settings = new ArrayList<User>();
+    private ArrayList<User> settings = myUsersList;
 
 
     @Override
@@ -56,10 +57,6 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
 
         buildToolbar();
-
-        for (User u : getUsersFromFile())
-            settings.add(u);
-
 
         buildRecyclerView(settings);
     }
@@ -107,29 +104,6 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }*/
 
-    public ArrayList<User> getUsersFromFile() {
-        Gson gson = new Gson();
-        String json = "";
-        ArrayList<User> usersList = null;
-        try {
-            FileInputStream inputStream = openFileInput("pseudos");
-            BufferedReader br = new BufferedReader(new InputStreamReader(
-                    new BufferedInputStream(inputStream), StandardCharsets.UTF_8));
-            usersList = gson.fromJson(br, new TypeToken<List<User>>() {}.getType());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        //partie suggestions editText
-/*        if (usersList != null) {
-            Log.i(TAG, "getUsersFromFile: ");
-            for (User p : usersList) {
-                p.onDeserialization();
-                autoCompleteAdapter.add(p.getUsername());
-            }
-        }*/
-
-        return usersList;
-    }
     public void sauvegarderUserToJsonFile(ArrayList myList) {
 
         final GsonBuilder builder = new GsonBuilder(); //assure la qualité des données Json

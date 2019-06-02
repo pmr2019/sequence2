@@ -1,26 +1,36 @@
 package PMR.ToDoList.Model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
-public class ToDoList {
+public class ToDoList implements java.io.Serializable{
 
     private String nameToDoList;
-    private List<Task> tasks;
+    private ArrayList<Task> tasksList;
+    private HashMap<UUID, Task> tasksMap;
+    private UUID idList;
 
     public ToDoList () {
-        tasks = new ArrayList<Task>();
+        tasksList = new ArrayList<Task>();
+        this.idList = UUID.randomUUID();
+        onDeserialization();
     }
 
-    public ToDoList (String titreListeToDo, List<Task> lesItems) {
+    public ToDoList (String titreListeToDo, ArrayList<Task> lesItems) {
         this.nameToDoList = titreListeToDo;
         lesItems = new ArrayList<Task>();
-        this.tasks = lesItems;
+        this.tasksList = lesItems;
+        this.idList = UUID.randomUUID();
+        onDeserialization();
     }
 
     public ToDoList(String titreListeToDo) {
         this.nameToDoList = titreListeToDo;
-        tasks = new ArrayList<Task>();
+        tasksList = new ArrayList<Task>();
+        this.idList = UUID.randomUUID();
+        onDeserialization();
     }
 
     public String getNameToDoList() {
@@ -31,16 +41,20 @@ public class ToDoList {
         this.nameToDoList = titreListeToDo;
     }
 
-    public List<Task> getLesItems() {
-        return tasks;
+    public ArrayList<Task> getLesItems() {
+        return tasksList;
     }
 
-    public void setLesItems(List<Task> lesItems) {
-        this.tasks = lesItems;
+    public UUID getIdList() {
+        return idList;
+    }
+
+    public void setLesItems(ArrayList<Task> lesItems) {
+        this.tasksList = lesItems;
     }
     public void ajouterItem(Task unItem)
     {
-        this.tasks.add(unItem);
+        this.tasksList.add(unItem);
     }
     public Boolean validerItem(String s)
     {
@@ -48,7 +62,7 @@ public class ToDoList {
 
         if ((indice = rechercherItem(s)) >=0)
         {
-            this.tasks.get(indice).setFait(Boolean.TRUE);
+            this.tasksList.get(indice).setFait(Boolean.TRUE);
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
@@ -59,17 +73,25 @@ public class ToDoList {
     {
         int retour = -1;
         Boolean trouve = Boolean.FALSE;
-        for (int i=0; i < this.tasks.size() ;i++)
+        for (int i=0; i < this.tasksList.size() ;i++)
         {
-            if (this.tasks.get(i).getDescription() == s)
+            if (this.tasksList.get(i).getDescription() == s)
             {
                 retour=i;
-                i=this.tasks.size();
+                i=this.tasksList.size();
                 trouve=Boolean.TRUE;
             }
         }
         return retour;
     }
+
+    public void onDeserialization() {
+        tasksMap = new HashMap<>();
+        for (Task task : tasksList) {
+            tasksMap.put(task.getIdTask(), task);
+        }
+    }
+
     @Override
     public String toString() {
         String retour;

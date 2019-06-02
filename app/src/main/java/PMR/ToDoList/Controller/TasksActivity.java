@@ -4,17 +4,30 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import PMR.ToDoList.Model.Task;
 import PMR.ToDoList.Model.ToDoList;
+import PMR.ToDoList.Model.User;
 import PMR.ToDoList.R;
+
+import static PMR.ToDoList.Controller.MainActivity.EXTRA_LOGIN;
+import static PMR.ToDoList.Controller.MainActivity.myUsersList;
+import static PMR.ToDoList.Controller.ToDoListActivity.EXTRA_IDLIST;
+import static PMR.ToDoList.Controller.ToDoListActivity.toDoLists;
 
 public class TasksActivity extends AppCompatActivity {
 
@@ -36,6 +49,11 @@ public class TasksActivity extends AppCompatActivity {
     //TO DO LIST DE LA TACHE
     private ToDoList todolist;
 
+    private void alerter(String s) {
+        Toast myToast = Toast.makeText(this, s, Toast.LENGTH_SHORT);
+        myToast.show();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,10 +61,17 @@ public class TasksActivity extends AppCompatActivity {
 
         buildToolbar();
 
-        tasks =new ArrayList<>();
+        //tasks.add(new Task("toDo1"));
 
-        tasks.add(new Task("toDo1"));
-        tasks.add(new Task("toDo2"));
+
+        Intent intentToDoList = getIntent();
+        for(ToDoList tdl : toDoLists){
+            if(tdl.getIdList().equals(intentToDoList.getSerializableExtra(EXTRA_IDLIST))) todolist = tdl;
+        }
+
+        tasks=todolist.getLesItems();
+
+        //tasks.add(new Task("toDo2"));
 
         buildRecyclerView(tasks);
 
@@ -62,6 +87,7 @@ public class TasksActivity extends AppCompatActivity {
 
                 if (!nameTask.equals("")){
                     tasks.add(new Task(nameTask));
+                    sauvegarderToJsonFile(toDoLists);
                     taskAdapter.notifyItemInserted(taskAdapter.getItemCount()-1);
                 }
             }
@@ -93,6 +119,7 @@ public class TasksActivity extends AppCompatActivity {
             @Override
             public void onDeleteClick(int position) {
                 tasks.remove(position);
+                sauvegarderToJsonFile(myUsersList);
                 taskAdapter.notifyItemRemoved(position);
             }
 
@@ -102,7 +129,9 @@ public class TasksActivity extends AppCompatActivity {
                 if (tasks.get(position).getFait()) {
                     tasks.get(position).setFait(false);
                 }
-                else tasks.get(position).setFait(true);
+                else {tasks.get(position).setFait(true);}
+                sauvegarderToJsonFile(toDoLists);
+
             }
         });
     }
@@ -111,4 +140,24 @@ public class TasksActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
+
+    public void sauvegarderToJsonFile(ArrayList myList) {
+
+        final GsonBuilder builder = new GsonBuilder(); //assure la qualité des données Json
+        final Gson gson = builder.setPrettyPrinting().create();
+        String fileName = "pseudos"; //nom du fichier Json
+        FileOutputStream outputStream; //permet de sérialiser correctement user
+
+        String fileContents = gson.toJson(myList);
+
+        try {
+            outputStream = openFileOutput("pseudos", Context.MODE_PRIVATE);
+            outputStream.write(fileContents.getBytes());
+            outputStream.close();
+            Log.i("TODO_Romain", "Sauvegarde du fichier Json");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

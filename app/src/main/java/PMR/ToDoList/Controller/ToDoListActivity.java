@@ -26,11 +26,14 @@ import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import PMR.ToDoList.Model.ToDoList;
 import PMR.ToDoList.Model.User;
 import PMR.ToDoList.R;
 
+import static PMR.ToDoList.Controller.MainActivity.EXTRA_LOGIN;
+import static PMR.ToDoList.Controller.MainActivity.myUsersList;
 import static android.content.Intent.EXTRA_USER;
 
 public class ToDoListActivity extends AppCompatActivity {
@@ -44,7 +47,7 @@ public class ToDoListActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager toDoListLayoutManager;
 
     //PARTIE DONNEES
-    private ArrayList<ToDoList> toDoLists;
+    public static ArrayList<ToDoList> toDoLists;
 
     //INSERT TODOLIST
     private Button btnInsertToDoList;
@@ -52,7 +55,8 @@ public class ToDoListActivity extends AppCompatActivity {
 
     //USER DE LA TACHE
     private User user;
-    private ArrayList<User> usersList;
+
+    public static final String EXTRA_IDLIST = "IDLIST";
 
     private void alerter(String s) {
         Toast myToast = Toast.makeText(this, s, Toast.LENGTH_SHORT);
@@ -66,19 +70,16 @@ public class ToDoListActivity extends AppCompatActivity {
 
         buildToolbar();
 
-        toDoLists =new ArrayList<>();
-
-        toDoLists.add(new ToDoList("toDo1"));
-        toDoLists.add(new ToDoList("toDo2"));
-
         Intent intentMain = getIntent();
-        user = intentMain.getParcelableExtra(EXTRA_USER);
-        alerter(user.getLogin());
+        for(User u : myUsersList){
+            if(u.getLogin().matches(intentMain.getSerializableExtra(EXTRA_LOGIN).toString())) user = u;
+        }
 
-        //sauvegarderToJsonFile(usersList);
+        toDoLists = user.getMesListeToDo();
 
+        toolbar.setSubtitle(user.getLogin());
 
-        buildRecyclerView(toDoLists);
+        buildRecyclerView(user.getMesListeToDo());
 
         btnInsertToDoList=findViewById(R.id.btnInsertToDoList);
         textInsertToDoList=findViewById(R.id.textInsertToDoList);
@@ -91,16 +92,10 @@ public class ToDoListActivity extends AppCompatActivity {
                 textInsertToDoList.setText("");
 
                 if (!nameToDoList.equals("")){
-                    toDoLists.add(new ToDoList(nameToDoList));
+                    user.ajouteListe(new ToDoList(nameToDoList));
                     toDoListAdapter.notifyItemInserted(toDoListAdapter.getItemCount()-1);
-
-/*                    user.getMesListeToDo().add(new ToDoList(nameToDoList));
-                    replaceUser(getUsersFromFile(), user);
-                    getUsersFromFile().add(user);
-                    sauvegarderToJsonFile(getUsersFromFile());
-                    alerter("sauvegarde");*/
+                    sauvegarderToJsonFile(myUsersList);
                 }
-
             }
         });
 
@@ -121,11 +116,15 @@ public class ToDoListActivity extends AppCompatActivity {
             //BOUTON QUAND ON CLIQUE SUR UNE CARD
             public void onItemClick(int position) {
                 Intent intent=new Intent(ToDoListActivity.this,TasksActivity.class);
+                intent.putExtra(EXTRA_IDLIST, toDoLists.get(position).getIdList());
                 startActivity(intent);            }
             //BOUTON QUAND ON CLIQUE SUR DELETE
             @Override
             public void onDeleteClick(int position) {
+
                 toDoLists.remove(position);
+                user.setMesListeToDo(toDoLists);
+                sauvegarderToJsonFile(myUsersList);
                 toDoListAdapter.notifyItemRemoved(position);
             }
         });
@@ -136,7 +135,7 @@ public class ToDoListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
     }
 
-/*    public void sauvegarderToJsonFile(ArrayList myList) {
+    public void sauvegarderToJsonFile(ArrayList myList) {
 
         final GsonBuilder builder = new GsonBuilder(); //assure la qualité des données Json
         final Gson gson = builder.setPrettyPrinting().create();
@@ -155,37 +154,4 @@ public class ToDoListActivity extends AppCompatActivity {
         }
     }
 
-    public ArrayList<User> getUsersFromFile() {
-        Gson gson = new Gson();
-        String json = "";
-        ArrayList<User> usersList = null;
-        try {
-            FileInputStream inputStream = openFileInput("pseudos");
-            BufferedReader br = new BufferedReader(new InputStreamReader(
-                    new BufferedInputStream(inputStream), StandardCharsets.UTF_8));
-            usersList = gson.fromJson(br, new TypeToken<List<User>>() {}.getType());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        //partie suggestions editText
-        if (usersList != null) {
-            Log.i(TAG, "getUsersFromFile: ");
-            for (User p : usersList) {
-                p.onDeserialization();
-                autoCompleteAdapter.add(p.getUsername());
-            }
-        }
-
-        return usersList;
-    }*/
-
-    public void replaceUser (ArrayList<User> myList, User myUser){
-
-        for (User u : myList){
-            if (u.getLogin()==myUser.getLogin()){
-                myList.remove(u);
-                myList.add(myUser);
-            }
-        }
-    }
 }

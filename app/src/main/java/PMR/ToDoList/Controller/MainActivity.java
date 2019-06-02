@@ -34,10 +34,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import PMR.ToDoList.Model.ToDoList;
 import PMR.ToDoList.Model.User;
 import PMR.ToDoList.R;
-
-import static android.content.Intent.EXTRA_USER;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,10 +44,11 @@ public class MainActivity extends AppCompatActivity {
     private EditText edtPseudo;
     private Button btnPseudo;
     private TextView txtPseudo;
+    public static final String EXTRA_LOGIN = "LOGIN";
     private androidx.appcompat.widget.Toolbar toolbar;
 
 
-    private ArrayList<User> myUsersList;
+    public static ArrayList<User> myUsersList;
 
     private void alerter(String s) {
         Toast myToast = Toast.makeText(this, s, Toast.LENGTH_SHORT);
@@ -92,14 +92,15 @@ public class MainActivity extends AppCompatActivity {
                 else if (myUsersList==null){
                     myUsersList = new ArrayList<>();
                 }
+
                 if (myUser==null){              //si le pseudo n'existait pas
                     myUser = new User(login);
+                    myUser.getMesListeToDo().add(new ToDoList("todo 2"));
                     myUsersList.add(myUser);
-
-                    sauvegarderUserToJsonFile(myUsersList);
                 }
                 if (autorisation) {
-                    intent.putExtra(EXTRA_USER, myUser); //transfert le login myUser à l'activité 2
+                    intent.putExtra(EXTRA_LOGIN, myUser.getLogin());
+                    sauvegarderUserToJsonFile(myUsersList);
                     startActivity(intent);
                 }
             }
