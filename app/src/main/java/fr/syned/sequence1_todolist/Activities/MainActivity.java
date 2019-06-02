@@ -21,9 +21,8 @@ public class MainActivity extends BaseActivity {
     private ArrayAdapter<String> autoCompleteAdapter;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    public void onResume(){
+        super.onResume();
         setupAutoComplete();
     }
 

@@ -1,29 +1,19 @@
 package fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters;
 
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-import fr.syned.sequence1_todolist.Activities.ToDoListActivity;
 import fr.syned.sequence1_todolist.Model.Profile;
-import fr.syned.sequence1_todolist.Model.Task;
-import fr.syned.sequence1_todolist.Model.ToDoList;
 import fr.syned.sequence1_todolist.R;
-
-import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_UUID;
 
 public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder>{
 
