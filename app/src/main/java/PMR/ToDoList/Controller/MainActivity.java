@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_LOGIN = "LOGIN";
     private androidx.appcompat.widget.Toolbar toolbar;
 
-
     public static ArrayList<User> myUsersList;
 
     private void alerter(String s) {
@@ -59,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //sauvegarderUserToJsonFile(myUsersList);
 
         edtPseudo = (EditText) findViewById(R.id.edtPseudo);
         btnPseudo = (Button) findViewById(R.id.btnPseudo);
@@ -91,12 +92,18 @@ public class MainActivity extends AppCompatActivity {
 
                 else if (myUsersList==null){
                     myUsersList = new ArrayList<>();
-                }
-
-                if (myUser==null){              //si le pseudo n'existait pas
                     myUser = new User(login);
                     myUsersList.add(myUser);
                 }
+
+                //alerter(String.valueOf(myUsersList.size()));
+
+                if (myUser==null){
+                    myUser = new User(login);
+                    myUsersList.add(myUser);
+                }
+
+
                 if (autorisation) {
                     intent.putExtra(EXTRA_LOGIN, myUser.getLogin());
                     sauvegarderUserToJsonFile(myUsersList);
@@ -121,10 +128,12 @@ public class MainActivity extends AppCompatActivity {
         switch (id) {
             case R.id.menu_settings:
 
-                Intent toSettings = new Intent(MainActivity.this,SettingsActivity.class);
-                startActivity(toSettings);
-                break;
-
+                if (myUsersList!=null){
+                    Intent toSettings = new Intent(MainActivity.this,SettingsActivity.class);
+                    startActivity(toSettings);
+                    break;
+                }
+                else alerter("Veuillez d'abord créer un pseudo");
         }
         return super.onOptionsItemSelected(item);
     }

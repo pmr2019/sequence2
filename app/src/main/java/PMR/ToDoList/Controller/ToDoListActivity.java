@@ -8,6 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -133,6 +136,30 @@ public class ToDoListActivity extends AppCompatActivity {
     public void buildToolbar(){
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menupseudo, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.menu_settings:
+
+                if (myUsersList!=null){
+                    Intent toSettings = new Intent(ToDoListActivity.this,SettingsActivity.class);
+                    startActivity(toSettings);
+                    break;
+                }
+                else alerter("Veuillez d'abord créer un pseudo");
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void sauvegarderToJsonFile(ArrayList myList) {
