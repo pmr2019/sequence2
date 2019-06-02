@@ -138,29 +138,6 @@ public class ToDoListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menupseudo, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        switch (id) {
-            case R.id.menu_settings:
-
-                if (myUsersList!=null){
-                    Intent toSettings = new Intent(ToDoListActivity.this,SettingsActivity.class);
-                    startActivity(toSettings);
-                    break;
-                }
-                else alerter("Veuillez d'abord créer un pseudo");
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     public void sauvegarderToJsonFile(ArrayList myList) {
 

@@ -114,8 +114,8 @@ public class TasksActivity extends AppCompatActivity {
             //BOUTON QUAND ON CLIQUE SUR UNE CARD
             public void onItemClick(int position) {
                 //On récupère la TODOLIST en question
-                Toast toast=Toast.makeText(getApplicationContext(),tasks.get(position).getFait().toString(),Toast.LENGTH_SHORT);
-                toast.show();
+                //Toast toast=Toast.makeText(getApplicationContext(),tasks.get(position).getFait().toString(),Toast.LENGTH_SHORT);
+                //toast.show();
             }
 
             //BOUTON QUAND ON CLIQUE SUR DELETE
@@ -144,29 +144,6 @@ public class TasksActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menupseudo, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        switch (id) {
-            case R.id.menu_settings:
-
-                if (myUsersList!=null){
-                    Intent toSettings = new Intent(TasksActivity.this,SettingsActivity.class);
-                    startActivity(toSettings);
-                    break;
-                }
-                else alerter("Veuillez d'abord créer un pseudo");
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     public void sauvegarderToJsonFile(ArrayList myList) {
 

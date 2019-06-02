@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                     for (User u : myUsersList) {
                         if (u.getLogin().equals(login)) {
                             myUser = u;
-                            alerter("Ce pseudo existe déjà");
+                            //alerter("Ce pseudo existe déjà");
                         }
                     }
                 }
