@@ -95,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
 
                 if (myUser==null){              //si le pseudo n'existait pas
                     myUser = new User(login);
-                    myUser.getMesListeToDo().add(new ToDoList("todo 2"));
                     myUsersList.add(myUser);
                 }
                 if (autorisation) {
