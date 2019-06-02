@@ -32,17 +32,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChoixListeActivity extends AppCompatActivity {
-
+    //pour recevoir le class ProfileListeToDo et enregistrer les nouveaux donnnes
     private ProfilListeToDo profile;
 
+    //recevoir le EditText Button et RecyclerView
     private EditText edtListe;
     private Button btnListe;
-
     private RecyclerView recyclerView;
-    private List<String> ListeData;
-    private ListeAdapter listeAdapter;
 
-    private String Cat="ChoixListe";
+    //Transpoteur de liste de nom de liste
+    private List<String> ListeData;
 
 
     @Override
@@ -50,16 +49,16 @@ public class ChoixListeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choix_liste);
 
-
         edtListe = findViewById(R.id.edtliste);
         btnListe = findViewById(R.id.btnListe);
 
-
-
-
+        //obtenir le Profile selon le nom qui est transmet de MainActicity
         profile=readProfilData(getIntent().getStringExtra("profile"));
+
+        //obtenir la liste de noms des listes dans le profile
         ListeData=getListedeNom(profile);
 
+        //afficher la liste de noms dans le RecyclerView
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new ListeAdapter(ListeData));
@@ -67,36 +66,31 @@ public class ChoixListeActivity extends AppCompatActivity {
 
     }
 
+    //alerter pour savoir le processus de la programme et alerter les utilisateurs
     public void alerter(String s) {
-        Log.i(Cat,s);
         Toast myToast = Toast.makeText(this,s,Toast.LENGTH_SHORT);
         myToast.show();
     }
 
+    //la function pour creer une nouvelle liste quand on cliquer le button "creer votre liste"
     public void addnewlist(View v) {
             String liste = edtListe.getText().toString();
             if (liste.equals("")) {
                 alerter("tapez la nouvelle liste");
             } else {
+
                     ListeToDo nouveauList = new ListeToDo(liste);
                     profile.ajouteListe(nouveauList);
                     saveProfileData(profile, profile.getLogin());
-                    ListeData=getListedeNom(profile);
+                    ListeData = getListedeNom(profile);
                     recyclerView.setAdapter(new ListeAdapter(ListeData));
                     edtListe.setText("");
-                }
 
             }
+            }
 
-    public boolean eviterMemeNom(String nomliste){
 
-        for(String i:ListeData){
-            if(i==nomliste)
-                return true;
-        }
-        return false;
-    }
-
+    //obtenir la liste de noms
     public List<String> getListedeNom(ProfilListeToDo profile){
 
         List<String> data = new ArrayList<>();
@@ -108,7 +102,7 @@ public class ChoixListeActivity extends AppCompatActivity {
         return data;
 
     }
-
+    //enregistrer le changement de liste
     public void saveProfileData(ProfilListeToDo profile, String pseudo) {
         Gson gson=new Gson();
         String fileContents = gson.toJson(profile);
@@ -118,6 +112,7 @@ public class ChoixListeActivity extends AppCompatActivity {
         editor.commit();
     }
 
+    //obtenir le profile selon le nom de profile
     public ProfilListeToDo readProfilData(String pseudo) {
 
         ProfilListeToDo profile;
@@ -132,11 +127,7 @@ public class ChoixListeActivity extends AppCompatActivity {
         return profile;
     }
 
-
-
-
-
-
+    //construire le Adapter de RecyclerView
     class ListeAdapter extends RecyclerView.Adapter<ListeAdapter.MyViewHolder>{
 
         private final List<String> lists;
@@ -166,6 +157,7 @@ public class ChoixListeActivity extends AppCompatActivity {
                 return 0;
             else return lists.size();
         }
+        //Construire le ViewHolder dans le Adapter
         class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
             private final TextView textView;
@@ -180,6 +172,8 @@ public class ChoixListeActivity extends AppCompatActivity {
                 textView.setText(data);
             }
 
+
+            //sauter au ItemActivity quand on clique la liste.
             @Override
             public void onClick(View v) {
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
