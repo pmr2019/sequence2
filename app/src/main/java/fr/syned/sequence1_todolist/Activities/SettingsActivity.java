@@ -21,7 +21,7 @@ public class SettingsActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+
         recyclerView = findViewById(R.id.profiles);
         profileAdapter = new ProfileAdapter(profilesList);
         recyclerView.setAdapter(profileAdapter);
