@@ -21,7 +21,10 @@ import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity {
 
+    //Transpoteur de liste de nom de profile
     List<String> profiles;
+
+    //recevoir le recyclerView
     RecyclerView recyclerView;
 
     @Override
@@ -29,13 +32,17 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        //obtenir la liste de noms de profiles
         profiles = readPreference();
+
+        //afficher la liste de noms dans le RecyclerView
         recyclerView = findViewById(R.id.setting_activity);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new SettingAdapter(profiles));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
     }
 
+    //function d'obtenir la liste de noms de profiles
     public List<String> readPreference() {
         SharedPreferences preferences = getSharedPreferences("profile", MODE_PRIVATE);
         List<String> profiles = new ArrayList<>();
@@ -46,6 +53,7 @@ public class SettingsActivity extends AppCompatActivity {
         return profiles;
     }
 
+    //construire le Adapter de RecyclerView
     class SettingAdapter extends RecyclerView.Adapter<SettingAdapter.SettingViewHolder> {
         private final List<String> profiles;
         SettingAdapter(List<String> profiles) { this.profiles = profiles; }
@@ -72,7 +80,7 @@ public class SettingsActivity extends AppCompatActivity {
             else return profiles.size();
         }
 
-
+        //Construire le ViewHolder dans le Adapter
         class SettingViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
             private final TextView textView;
 
@@ -87,6 +95,7 @@ public class SettingsActivity extends AppCompatActivity {
                 textView.setText(data);
             }
 
+            //sauter au MainActivity corresponde quand on clique la liste.
             @Override
             public void onClick(View v) {
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
