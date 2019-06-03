@@ -1,8 +1,11 @@
 package fr.ec.app;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -42,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements ItemAdapter.Actio
   }
 
   private List<String> newItemList() {
+
+    // parser posts
     List<String> data = new ArrayList<>();
     for (int i = 0; i < 10000; i++) {
       data.add("Item n°"+i);
@@ -64,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements ItemAdapter.Actio
 
     //noinspection SimplifiableIfStatement
     if (id == R.id.action_settings) {
+      AsyncTask task = new PostAsyncTask();
+      task.execute();
       return true;
     }
 
@@ -72,5 +79,28 @@ public class MainActivity extends AppCompatActivity implements ItemAdapter.Actio
 
   public void onItemClicked(String data) {
     Toast.makeText(this,data,Toast.LENGTH_LONG).show();
+  }
+
+  public class PostAsyncTask extends AsyncTask<Object,Void,String> {
+
+    @Override protected String doInBackground(Object... objects) {
+
+      return  DataProvider.getPostsFromWeb(DataProvider.POST_API_END_POINT);
+    }
+
+
+    @Override protected void onPreExecute() {
+      super.onPreExecute();
+      findViewById(R.id.progess).setVisibility(View.VISIBLE);
+      Log.d("TAG", "onPreExecute() called +" +Thread.currentThread().getName());
+    }
+
+
+    @Override protected void onPostExecute(String s) {
+      super.onPostExecute(s);
+      Log.d("TAG", "onPostExecute() called with: s = [" + s + "]");
+      Log.d("TAG", "onPostExecute() called +" +Thread.currentThread().getName());
+      findViewById(R.id.progess).setVisibility(View.GONE);
+    }
   }
 }
