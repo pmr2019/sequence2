@@ -1,12 +1,16 @@
-package fr.ec.app;
+package fr.ec.app.data;
 
 import android.util.Log;
+import com.google.gson.Gson;
+import fr.ec.app.data.api.PostResponse;
+import fr.ec.app.data.api.PostResponseList;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 public class DataProvider {
 
@@ -66,5 +70,14 @@ public class DataProvider {
     }
 
     return posts;
+  }
+
+  public static List<PostResponse> getPosts() {
+    String response = getPostsFromWeb(POST_API_END_POINT);
+    Gson gson = new Gson();
+
+    PostResponseList postResponseList = gson.fromJson(response, PostResponseList.class);
+
+    return postResponseList.posts;
   }
 }

@@ -1,4 +1,4 @@
-package fr.ec.app;
+package fr.ec.app.ui;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,11 +12,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import fr.ec.app.R;
+import fr.ec.app.data.DataProvider;
+import fr.ec.app.data.api.PostResponse;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements ItemAdapter.ActionListener {
+
+  private ItemAdapter itemAdapter;
+  private PostAsyncTask task;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -24,35 +31,14 @@ public class MainActivity extends AppCompatActivity implements ItemAdapter.Actio
     Toolbar toolbar = findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
 
-    List<String> listItemData = newItemList();
     RecyclerView recyclerView = findViewById(R.id.list);
 
-    //recyclerView.setLayoutManager(new LinearLayoutManager(this));
-    GridLayoutManager lg = new GridLayoutManager(this, 2);
-    lg.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-      @Override public int getSpanSize(int position) {
-         if(position == 0)  {
-           return  2;
-        }
-         else { return 1;}
-      }
-    });
-    recyclerView.setLayoutManager(lg);
+    recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-    recyclerView.setAdapter(new ItemAdapter(newItemList(), this));
+    itemAdapter = new ItemAdapter( this);
+    recyclerView.setAdapter(itemAdapter);
     recyclerView.addItemDecoration(
         new DividerItemDecoration(this,LinearLayout.VERTICAL));
-  }
-
-  private List<String> newItemList() {
-
-    // parser posts
-    List<String> data = new ArrayList<>();
-    for (int i = 0; i < 10000; i++) {
-      data.add("Item n°"+i);
-    }
-
-    return data;
   }
 
   @Override public boolean onCreateOptionsMenu(Menu menu) {
@@ -69,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements ItemAdapter.Actio
 
     //noinspection SimplifiableIfStatement
     if (id == R.id.action_settings) {
-      AsyncTask task = new PostAsyncTask();
+      task = new PostAsyncTask();
       task.execute();
       return true;
     }
@@ -77,17 +63,16 @@ public class MainActivity extends AppCompatActivity implements ItemAdapter.Actio
     return super.onOptionsItemSelected(item);
   }
 
+  @Override protected void onDestroy() {
+    super.onDestroy();
+    task.cancel(true);
+  }
+
   public void onItemClicked(String data) {
     Toast.makeText(this,data,Toast.LENGTH_LONG).show();
   }
 
-  public class PostAsyncTask extends AsyncTask<Object,Void,String> {
-
-    @Override protected String doInBackground(Object... objects) {
-
-      return  DataProvider.getPostsFromWeb(DataProvider.POST_API_END_POINT);
-    }
-
+  public class PostAsyncTask extends AsyncTask<Object,Void,List<PostResponse>> {
 
     @Override protected void onPreExecute() {
       super.onPreExecute();
@@ -95,12 +80,15 @@ public class MainActivity extends AppCompatActivity implements ItemAdapter.Actio
       Log.d("TAG", "onPreExecute() called +" +Thread.currentThread().getName());
     }
 
+    @Override protected List<PostResponse> doInBackground(Object... objects) {
+      return  DataProvider.getPosts();
+    }
 
-    @Override protected void onPostExecute(String s) {
-      super.onPostExecute(s);
-      Log.d("TAG", "onPostExecute() called with: s = [" + s + "]");
-      Log.d("TAG", "onPostExecute() called +" +Thread.currentThread().getName());
+
+    @Override protected void onPostExecute(List<PostResponse> posts) {
+      super.onPostExecute(posts);
       findViewById(R.id.progess).setVisibility(View.GONE);
+      itemAdapter.show(posts);
     }
   }
 }
