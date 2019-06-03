@@ -4,12 +4,15 @@ import android.util.Log;
 import com.google.gson.Gson;
 import fr.ec.app.data.api.PostResponse;
 import fr.ec.app.data.api.PostResponseList;
+import fr.ec.app.data.api.ProductHuntService;
+import fr.ec.app.data.api.ProductHuntServiceFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DataProvider {
@@ -73,11 +76,18 @@ public class DataProvider {
   }
 
   public static List<PostResponse> getPosts() {
-    String response = getPostsFromWeb(POST_API_END_POINT);
-    Gson gson = new Gson();
+    //String response = getPostsFromWeb(POST_API_END_POINT);
+    //Gson gson = new Gson();
+    //
+    //PostResponseList postResponseList = gson.fromJson(response, PostResponseList.class);
+    ProductHuntService service = ProductHuntServiceFactory.createService(ProductHuntService.class);
+    List<PostResponse> postResponses = new ArrayList<>(0);
+    try {
+      postResponses = service.getPosts().execute().body().posts;
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
-    PostResponseList postResponseList = gson.fromJson(response, PostResponseList.class);
-
-    return postResponseList.posts;
+    return postResponses;
   }
 }

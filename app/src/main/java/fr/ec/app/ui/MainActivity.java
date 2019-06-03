@@ -2,6 +2,7 @@ package fr.ec.app.ui;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,19 +12,26 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import fr.ec.app.R;
+import fr.ec.app.Utils;
 import fr.ec.app.data.DataProvider;
 import fr.ec.app.data.api.PostResponse;
-import java.util.ArrayList;
+import fr.ec.app.data.api.PostResponseList;
+import fr.ec.app.data.api.ProductHuntService;
+import fr.ec.app.data.api.ProductHuntServiceFactory;
 import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements ItemAdapter.ActionListener {
 
   private ItemAdapter itemAdapter;
   private PostAsyncTask task;
+  private Handler handler;
+  private Call<PostResponseList> call;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -39,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements ItemAdapter.Actio
     recyclerView.setAdapter(itemAdapter);
     recyclerView.addItemDecoration(
         new DividerItemDecoration(this,LinearLayout.VERTICAL));
+    handler = new Handler();
   }
 
   @Override public boolean onCreateOptionsMenu(Menu menu) {
@@ -55,17 +64,43 @@ public class MainActivity extends AppCompatActivity implements ItemAdapter.Actio
 
     //noinspection SimplifiableIfStatement
     if (id == R.id.action_settings) {
-      task = new PostAsyncTask();
-      task.execute();
+      sync();
       return true;
     }
 
     return super.onOptionsItemSelected(item);
   }
 
-  @Override protected void onDestroy() {
-    super.onDestroy();
-    task.cancel(true);
+  private void sync() {
+    ProductHuntService productHuntService = ProductHuntServiceFactory.createService(ProductHuntService.class);
+    findViewById(R.id.progess).setVisibility(View.VISIBLE);
+     call = productHuntService.getPosts();
+    call.enqueue(new Callback<PostResponseList>() {
+      @Override
+      public void onResponse(Call<PostResponseList> call, Response<PostResponseList> response) {
+
+        if(response.isSuccessful()){
+          itemAdapter.show(response.body().posts);
+        }else {
+          Log.d("TAG", "onResponse: "+response.code());
+          Toast.makeText(MainActivity.this,"Error code : "+response.code(),Toast.LENGTH_LONG).show();
+        }
+        findViewById(R.id.progess).setVisibility(View.GONE);
+
+      }
+
+      @Override public void onFailure(Call<PostResponseList> call, Throwable t) {
+        findViewById(R.id.progess).setVisibility(View.GONE);
+        Toast.makeText(MainActivity.this,"Error code : ",Toast.LENGTH_LONG).show();
+        Log.d("TAG", "onFailure() called with: call = [" + call + "], t = [" + t + "]");
+      }
+    });
+
+  }
+
+  @Override protected void onStop() {
+    super.onStop();
+    call.cancel();
   }
 
   public void onItemClicked(String data) {
