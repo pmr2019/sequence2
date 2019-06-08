@@ -3,20 +3,20 @@ package com.todolist.DataClass;
 import java.io.Serializable;
 
 public class User implements Serializable {
-    private int id;
     private String pseudo;
     private String password;
     private String hash;
 
-    public User(int id, String pseudo, String password) {
-        this.id = id;
+    public User(String pseudo, String password) {
         this.pseudo = pseudo;
         this.password = password;
         this.hash = "";
     }
 
-    public int getUserId() {
-        return id;
+    public User(String pseudo, String password, String hash) {
+        this.pseudo = pseudo;
+        this.password = password;
+        this.hash = hash;
     }
 
     public String getPseudo() {

@@ -1,7 +1,5 @@
 package com.todolist;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,27 +16,27 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.todolist.DataClass.Profile;
-import com.todolist.DataClass.TodoList;
+import com.todolist.MyRetrofit.Label;
+import com.todolist.MyRetrofit.Lists;
+import com.todolist.MyRetrofit.TodoListService;
+import com.todolist.MyRetrofit.TodoListServiceFactory;
 import com.todolist.MyTouchHelper.ItemTouchHelperAdapter;
 import com.todolist.MyTouchHelper.ItemTouchHelperCallback;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class ListActivity extends AppCompatActivity {
-    private Profile profile;
     EditText edt_list;
     Button btn_list;
     RecyclerView recyclerView;
     ListAdapter listAdapter;
-    List<String> data_list;
+    String hash;
+    int userId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,28 +46,56 @@ public class ListActivity extends AppCompatActivity {
         edt_list = findViewById(R.id.edt_list);
         btn_list = findViewById(R.id.btn_list);
 
-        profile = readProfilData(getIntent().getStringExtra("profile"));
+        hash = getIntent().getStringExtra("hash");
 
-        data_list = data_list(profile);
-        recyclerView = findViewById(R.id.list_activity);
-        listAdapter = new ListAdapter(data_list);
+        recyclerViewConfig(hash);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        recyclerView.setAdapter(listAdapter);
-
-        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(listAdapter);
-        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
-        touchHelper.attachToRecyclerView(recyclerView);
+        userId = getCurrentUserId(getIntent().getStringExtra("pseudo"));
     }
 
-    // Return a list of todolists' names in a profile class
-    // to dispaly in the Recycler view
-    private List<String> data_list(Profile profile) {
-        List<String> data = new ArrayList<>();
-        for (TodoList list : profile.getListe()) {
-            data.add(list.getTitreListeToDo());
+    private void recyclerViewConfig(String hash) {
+        TodoListService todoListService = TodoListServiceFactory.createService(
+                        getIntent().getStringExtra("url"),
+                        TodoListService.class);
+
+        Call call = todoListService.getLists(hash);
+
+        call.enqueue(new Callback<Lists>() {
+            @Override
+            public void onResponse(Call<Lists> call, Response<Lists> response) {
+                recyclerView = findViewById(R.id.list_activity);
+                listAdapter = new ListAdapter(getLabels(response.body()));
+
+                recyclerView.setLayoutManager(new LinearLayoutManager(ListActivity.this, RecyclerView.VERTICAL, false));
+                recyclerView.setAdapter(listAdapter);
+
+                ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(listAdapter);
+                ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+                touchHelper.attachToRecyclerView(recyclerView);
+            }
+
+            @Override
+            public void onFailure(Call call, Throwable t) {
+                Toast.makeText(ListActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private List<String> getLabels(Lists lists) {
+        List<String> labels = new ArrayList<>();
+
+        for (Label l : lists.labels) {
+            labels.add(l.label);
         }
-        return data;
+        return labels;
+    }
+
+    private int getCurrentUserId(String pseudo) {
+        int id = 0;
+
+        //TODO get user ID by searching pseudo
+
+        return id;
     }
 
     // Function bind to the "OK" button as onClick event for a new list
@@ -78,10 +104,10 @@ public class ListActivity extends AppCompatActivity {
         if (list_name.isEmpty()){
             Toast.makeText(this, "Please enter list name", Toast.LENGTH_SHORT).show();
         } else {
-            profile.addList(new TodoList(list_name));
-            saveProfilData(profile, profile.getLogin());
-            listAdapter.addData(list_name);
-            edt_list.setText("");
+//            profile.addList(new TodoList(list_name));
+//            saveProfilData(profile, profile.getLogin());
+//            listAdapter.addData(list_name);
+//            edt_list.setText("");
         }
     }
 
@@ -125,21 +151,21 @@ public class ListActivity extends AppCompatActivity {
         // Triggered when item swiped to left
         @Override
         public void onItemDissmiss(int position) {
-            profile.removeList(position);
-            removeData(position);
-            saveProfilData(profile, profile.getLogin());
+//            profile.removeList(position);
+//            removeData(position);
+//            saveProfilData(profile, profile.getLogin());
         }
 
         // Function declared in the interface "ItemTouchHelperAdapter"
         // Triggered when item dragged to other position
         @Override
         public void onItemMove(int fromPosition, int toPosition) {
-            String tmp = lists.get(fromPosition);
-            lists.remove(fromPosition);
-            lists.add(toPosition > fromPosition ? toPosition - 1 : toPosition, tmp);
-            profile.swapList(fromPosition, toPosition);
-            saveProfilData(profile, profile.getLogin());
-            notifyItemMoved(fromPosition,toPosition);
+//            String tmp = labels.get(fromPosition);
+//            labels.remove(fromPosition);
+//            labels.add(toPosition > fromPosition ? toPosition - 1 : toPosition, tmp);
+//            profile.swapList(fromPosition, toPosition);
+//            saveProfilData(profile, profile.getLogin());
+//            notifyItemMoved(fromPosition,toPosition);
         }
 
         class ListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -158,55 +184,13 @@ public class ListActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                    Intent i = new Intent(ListActivity.this, ItemActivity.class);
-                    i.putExtra("profile", profile.getLogin());
-                    i.putExtra("list", lists.get(getAdapterPosition()));
-                    startActivity(i);
-                }
+//                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+//                    Intent i = new Intent(ListActivity.this, ItemActivity.class);
+//                    i.putExtra("profile", profile.getLogin());
+//                    i.putExtra("list", labels.get(getAdapterPosition()));
+//                    startActivity(i);
+//                }
             }
         }
-    }
-
-    public void saveProfilData(Profile profile, String pseudo) {
-        final GsonBuilder builder = new GsonBuilder();
-        final Gson gson = builder.create();
-        String fileContents = gson.toJson(profile);
-        FileOutputStream fileOutputStream;
-
-        try {
-            fileOutputStream = openFileOutput(pseudo, Context.MODE_PRIVATE);
-            fileOutputStream.write(fileContents.getBytes());
-            fileOutputStream.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Profile readProfilData(String filename) {
-        StringBuilder jsonRead = new StringBuilder();
-        Profile profile;
-        final GsonBuilder builder = new GsonBuilder();
-        final Gson gson = builder.create();
-        try {
-            FileInputStream inputStream;
-            inputStream = openFileInput(filename);
-            int content;
-            while ((content = inputStream.read()) != -1) {
-                jsonRead.append((char) content);
-            }
-            inputStream.close();
-
-            profile = gson.fromJson(jsonRead.toString(), Profile.class); // cast Profile
-
-            return profile;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new Profile();
     }
 }

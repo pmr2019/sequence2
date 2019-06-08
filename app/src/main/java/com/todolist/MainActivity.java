@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,7 +17,7 @@ import com.google.gson.GsonBuilder;
 import com.todolist.DataClass.Profile;
 import com.todolist.DataClass.Setting;
 import com.todolist.DataClass.User;
-import com.todolist.MyRetrofit.AuthenticateFactory;
+import com.todolist.MyRetrofit.TodoListServiceFactory;
 import com.todolist.MyRetrofit.Hash;
 import com.todolist.MyRetrofit.TodoListService;
 
@@ -27,12 +26,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
     EditText edt_pseudo;
@@ -93,20 +89,20 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        Intent i = new Intent(MainActivity.this, ListActivity.class);
-
         if (setting.hasUser(pseudo)) {
             User user = setting.getUser(pseudo);
             if (user.verify(password)) {
-                i.putExtra("user_id", user.getUserId());
-                i.putExtra("hashcode", user.getHash());
+                Intent i = new Intent(MainActivity.this, ListActivity.class);
+                i.putExtra("hash", user.getHash());
+                i.putExtra("url", setting.getUrl());
+                i.putExtra("pseudo", pseudo);
                 startActivity(i);
             } else {
                 Toast.makeText(this, "Incorrect username or password", Toast.LENGTH_SHORT).show();
                 return;
             }
         } else {
-            TodoListService todoListService = AuthenticateFactory.createService(setting.getUrl(), TodoListService.class);
+            TodoListService todoListService = TodoListServiceFactory.createService(setting.getUrl(), TodoListService.class);
 
             Call call = todoListService.authenticate(pseudo, password);
 
@@ -114,7 +110,13 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<Hash> call, Response<Hash> response) {
                     if (response.isSuccessful()) {
-                        Log.d("Retrofit", response.body().hash);
+                        setting.addUser(new User(pseudo, password, response.body().hash));
+                        savePreference(setting);
+                        Intent i = new Intent(MainActivity.this, ListActivity.class);
+                        i.putExtra("hash", response.body().hash);
+                        i.putExtra("url", setting.getUrl());
+                        i.putExtra("pseudo", pseudo);
+                        startActivity(i);
                     } else {
                         Toast.makeText(MainActivity.this, "Incorrect username or password", Toast.LENGTH_SHORT).show();
                     }
