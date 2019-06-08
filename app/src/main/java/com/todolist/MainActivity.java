@@ -132,52 +132,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void signin(View v) {
-
-    }
-
-    // Function to save data as json file
-    // Each Profile class has its own json file named by its login
-    public void saveProfilData(Profile profile, String pseudo) {
-        final GsonBuilder builder = new GsonBuilder();
-        final Gson gson = builder.create();
-        String fileContents = gson.toJson(profile);
-        FileOutputStream fileOutputStream;
-
-        try {
-            fileOutputStream = openFileOutput(pseudo, Context.MODE_PRIVATE);
-            fileOutputStream.write(fileContents.getBytes());
-            fileOutputStream.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Read data and return a Profile class by using its login
-    public Profile readProfilData(String filename) {
-        StringBuilder jsonRead = new StringBuilder();
-        Profile profile;
-        final GsonBuilder builder = new GsonBuilder();
-        final Gson gson = builder.create();
-        try {
-            FileInputStream inputStream;
-            inputStream = openFileInput(filename);
-            int content;
-            while ((content = inputStream.read()) != -1) {
-                jsonRead.append((char) content);
-            }
-            inputStream.close();
-
-            profile = gson.fromJson(jsonRead.toString(), Profile.class); // cast Profile
-
-            return profile;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new Profile();
+        //TODO Sign in function
     }
 
     // Save setting into sharedpreferences

@@ -147,11 +147,6 @@ public class ListActivity extends AppCompatActivity {
             notifyItemInserted(lists.size());
         }
 
-        void removeData(int position) {
-            lists.remove(position);
-            notifyItemRemoved(position);
-        }
-
         @NonNull
         @Override
         public ListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -176,21 +171,51 @@ public class ListActivity extends AppCompatActivity {
         // Triggered when item swiped to left
         @Override
         public void onItemDissmiss(int position) {
-//            profile.removeList(position);
-//            removeData(position);
-//            saveProfilData(profile, profile.getLogin());
+            Call call1 = todoListService.getLists(hash);
+            final String list_selected = lists.get(position);
+
+            call1.enqueue(new Callback<Lists>() {
+                @Override
+                public void onResponse(Call<Lists> call, Response<Lists> response) {
+                    if (response.isSuccessful()) {
+                        for (Lists.ListsBean l : response.body().getLists()) {
+                            if (l.getLabel().equals(list_selected)) {
+                                Call call2 = todoListService.deleteList(hash, userId, l.getId());
+
+                                call2.enqueue(new Callback() {
+                                    @Override
+                                    public void onResponse(Call call, Response response) {
+
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call call, Throwable t) {
+
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call call, Throwable t) {
+
+                }
+            });
+
+            lists.remove(position);
+            notifyItemRemoved(position);
         }
 
         // Function declared in the interface "ItemTouchHelperAdapter"
         // Triggered when item dragged to other position
         @Override
         public void onItemMove(int fromPosition, int toPosition) {
-//            String tmp = labels.get(fromPosition);
-//            labels.remove(fromPosition);
-//            labels.add(toPosition > fromPosition ? toPosition - 1 : toPosition, tmp);
-//            profile.swapList(fromPosition, toPosition);
-//            saveProfilData(profile, profile.getLogin());
-//            notifyItemMoved(fromPosition,toPosition);
+            String tmp = lists.get(fromPosition);
+            lists.remove(fromPosition);
+            lists.add(toPosition > fromPosition ? toPosition - 1 : toPosition, tmp);
+            notifyItemMoved(fromPosition,toPosition);
         }
 
         class ListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

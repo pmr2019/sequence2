@@ -183,22 +183,51 @@ public class ItemActivity extends AppCompatActivity {
         // Triggered when item swiped to left
         @Override
         public void onItemDissmiss(int position) {
-//            data.remove(position);
-//            profile.removeItem(list_name_selected, position);
-//            notifyItemRemoved(position);
-//            saveProfilData(profile, profile.getLogin());
+            Call call1 = todoListService.getItems(hash, listId);
+            final String item_selected = data.get(position).getItemName();
+
+            call1.enqueue(new Callback<Items>() {
+                @Override
+                public void onResponse(Call<Items> call, Response<Items> response) {
+                    if (response.isSuccessful()) {
+                        for (Items.ItemsBean i : response.body().getItems()) {
+                            if (i.getLabel().equals(item_selected)) {
+                                Call call2 = todoListService.deleteItem(hash, listId, i.getId());
+
+                                call2.enqueue(new Callback() {
+                                    @Override
+                                    public void onResponse(Call call, Response response) {
+
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call call, Throwable t) {
+
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call call, Throwable t) {
+
+                }
+            });
+
+            data.remove(position);
+            notifyItemRemoved(position);
         }
 
         // Function declared in the interface "ItemTouchHelperAdapter"
         // Triggered when item dragged to other position
         @Override
         public void onItemMove(int fromPosition, int toPosition) {
-//            DataEntity tmp = data.get(fromPosition);
-//            data.remove(fromPosition);
-//            data.add(toPosition > fromPosition ? toPosition - 1 : toPosition, tmp);
-//            profile.swapItem(fromPosition, toPosition, list_name_selected);
-//            saveProfilData(profile, profile.getLogin());
-//            notifyItemMoved(fromPosition,toPosition);
+            DataEntity tmp = data.get(fromPosition);
+            data.remove(fromPosition);
+            data.add(toPosition > fromPosition ? toPosition - 1 : toPosition, tmp);
+            notifyItemMoved(fromPosition,toPosition);
         }
 
         class ItemViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener {

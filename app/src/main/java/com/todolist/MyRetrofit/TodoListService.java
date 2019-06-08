@@ -2,6 +2,7 @@ package com.todolist.MyRetrofit;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -16,14 +17,17 @@ public interface TodoListService {
     @POST("authenticate")
     Call<Hash> authenticate(@Field("user") String user, @Field("password") String password);
 
-    @GET("lists")
-    Call<Lists> getLists(@Query("hash") String hash);
-
     @GET("users")
     Call<Users> getUsers(@Query("hash") String hash);
 
+    @GET("lists")
+    Call<Lists> getLists(@Query("hash") String hash);
+
     @POST("users/{id}/lists")
     Call<NewListInfo> addList(@Header("hash") String hash, @Path("id") String id, @Query("label") String label);
+
+    @DELETE("users/{user_id}/lists/{list_id}")
+    Call<ResponseBody> deleteList(@Header("hash") String hash, @Path("user_id") String user_id, @Path("list_id") String list_id);
 
     @GET("lists/{id}/items")
     Call<Items> getItems(@Header("hash") String hash, @Path("id") String id);
@@ -33,4 +37,7 @@ public interface TodoListService {
 
     @PUT("lists/{list_id}/items/{item_id}")
     Call<ChangeItemInfo> changeItem(@Header("hash") String hash, @Path("list_id") String list_id, @Path("item_id") String item_id, @Query("check") String check);
+
+    @DELETE("lists/{list_id}/items/{item_id}")
+    Call<ResponseBody> deleteItem(@Header("hash") String hash, @Path("list_id") String list_id, @Path("item_id") String item_id);
 }
