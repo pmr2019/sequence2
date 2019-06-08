@@ -31,5 +31,6 @@ public interface TodoListService {
     @POST("lists/{id}/items")
     Call<NewItemInfo> addItem(@Header("hash") String hash, @Path("id") String id, @Query("label") String label);
 
-//    @PUT("lists/{id}/items/{id}")
+    @PUT("lists/{list_id}/items/{item_id}")
+    Call<ChangeItemInfo> changeItem(@Header("hash") String hash, @Path("list_id") String list_id, @Path("item_id") String item_id, @Query("check") String check);
 }

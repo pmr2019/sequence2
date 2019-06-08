@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.todolist.DataClass.Item;
 import com.todolist.DataClass.Profile;
+import com.todolist.MyRetrofit.ChangeItemInfo;
 import com.todolist.MyRetrofit.Items;
 import com.todolist.MyRetrofit.Lists;
 import com.todolist.MyRetrofit.NewItemInfo;
@@ -216,8 +217,45 @@ public class ItemActivity extends AppCompatActivity {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                profile.getListByName(list_name_selected).setItemStatus(data.get(getAdapterPosition()).getItemName(), isChecked);
-//                saveProfilData(profile, profile.getLogin());
+                Call call1 = todoListService.getItems(hash, listId);
+                final String item_selected = data.get(getAdapterPosition()).getItemName();
+
+                call1.enqueue(new Callback<Items>() {
+                    @Override
+                    public void onResponse(Call<Items> call, Response<Items> response) {
+                        if (response.isSuccessful()) {
+                            for (Items.ItemsBean i : response.body().getItems()) {
+                                if (i.getLabel().equals(item_selected)) {
+                                    Call call2;
+                                    if (i.getChecked().equals("0")) {
+                                        call2 = todoListService.changeItem(
+                                                hash, listId, i.getId(), "1");
+                                    } else {
+                                        call2 = todoListService.changeItem(
+                                                hash, listId, i.getId(), "0");
+                                    }
+
+                                    call2.enqueue(new Callback() {
+                                        @Override
+                                        public void onResponse(Call call, Response response) {
+
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call call, Throwable t) {
+
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Throwable t) {
+
+                    }
+                });
             }
         }
     }
