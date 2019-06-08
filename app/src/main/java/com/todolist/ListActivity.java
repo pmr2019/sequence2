@@ -2,7 +2,6 @@ package com.todolist;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,6 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.todolist.DataClass.User;
 import com.todolist.MyRetrofit.Lists;
 import com.todolist.MyRetrofit.NewListInfo;
 import com.todolist.MyRetrofit.TodoListService;
@@ -30,6 +28,7 @@ import com.todolist.MyTouchHelper.ItemTouchHelperCallback;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -74,7 +73,7 @@ public class ListActivity extends AppCompatActivity {
     }
 
     private void recyclerViewConfig(String hash) {
-        Call call = todoListService.getLists(hash);
+        Call<Lists> call = todoListService.getLists(hash);
 
         call.enqueue(new Callback<Lists>() {
             @Override
@@ -94,7 +93,7 @@ public class ListActivity extends AppCompatActivity {
     }
 
     private void getCurrentUserId(String hash, final String pseudo) {
-        Call call = todoListService.getUsers(hash);
+        Call<Users> call = todoListService.getUsers(hash);
 
         call.enqueue(new Callback<Users>() {
             @Override
@@ -117,7 +116,7 @@ public class ListActivity extends AppCompatActivity {
         if (list_name.isEmpty()){
             Toast.makeText(this, "Please enter list name", Toast.LENGTH_SHORT).show();
         } else {
-            Call call = todoListService.addList(hash, userId, list_name);
+            Call<NewListInfo> call = todoListService.addList(hash, userId, list_name);
 
             call.enqueue(new Callback<NewListInfo>() {
                 @Override
@@ -171,7 +170,7 @@ public class ListActivity extends AppCompatActivity {
         // Triggered when item swiped to left
         @Override
         public void onItemDissmiss(int position) {
-            Call call1 = todoListService.getLists(hash);
+            Call<Lists> call1 = todoListService.getLists(hash);
             final String list_selected = lists.get(position);
 
             call1.enqueue(new Callback<Lists>() {
@@ -180,7 +179,7 @@ public class ListActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         for (Lists.ListsBean l : response.body().getLists()) {
                             if (l.getLabel().equals(list_selected)) {
-                                Call call2 = todoListService.deleteList(hash, userId, l.getId());
+                                Call<ResponseBody> call2 = todoListService.deleteList(hash, userId, l.getId());
 
                                 call2.enqueue(new Callback() {
                                     @Override
@@ -235,7 +234,7 @@ public class ListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                    Call call = todoListService.getLists(hash);
+                    Call<Lists> call = todoListService.getLists(hash);
                     final String list_selected = lists.get(getAdapterPosition());
 
                     call.enqueue(new Callback<Lists>() {

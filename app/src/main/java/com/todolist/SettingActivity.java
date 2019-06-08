@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,26 +17,30 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.todolist.DataClass.Setting;
+import com.todolist.DataClass.User;
 import com.todolist.MyTouchHelper.ItemTouchHelperAdapter;
 import com.todolist.MyTouchHelper.ItemTouchHelperCallback;
-
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class SettingActivity extends AppCompatActivity {
-    List<String> profiles;
     RecyclerView recyclerView;
     SettingAdapter settingAdapter;
+    Setting setting;
+    EditText edt_url;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
 
-        profiles = readPreference();
+        setting = readPreference();
+        edt_url = findViewById(R.id.edt_url);
+        edt_url.setText(setting.getUrl());
 
-        settingAdapter = new SettingAdapter(profiles);
+        settingAdapter = new SettingAdapter(setting.getUsers());
         recyclerView = findViewById(R.id.setting_activity);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(settingAdapter);
@@ -44,32 +50,43 @@ public class SettingActivity extends AppCompatActivity {
         touchHelper.attachToRecyclerView(recyclerView);
     }
 
-    public void savePreference(List<String> profiles) {
-        SharedPreferences preferences = getSharedPreferences("profile", MODE_PRIVATE);
+    public void newURL(View v) {
+        final String url = edt_url.getText().toString();
+        if (url.isEmpty()){
+            Toast.makeText(this, "Please enter list name", Toast.LENGTH_SHORT).show();
+        } else {
+            setting.setUrl(url);
+            savePreference(setting);
+        }
+    }
+
+    // Save setting into sharedpreferences
+    public void savePreference(Setting setting) {
+        SharedPreferences preferences = getSharedPreferences("setting", MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
 
-        editor.putInt("profile_number", profiles.size());
-        for (int i = 0; i < profiles.size(); i++) {
-            editor.putString("" + i, profiles.get(i));
-        }
+        final GsonBuilder builder = new GsonBuilder();
+        final Gson gson = builder.create();
+        String setting_serialized = gson.toJson(setting);
+        editor.putString("setting", setting_serialized);
 
         editor.apply();
         editor.commit();
     }
 
-    public List<String> readPreference() {
-        SharedPreferences preferences = getSharedPreferences("profile", MODE_PRIVATE);
-        List<String> profiles = new ArrayList<>();
-        int profile_number = preferences.getInt("profile_number", 0);
-        for (int i = 0; i < profile_number; i++) {
-            profiles.add(preferences.getString("" + i, ""));
-        }
-        return profiles;
+    // Return setting class
+    public Setting readPreference() {
+        SharedPreferences preferences = getSharedPreferences("setting", MODE_PRIVATE);
+
+        final GsonBuilder builder = new GsonBuilder();
+        final Gson gson = builder.create();
+        String setting_serialized = preferences.getString("setting", gson.toJson(new Setting()));
+        return gson.fromJson(setting_serialized, Setting.class);
     }
 
     class SettingAdapter extends RecyclerView.Adapter<SettingAdapter.SettingViewHolder> implements ItemTouchHelperAdapter {
-        private final List<String> profiles;
-        SettingAdapter(List<String> profiles) { this.profiles = profiles; }
+        private final List<User> users;
+        SettingAdapter(List<User> users) { this.users = users; }
 
         @NonNull
         @Override
@@ -81,22 +98,19 @@ public class SettingActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull SettingViewHolder holder, int position) {
-            String data = profiles.get(position);
+            String data = users.get(position).getPseudo();
 
             holder.bind(data);
         }
 
         @Override
         public int getItemCount() {
-            return profiles.size();
+            return users.size();
         }
 
         @Override
         public void onItemDissmiss(int postion) {
-            File f = new File(getFilesDir() + "/" + profiles.get(postion));
-            f.delete();
-            profiles.remove(postion);
-            savePreference(profiles);
+            users.remove(postion);
             notifyItemRemoved(postion);
         }
 
@@ -121,7 +135,8 @@ public class SettingActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                     Intent i = new Intent(SettingActivity.this, MainActivity.class);
-                    i.putExtra("profile", profiles.get(getAdapterPosition()));
+                    i.putExtra("profile", users.get(getAdapterPosition()).getPseudo());
+                    i.putExtra("password", users.get(getAdapterPosition()).getPassword());
                     startActivity(i);
                 }
             }

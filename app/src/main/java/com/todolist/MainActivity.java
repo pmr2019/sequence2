@@ -2,7 +2,6 @@ package com.todolist;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,18 +13,13 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.todolist.DataClass.Profile;
 import com.todolist.DataClass.Setting;
 import com.todolist.DataClass.User;
 import com.todolist.MyRetrofit.TodoListServiceFactory;
 import com.todolist.MyRetrofit.Hash;
 import com.todolist.MyRetrofit.TodoListService;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -60,8 +54,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (getIntent().getStringExtra("profile") != null) {
-            edt_pseudo.setText(getIntent().getStringExtra("profile"));
+        String pseudo = getIntent().getStringExtra("profile");
+        String password = getIntent().getStringExtra("password");
+
+        if (pseudo != null) {
+            edt_pseudo.setText(pseudo);
+        }
+        if (password != null) {
+            edt_password.setText(password);
         }
     }
 
@@ -99,12 +99,11 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             } else {
                 Toast.makeText(this, "Incorrect username or password", Toast.LENGTH_SHORT).show();
-                return;
             }
         } else {
             TodoListService todoListService = TodoListServiceFactory.createService(setting.getUrl(), TodoListService.class);
 
-            Call call = todoListService.authenticate(pseudo, password);
+            Call<Hash> call = todoListService.authenticate(pseudo, password);
 
             call.enqueue(new Callback<Hash>() {
                 @Override
@@ -132,7 +131,49 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void signin(View v) {
-        //TODO Sign in function
+        final String pseudo = edt_pseudo.getText().toString();
+        final String password = edt_password.getText().toString();
+
+        if (pseudo.isEmpty()){
+            Toast.makeText(this, "Please enter your pseudo", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (password.isEmpty()) {
+            Toast.makeText(this, "Please enter your password", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (setting.getLastUser() == null) {
+            Toast.makeText(this, "You have no right to sign in", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (setting.hasUser(pseudo)) {
+            Toast.makeText(this, "User already exist", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        TodoListService todoListService = TodoListServiceFactory.createService(setting.getUrl(), TodoListService.class);
+
+        Call<ResponseBody> call = todoListService.signin(setting.getLastUser().getHash(), pseudo, password);
+
+        call.enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(MainActivity.this, "Success to sign in", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "Fail to sign in", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call call, Throwable t) {
+
+            }
+        });
     }
 
     // Save setting into sharedpreferences

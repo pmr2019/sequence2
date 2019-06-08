@@ -5,12 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Setting implements Serializable {
-    private final String URL = "http://tomnab.fr/todo-api/";
     private String url;
     private List<User> users;
 
     public Setting() {
-        this.url = URL; //default api setting
+        this.url = "http://tomnab.fr/todo-api/"; //default api setting
         this.users = new ArrayList<>();
     }
 
@@ -45,5 +44,9 @@ public class Setting implements Serializable {
             if (u.getPseudo().equals(pseudo)) return u;
         }
         return null;
+    }
+
+    public List<User> getUsers() {
+        return users;
     }
 }

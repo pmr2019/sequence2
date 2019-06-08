@@ -1,6 +1,5 @@
 package com.todolist;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,26 +17,17 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.todolist.DataClass.Item;
-import com.todolist.DataClass.Profile;
-import com.todolist.MyRetrofit.ChangeItemInfo;
 import com.todolist.MyRetrofit.Items;
-import com.todolist.MyRetrofit.Lists;
 import com.todolist.MyRetrofit.NewItemInfo;
 import com.todolist.MyRetrofit.TodoListService;
 import com.todolist.MyRetrofit.TodoListServiceFactory;
 import com.todolist.MyTouchHelper.ItemTouchHelperAdapter;
 import com.todolist.MyTouchHelper.ItemTouchHelperCallback;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -80,7 +70,7 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     private void recyclerViewConfig(String hash, String listId) {
-        Call call = todoListService.getItems(hash, listId);
+        Call<Items> call = todoListService.getItems(hash, listId);
 
         call.enqueue(new Callback<Items>() {
             @Override
@@ -106,11 +96,7 @@ public class ItemActivity extends AppCompatActivity {
 
         DataEntity(String itemName, String checked) {
             this.itemName = itemName;
-            if (checked.equals("1")) {
-                this.checked = true;
-            } else {
-                this.checked = false;
-            }
+            this.checked = checked.equals("1");
         }
 
         String getItemName() {
@@ -128,7 +114,7 @@ public class ItemActivity extends AppCompatActivity {
         if (item_name.isEmpty()) {
             Toast.makeText(this, "Please enter item name", Toast.LENGTH_SHORT).show();
         } else {
-            Call call = todoListService.addItem(hash, listId, item_name);
+            Call<NewItemInfo> call = todoListService.addItem(hash, listId, item_name);
 
             call.enqueue(new Callback<NewItemInfo>() {
                 @Override
@@ -183,7 +169,7 @@ public class ItemActivity extends AppCompatActivity {
         // Triggered when item swiped to left
         @Override
         public void onItemDissmiss(int position) {
-            Call call1 = todoListService.getItems(hash, listId);
+            Call<Items> call1 = todoListService.getItems(hash, listId);
             final String item_selected = data.get(position).getItemName();
 
             call1.enqueue(new Callback<Items>() {
@@ -192,7 +178,7 @@ public class ItemActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         for (Items.ItemsBean i : response.body().getItems()) {
                             if (i.getLabel().equals(item_selected)) {
-                                Call call2 = todoListService.deleteItem(hash, listId, i.getId());
+                                Call<ResponseBody> call2 = todoListService.deleteItem(hash, listId, i.getId());
 
                                 call2.enqueue(new Callback() {
                                     @Override
@@ -246,7 +232,7 @@ public class ItemActivity extends AppCompatActivity {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Call call1 = todoListService.getItems(hash, listId);
+                Call<Items> call1 = todoListService.getItems(hash, listId);
                 final String item_selected = data.get(getAdapterPosition()).getItemName();
 
                 call1.enqueue(new Callback<Items>() {
@@ -256,6 +242,7 @@ public class ItemActivity extends AppCompatActivity {
                             for (Items.ItemsBean i : response.body().getItems()) {
                                 if (i.getLabel().equals(item_selected)) {
                                     Call call2;
+
                                     if (i.getChecked().equals("0")) {
                                         call2 = todoListService.changeItem(
                                                 hash, listId, i.getId(), "1");

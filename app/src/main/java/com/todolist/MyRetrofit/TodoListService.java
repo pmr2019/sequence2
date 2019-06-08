@@ -20,6 +20,9 @@ public interface TodoListService {
     @GET("users")
     Call<Users> getUsers(@Query("hash") String hash);
 
+    @POST("users")
+    Call<ResponseBody> signin(@Header("hash") String hash, @Query("pseudo") String pseudo, @Query("pass") String password);
+
     @GET("lists")
     Call<Lists> getLists(@Query("hash") String hash);
 
