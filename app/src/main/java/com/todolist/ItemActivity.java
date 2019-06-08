@@ -22,6 +22,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.todolist.DataClass.Item;
 import com.todolist.DataClass.Profile;
+import com.todolist.MyRetrofit.Items;
+import com.todolist.MyRetrofit.Lists;
+import com.todolist.MyRetrofit.NewItemInfo;
+import com.todolist.MyRetrofit.TodoListService;
+import com.todolist.MyRetrofit.TodoListServiceFactory;
 import com.todolist.MyTouchHelper.ItemTouchHelperAdapter;
 import com.todolist.MyTouchHelper.ItemTouchHelperCallback;
 
@@ -32,14 +37,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class ItemActivity extends AppCompatActivity {
-    private Profile profile;
-    String list_name_selected;
     EditText edt_item;
     Button btn_item;
     RecyclerView recyclerView;
     ItemAdapter itemAdapter;
-    List<DataEntity> data;
+    String hash;
+    String url;
+    String listId;
+    TodoListService todoListService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,18 +59,43 @@ public class ItemActivity extends AppCompatActivity {
         edt_item = findViewById(R.id.edt_item);
         btn_item = findViewById(R.id.btn_item);
 
-        profile = readProfilData(getIntent().getStringExtra("profile"));
-        list_name_selected = getIntent().getStringExtra("list");
+        hash = getIntent().getStringExtra("hash");
+        url = getIntent().getStringExtra("url");
+        listId = getIntent().getStringExtra("listId");
+
+        todoListService = TodoListServiceFactory.createService(
+                url, TodoListService.class);
 
         recyclerView = findViewById(R.id.item_activity);
-        data = data(profile, list_name_selected);
-        itemAdapter = new ItemAdapter(data);
+        itemAdapter = new ItemAdapter(new ArrayList<DataEntity>());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(itemAdapter);
 
         ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(itemAdapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(recyclerView);
+
+        recyclerViewConfig(hash, listId);
+    }
+
+    private void recyclerViewConfig(String hash, String listId) {
+        Call call = todoListService.getItems(hash, listId);
+
+        call.enqueue(new Callback<Items>() {
+            @Override
+            public void onResponse(Call<Items> call, Response<Items> response) {
+                if (response.isSuccessful()) {
+                    for (Items.ItemsBean i: response.body().getItems()) {
+                        itemAdapter.addData(new DataEntity(i.getLabel(), i.getChecked()));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, Throwable t) {
+
+            }
+        });
     }
 
     // Class contains item name and check status
@@ -68,9 +103,13 @@ public class ItemActivity extends AppCompatActivity {
         private String itemName;
         private Boolean checked;
 
-        DataEntity(String itemName, Boolean checked) {
+        DataEntity(String itemName, String checked) {
             this.itemName = itemName;
-            this.checked = checked;
+            if (checked.equals("1")) {
+                this.checked = true;
+            } else {
+                this.checked = false;
+            }
         }
 
         String getItemName() {
@@ -82,31 +121,28 @@ public class ItemActivity extends AppCompatActivity {
         }
     }
 
-    // Return a list of DataEntity in a profile.list class
-    // to dispaly in the Recycler view
-    private List<DataEntity> data(Profile profile, String list_name_selected) {
-        List<DataEntity> data = new ArrayList<>();
-        List<Item> items = profile.getListByName(list_name_selected).getLesItems();
-        for (Item i : items) {
-            data.add(new DataEntity(i.getDescription(), i.getFait()));
-        }
-        return data;
-    }
-
     // Function bind to the "OK" button as onClick event for a new item
     public void newItem(View v) {
-        String item_name = edt_item.getText().toString();
+        final String item_name = edt_item.getText().toString();
         if (item_name.isEmpty()) {
             Toast.makeText(this, "Please enter item name", Toast.LENGTH_SHORT).show();
         } else {
-            profile.addItem(list_name_selected, item_name);
-//            recyclerView.setAdapter(new ItemAdapter(data_item(profile, list_name_selected), checked_item(profile, list_name_selected)));
-            edt_item.setText("");
-            saveProfilData(profile, profile.getLogin());
-//            data_item.add(item_name);
-//            checked_item.add(false);
-            data.add(new DataEntity(item_name, false));
-            itemAdapter.notifyItemInserted(data.size());
+            Call call = todoListService.addItem(hash, listId, item_name);
+
+            call.enqueue(new Callback<NewItemInfo>() {
+                @Override
+                public void onResponse(Call<NewItemInfo> call, Response<NewItemInfo> response) {
+                    if (response.isSuccessful()) {
+                        itemAdapter.addData(new DataEntity(item_name, "0"));
+                        edt_item.setText("");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call call, Throwable t) {
+
+                }
+            });
         }
     }
 
@@ -114,6 +150,11 @@ public class ItemActivity extends AppCompatActivity {
         private final List<DataEntity> data;
         ItemAdapter(List<DataEntity> data) {
             this.data = data;
+        }
+
+        void addData(DataEntity dataEntity) {
+            data.add(dataEntity);
+            notifyItemInserted(data.size());
         }
 
         @NonNull
@@ -141,22 +182,22 @@ public class ItemActivity extends AppCompatActivity {
         // Triggered when item swiped to left
         @Override
         public void onItemDissmiss(int position) {
-            data.remove(position);
-            profile.removeItem(list_name_selected, position);
-            notifyItemRemoved(position);
-            saveProfilData(profile, profile.getLogin());
+//            data.remove(position);
+//            profile.removeItem(list_name_selected, position);
+//            notifyItemRemoved(position);
+//            saveProfilData(profile, profile.getLogin());
         }
 
         // Function declared in the interface "ItemTouchHelperAdapter"
         // Triggered when item dragged to other position
         @Override
         public void onItemMove(int fromPosition, int toPosition) {
-            DataEntity tmp = data.get(fromPosition);
-            data.remove(fromPosition);
-            data.add(toPosition > fromPosition ? toPosition - 1 : toPosition, tmp);
-            profile.swapItem(fromPosition, toPosition, list_name_selected);
-            saveProfilData(profile, profile.getLogin());
-            notifyItemMoved(fromPosition,toPosition);
+//            DataEntity tmp = data.get(fromPosition);
+//            data.remove(fromPosition);
+//            data.add(toPosition > fromPosition ? toPosition - 1 : toPosition, tmp);
+//            profile.swapItem(fromPosition, toPosition, list_name_selected);
+//            saveProfilData(profile, profile.getLogin());
+//            notifyItemMoved(fromPosition,toPosition);
         }
 
         class ItemViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener {
@@ -175,51 +216,9 @@ public class ItemActivity extends AppCompatActivity {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                profile.getListByName(list_name_selected).setItemStatus(data.get(getAdapterPosition()).getItemName(), isChecked);
-                saveProfilData(profile, profile.getLogin());
+//                profile.getListByName(list_name_selected).setItemStatus(data.get(getAdapterPosition()).getItemName(), isChecked);
+//                saveProfilData(profile, profile.getLogin());
             }
         }
-    }
-
-    public void saveProfilData(Profile profile, String pseudo) {
-        final GsonBuilder builder = new GsonBuilder();
-        final Gson gson = builder.create();
-        String fileContents = gson.toJson(profile);
-        FileOutputStream fileOutputStream;
-
-        try {
-            fileOutputStream = openFileOutput(pseudo, Context.MODE_PRIVATE);
-            fileOutputStream.write(fileContents.getBytes());
-            fileOutputStream.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Profile readProfilData(String filename) {
-        StringBuilder jsonRead = new StringBuilder();
-        Profile profile;
-        final GsonBuilder builder = new GsonBuilder();
-        final Gson gson = builder.create();
-        try {
-            FileInputStream inputStream;
-            inputStream = openFileInput(filename);
-            int content;
-            while ((content = inputStream.read()) != -1) {
-                jsonRead.append((char) content);
-            }
-            inputStream.close();
-
-            profile = gson.fromJson(jsonRead.toString(), Profile.class); // cast Profile
-
-            return profile;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new Profile();
     }
 }

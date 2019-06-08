@@ -1,20 +1,18 @@
 package com.todolist.MyRetrofit;
 
-import java.util.List;
-
-public class Lists {
+public class NewListInfo {
 
     /**
      * version : 1
      * success : true
-     * status : 200
-     * lists : [{"id":"35","label":"test2"},{"id":"36","label":"test1"}]
+     * status : 201
+     * list : {"id":"37","label":"test3"}
      */
 
     private int version;
     private boolean success;
     private int status;
-    private List<ListsBean> lists;
+    private ListBean list;
 
     public int getVersion() {
         return version;
@@ -24,14 +22,34 @@ public class Lists {
         this.version = version;
     }
 
-    public List<ListsBean> getLists() {
-        return lists;
+    public boolean isSuccess() {
+        return success;
     }
 
-    public static class ListsBean {
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public ListBean getList() {
+        return list;
+    }
+
+    public void setList(ListBean list) {
+        this.list = list;
+    }
+
+    public static class ListBean {
         /**
-         * id : 35
-         * label : test2
+         * id : 37
+         * label : test3
          */
 
         private String id;

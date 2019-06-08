@@ -1,6 +1,8 @@
 package com.todolist;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +18,12 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.todolist.MyRetrofit.Label;
+import com.todolist.DataClass.User;
 import com.todolist.MyRetrofit.Lists;
+import com.todolist.MyRetrofit.NewListInfo;
 import com.todolist.MyRetrofit.TodoListService;
 import com.todolist.MyRetrofit.TodoListServiceFactory;
+import com.todolist.MyRetrofit.Users;
 import com.todolist.MyTouchHelper.ItemTouchHelperAdapter;
 import com.todolist.MyTouchHelper.ItemTouchHelperCallback;
 
@@ -36,7 +40,10 @@ public class ListActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ListAdapter listAdapter;
     String hash;
-    int userId;
+    String url;
+    String pseudo;
+    String userId;
+    TodoListService todoListService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,31 +54,36 @@ public class ListActivity extends AppCompatActivity {
         btn_list = findViewById(R.id.btn_list);
 
         hash = getIntent().getStringExtra("hash");
+        url = getIntent().getStringExtra("url");
+        pseudo = getIntent().getStringExtra("pseudo");
+
+        todoListService = TodoListServiceFactory.createService(
+                url, TodoListService.class);
+
+        recyclerView = findViewById(R.id.list_activity);
+        listAdapter = new ListAdapter(new ArrayList<String>());
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(listAdapter);
+
+        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(listAdapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(recyclerView);
 
         recyclerViewConfig(hash);
-
-        userId = getCurrentUserId(getIntent().getStringExtra("pseudo"));
+        getCurrentUserId(hash, pseudo);
     }
 
     private void recyclerViewConfig(String hash) {
-        TodoListService todoListService = TodoListServiceFactory.createService(
-                        getIntent().getStringExtra("url"),
-                        TodoListService.class);
-
         Call call = todoListService.getLists(hash);
 
         call.enqueue(new Callback<Lists>() {
             @Override
             public void onResponse(Call<Lists> call, Response<Lists> response) {
-                recyclerView = findViewById(R.id.list_activity);
-                listAdapter = new ListAdapter(getLabels(response.body()));
-
-                recyclerView.setLayoutManager(new LinearLayoutManager(ListActivity.this, RecyclerView.VERTICAL, false));
-                recyclerView.setAdapter(listAdapter);
-
-                ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(listAdapter);
-                ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
-                touchHelper.attachToRecyclerView(recyclerView);
+                if (response.isSuccessful()) {
+                    for (Lists.ListsBean l : response.body().getLists()) {
+                        listAdapter.addData(l.getLabel());
+                    }
+                }
             }
 
             @Override
@@ -81,33 +93,46 @@ public class ListActivity extends AppCompatActivity {
         });
     }
 
-    private List<String> getLabels(Lists lists) {
-        List<String> labels = new ArrayList<>();
+    private void getCurrentUserId(String hash, final String pseudo) {
+        Call call = todoListService.getUsers(hash);
 
-        for (Label l : lists.labels) {
-            labels.add(l.label);
-        }
-        return labels;
-    }
+        call.enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> call, Response<Users> response) {
+                if (response.isSuccessful()) {
+                    userId = response.body().getUserId(pseudo);
+                }
+            }
 
-    private int getCurrentUserId(String pseudo) {
-        int id = 0;
+            @Override
+            public void onFailure(Call call, Throwable t) {
 
-        //TODO get user ID by searching pseudo
-
-        return id;
+            }
+        });
     }
 
     // Function bind to the "OK" button as onClick event for a new list
     public void newList(View v) {
-        String list_name = edt_list.getText().toString();
+        final String list_name = edt_list.getText().toString();
         if (list_name.isEmpty()){
             Toast.makeText(this, "Please enter list name", Toast.LENGTH_SHORT).show();
         } else {
-//            profile.addList(new TodoList(list_name));
-//            saveProfilData(profile, profile.getLogin());
-//            listAdapter.addData(list_name);
-//            edt_list.setText("");
+            Call call = todoListService.addList(hash, userId, list_name);
+
+            call.enqueue(new Callback<NewListInfo>() {
+                @Override
+                public void onResponse(Call<NewListInfo> call, Response<NewListInfo> response) {
+                    if (response.isSuccessful()) {
+                        listAdapter.addData(list_name);
+                        edt_list.setText("");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call call, Throwable t) {
+
+                }
+            });
         }
     }
 
@@ -184,12 +209,32 @@ public class ListActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-//                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-//                    Intent i = new Intent(ListActivity.this, ItemActivity.class);
-//                    i.putExtra("profile", profile.getLogin());
-//                    i.putExtra("list", labels.get(getAdapterPosition()));
-//                    startActivity(i);
-//                }
+                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                    Call call = todoListService.getLists(hash);
+                    final String list_selected = lists.get(getAdapterPosition());
+
+                    call.enqueue(new Callback<Lists>() {
+                        @Override
+                        public void onResponse(Call<Lists> call, Response<Lists> response) {
+                            if (response.isSuccessful()) {
+                                for (Lists.ListsBean l : response.body().getLists()) {
+                                    if (l.getLabel().equals(list_selected)) {
+                                        Intent i = new Intent(ListActivity.this, ItemActivity.class);
+                                        i.putExtra("hash", hash);
+                                        i.putExtra("url", url);
+                                        i.putExtra("listId", l.getId());
+                                        startActivity(i);
+                                    }
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call call, Throwable t) {
+
+                        }
+                    });
+                }
             }
         }
     }
