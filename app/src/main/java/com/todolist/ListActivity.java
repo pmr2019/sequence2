@@ -22,8 +22,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.todolist.DataClass.Profile;
 import com.todolist.DataClass.TodoList;
-import com.todolist.TouchHelper.ItemTouchHelperAdapter;
-import com.todolist.TouchHelper.ItemTouchHelperCallback;
+import com.todolist.MyTouchHelper.ItemTouchHelperAdapter;
+import com.todolist.MyTouchHelper.ItemTouchHelperCallback;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

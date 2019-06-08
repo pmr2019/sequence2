@@ -1,4 +1,4 @@
-package com.todolist.TouchHelper;
+package com.todolist.MyTouchHelper;
 
 public interface ItemTouchHelperAdapter {
     void onItemDissmiss(int postion);

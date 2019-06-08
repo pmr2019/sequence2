@@ -6,29 +6,38 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.todolist.DataClass.Profile;
-import com.todolist.DataClass.TodoList;
+import com.todolist.DataClass.Setting;
+import com.todolist.DataClass.User;
+import com.todolist.MyRetrofit.AuthenticateFactory;
+import com.todolist.MyRetrofit.Hash;
+import com.todolist.MyRetrofit.TodoListService;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
     EditText edt_pseudo;
-    Button btn_pseudo;
-    List<String> profiles;
+    EditText edt_password;
+    Setting setting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +45,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         edt_pseudo = findViewById(R.id.edt_pseudo);
-        btn_pseudo = findViewById(R.id.btn_pseudo);
+        edt_password = findViewById(R.id.edt_password);
 
-        profiles = readPreference();
-        if (profiles.size() > 0) {
-            edt_pseudo.setText(profiles.get(profiles.size() - 1));
+        setting = readPreference();
+        if (setting.getLastUser() != null) {
+            edt_pseudo.setText(setting.getLastUser().getPseudo());
+            edt_password.setText(setting.getLastUser().getPassword());
         }
     }
 
@@ -69,22 +79,58 @@ public class MainActivity extends AppCompatActivity {
 
     // Open an existing list activity or create a new one
     // regarding if the pseudo exist or not in the preference
-    public void openListActivity(View v) {
-        String pseudo = edt_pseudo.getText().toString();
+    public void login(View v) {
+        final String pseudo = edt_pseudo.getText().toString();
+        final String password = edt_password.getText().toString();
 
         if (pseudo.isEmpty()){
             Toast.makeText(this, "Please enter your pseudo", Toast.LENGTH_SHORT).show();
-        } else {
-            Intent i = new Intent(MainActivity.this, ListActivity.class);
-            if (!profiles.contains(pseudo)) {
-                Profile p = new Profile(pseudo, new ArrayList<TodoList>());
-                profiles.add(pseudo);
-                saveProfilData(p, pseudo);
-                savePreference(profiles);
-            }
-            i.putExtra("profile", pseudo);
-            startActivity(i);
+            return;
         }
+
+        if (password.isEmpty()) {
+            Toast.makeText(this, "Please enter your password", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Intent i = new Intent(MainActivity.this, ListActivity.class);
+
+        if (setting.hasUser(pseudo)) {
+            User user = setting.getUser(pseudo);
+            if (user.verify(password)) {
+                i.putExtra("user_id", user.getUserId());
+                i.putExtra("hashcode", user.getHash());
+                startActivity(i);
+            } else {
+                Toast.makeText(this, "Incorrect username or password", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } else {
+            TodoListService todoListService = AuthenticateFactory.createService(setting.getUrl(), TodoListService.class);
+
+            Call call = todoListService.authenticate(pseudo, password);
+
+            call.enqueue(new Callback<Hash>() {
+                @Override
+                public void onResponse(Call<Hash> call, Response<Hash> response) {
+                    if (response.isSuccessful()) {
+                        Log.d("Retrofit", response.body().hash);
+                    } else {
+                        Toast.makeText(MainActivity.this, "Incorrect username or password", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call call, Throwable t) {
+                    Toast.makeText(MainActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+    }
+
+    public void signin(View v) {
+
     }
 
     // Function to save data as json file
@@ -132,28 +178,27 @@ public class MainActivity extends AppCompatActivity {
         return new Profile();
     }
 
-    // Save logins and number as preference
-    public void savePreference(List<String> profiles) {
-        SharedPreferences preferences = getSharedPreferences("profile", MODE_PRIVATE);
+    // Save setting into sharedpreferences
+    public void savePreference(Setting setting) {
+        SharedPreferences preferences = getSharedPreferences("setting", MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
 
-        editor.putInt("profile_number", profiles.size());
-        for (int i = 0; i < profiles.size(); i++) {
-            editor.putString("" + i, profiles.get(i));
-        }
+        final GsonBuilder builder = new GsonBuilder();
+        final Gson gson = builder.create();
+        String setting_serialized = gson.toJson(setting);
+        editor.putString("setting", setting_serialized);
 
         editor.apply();
         editor.commit();
     }
 
-    // Return an array list of profiles' logins;
-    public List<String> readPreference() {
-        SharedPreferences preferences = getSharedPreferences("profile", MODE_PRIVATE);
-        List<String> profiles = new ArrayList<>();
-        int profile_number = preferences.getInt("profile_number", 0);
-        for (int i = 0; i < profile_number; i++) {
-            profiles.add(preferences.getString("" + i, ""));
-        }
-        return profiles;
+    // Return setting class
+    public Setting readPreference() {
+        SharedPreferences preferences = getSharedPreferences("setting", MODE_PRIVATE);
+
+        final GsonBuilder builder = new GsonBuilder();
+        final Gson gson = builder.create();
+        String setting_serialized = preferences.getString("setting", gson.toJson(new Setting()));
+        return gson.fromJson(setting_serialized, Setting.class);
     }
 }
