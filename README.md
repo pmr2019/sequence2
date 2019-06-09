@@ -1,2 +1,3 @@
-# sequence1
-Étudiants : Shiyu FAN, Qing TANG
+# sequence2
+Sequence2
+Etudiants : Shiyu FAN et Qing TANG
