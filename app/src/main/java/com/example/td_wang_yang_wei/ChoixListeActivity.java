@@ -1,48 +1,48 @@
 package com.example.td_wang_yang_wei;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
-import androidx.recyclerview.widget.RecyclerView;
-
-
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class ChoixListeActivity extends AppCompatActivity {
-    //pour recevoir le class ProfileListeToDo et enregistrer les nouveaux donnnes
-    private ProfilListeToDo profile;
 
     //recevoir le EditText Button et RecyclerView
     private EditText edtListe;
     private Button btnListe;
 
     private RecyclerView recyclerView;
+   // private ListeAdapter listAdapter;
+    private ListeAdapter listeAdapter;
+
 
     //Transpoteur de liste de nom de liste
-    private List<String> ListeData;
+
+
+    private String hash;
+    private String url;
+    private String pseudo;
+    private String userId;
+    private requestService requestService;
 
 
     @Override
@@ -53,17 +53,26 @@ public class ChoixListeActivity extends AppCompatActivity {
         edtListe = findViewById(R.id.edtliste);
         btnListe = findViewById(R.id.btnListe);
 
-        //obtenir le Profile selon le nom qui est transmet de MainActicity
-        profile=readProfilData(getIntent().getStringExtra("profile"));
+        hash = getIntent().getStringExtra("hash");
+        url = getIntent().getStringExtra("url");
+        pseudo = getIntent().getStringExtra("pseudo");
+
+
+
+        requestService = requestServiceFactory.createService(url, requestService.class);
+
+        listeAdapter=new ListeAdapter((new ArrayList<String>()));
+        recyclerView = findViewById(R.id.recyclerView);
+        //afficher la liste de noms dans le RecyclerView
+        recyclerView.setAdapter(listeAdapter);
+
 
         //obtenir la liste de noms des listes dans le profile
-        ListeData=getListedeNom(profile);
+        getListedeLabel(hash);
+        getUserIdconneted(hash,pseudo);
 
-        //afficher la liste de noms dans le RecyclerView
-        recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new ListeAdapter(ListeData));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
     }
 
@@ -75,66 +84,75 @@ public class ChoixListeActivity extends AppCompatActivity {
 
     //la function pour creer une nouvelle liste quand on cliquer le button "creer votre liste"
     public void addnewlist(View v) {
-        String liste = edtListe.getText().toString();
+        final String liste = edtListe.getText().toString();
         if (liste.equals("")) {
             alerter("tapez la nouvelle liste");
         } else {
-            if(eviterMemeNom(liste)){
+            if(listeAdapter.verfierNom(liste)){
                 alerter("Déjà existe");
             }else {
-            ListeToDo nouveauList = new ListeToDo(liste);
-            profile.ajouteListe(nouveauList);
-            saveProfileData(profile, profile.getLogin());
-            ListeData=getListedeNom(profile);
-            recyclerView.setAdapter(new ListeAdapter(ListeData));
-            edtListe.setText("");
+
+                Call<NouveauListe> call = requestService.addList(hash, userId, liste);
+
+                call.enqueue(new Callback<NouveauListe>() {
+                    @Override
+                    public void onResponse(Call<NouveauListe> call, Response<NouveauListe> response) {
+                        if (response.isSuccessful()) {
+                            listeAdapter.add(liste);
+                            edtListe.setText("");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Throwable t) {
+
+                    }
+                });
         }}
 
     }
 
-    public boolean eviterMemeNom(String nomliste){
+    public void getListedeLabel(String hash){
 
-        for(String i:ListeData){
-            if(i.equals(nomliste))
-                return true;
-        }
-        return false;
+        Call<Lists> call = requestService.getLists(hash);
+        call.enqueue(new Callback<Lists>() {
+            @Override
+            public void onResponse(Call<Lists> call, Response<Lists> response) {
+                if (response.isSuccessful()) {
+                    if(!response.body().getLists().isEmpty()){
+                        for (int i=0;i<response.body().getLists().size();i++) {
+                            listeAdapter.add(response.body().getLists().get(i).getLabel());
+                        }
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, Throwable t) {
+                alerter("pas de connexion");
+            }
+        });
+
+    }
+    private void getUserIdconneted(String hash, final String pseudo) {
+        Call<Users> call = requestService.getUsers(hash);
+
+        call.enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> call, Response<Users> response) {
+                if (response.isSuccessful()) {
+                    userId = response.body().getUserId(pseudo);
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, Throwable t) {
+                alerter("pas de connexion");
+            }
+        });
     }
 
-    public List<String> getListedeNom(ProfilListeToDo profile){
-
-        List<String> data = new ArrayList<>();
-        ListeToDo tmp;
-        for (ListeToDo list : profile.getMesListeToDo()){
-            tmp = list;
-            data.add(tmp.getTitreListeToDo());
-        }
-        return data;
-    }
-    //enregistrer le changement de liste
-    public void saveProfileData(ProfilListeToDo profile, String pseudo) {
-        Gson gson=new Gson();
-        String fileContents = gson.toJson(profile);
-        SharedPreferences preferences = getSharedPreferences(pseudo, MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("content",fileContents);
-        editor.commit();
-    }
-
-    //obtenir le profile selon le nom de profile
-    public ProfilListeToDo readProfilData(String pseudo) {
-
-        ProfilListeToDo profile;
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        //Gson gson=new Gson();
-        SharedPreferences profileData = getSharedPreferences(pseudo, MODE_PRIVATE);
-        String content=profileData.getString("content","");
-
-        profile = gson.fromJson(content, ProfilListeToDo.class); // cast Profile
-
-        return profile;
-    }
 
     //construire le Adapter de RecyclerView
     class ListeAdapter extends RecyclerView.Adapter<ListeAdapter.MyViewHolder>{
@@ -145,6 +163,15 @@ public class ChoixListeActivity extends AppCompatActivity {
             this.lists = lists;
         }
 
+        private void add(String list){
+            lists.add(list);
+            notifyDataSetChanged();
+        }
+        private Boolean verfierNom(String s){
+            if(this.lists.contains(s))
+                return true;
+            return false;
+        }
         @NonNull
         @Override
         public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -186,11 +213,34 @@ public class ChoixListeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                    Intent i = new Intent(ChoixListeActivity.this, ShowListeActivity.class);
-                    i.putExtra("profile", profile.getLogin());
-                    i.putExtra("liste", lists.get(getAdapterPosition()));
-                    startActivity(i);
+                    Call<Lists> call = requestService.getLists(hash);
+                    final String listeCliquee = lists.get(getAdapterPosition());
+                    call.enqueue(new Callback<Lists>() {
+                        @Override
+                        public void onResponse(Call<Lists> call, Response<Lists> response) {
+                            if (response.isSuccessful()) {
+                                if(!response.body().getLists().isEmpty())
+                                for (int i=0;i<response.body().getLists().size();i++) {
+                                    if (response.body().getLists().get(i).getLabel().equals(listeCliquee)) {
+                                        convertToItems(hash,url,response.body().getLists().get(i).getId());
+                                    }
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call call, Throwable t) {
+                            alerter("pas de connexion");
+                        }
+                    });
                 }
+            }
+            public void convertToItems(String hash,String url,String id){
+                Intent i = new Intent(ChoixListeActivity.this, ShowListeActivity.class);
+                i.putExtra("hash", hash);
+                i.putExtra("url", url);
+                i.putExtra("listId", id);
+                startActivity(i);
             }
         }
     }

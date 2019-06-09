@@ -1,5 +1,15 @@
 package com.example.td_wang_yang_wei;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,50 +17,54 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    //Transpoteur de liste de nom de profile
-    List<String> profiles;
-
+    private SettingAdapter settingAdapter;
+    private ListeDeUtilisateur listeDeUtilisateur;
     //recevoir le recyclerView
-    RecyclerView recyclerView;
+    private RecyclerView recyclerView;
+    private EditText edtUrl;
+    private List<String> listeDeNom;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        //obtenir la liste de noms de profiles
-        profiles = readPreference();
-
+        listeDeUtilisateur=getProfiles();
+        listeDeNom=ListeDeNom(listeDeUtilisateur.getUtilisateurs());
+        settingAdapter=new SettingAdapter(listeDeNom);
         //afficher la liste de noms dans le RecyclerView
         recyclerView = findViewById(R.id.setting_activity);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new SettingAdapter(profiles));
+        recyclerView.setAdapter(settingAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
+        edtUrl=findViewById(R.id.edtUrl);
+        edtUrl.setText(listeDeUtilisateur.getUrl());
     }
 
-    //function d'obtenir la liste de noms de profiles
-    public List<String> readPreference() {
-        SharedPreferences preferences = getSharedPreferences("profile", MODE_PRIVATE);
-        List<String> profiles = new ArrayList<>();
-        int profile_number = preferences.getInt("nbProfile", 0);
-        for (int i = 0; i < profile_number; i++) {
-            profiles.add(preferences.getString("" + i, ""));
-        }
-        return profiles;
+    public List<String> ListeDeNom(List<Utilisateur> u){
+        List<String>data=new ArrayList<>();
+        if(!u.isEmpty()){
+            for(int i=0;i<u.size();i++){
+                data.add(u.get(i).getPseudo());
+            }return data;
+        }return null;
+    }
+
+    public ListeDeUtilisateur getProfiles() {
+        SharedPreferences preferences = getSharedPreferences("utilisateurs", MODE_PRIVATE);
+        GsonBuilder builder=new GsonBuilder();
+        Gson gson = builder.create();
+        String stringListUtilisateur = preferences.getString("utilisateurs", gson.toJson(new ListeDeUtilisateur()));
+        ListeDeUtilisateur LU=gson.fromJson(stringListUtilisateur,ListeDeUtilisateur.class);
+        return LU;
     }
 
     //construire le Adapter de RecyclerView
@@ -100,7 +114,7 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                     Intent i = new Intent(SettingsActivity.this, MainActivity.class);
-                    i.putExtra("profile", profiles.get(getAdapterPosition()));
+                    i.putExtra("pseudo", profiles.get(getAdapterPosition()));
                     startActivity(i);
                 }
             }
