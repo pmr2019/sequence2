@@ -34,20 +34,29 @@ import PMR.ToDoList.R;
 
 public class MainActivity extends AppCompatActivity implements NetworkStateReceiver.NetworkStateReceiverListener {
 
-    private static final String TAG = "Romain";
-    private EditText edtPseudo;
-    private Button btnConnexion;
-    private TextView txtPseudo;
-    private EditText edtMdp;
-    private TextView txtMdp;
-    public static final String EXTRA_LOGIN = "LOGIN";
+    //GESTION DE LA TOOLBAR
     private androidx.appcompat.widget.Toolbar toolbar;
 
+    //GESTION DES INFORMATIONS DE CONNEXION
+    private EditText edtPseudo;
+    private TextView txtPseudo;
+
+    private EditText edtMdp;
+    private TextView txtMdp;
+
+    private Button btnConnexion;
+
+    //LISTE DES UTILISATEURS ENREGISTRÉS DANS LA BASE DE DONNÉES
     public static ArrayList<User> myUsersList;
 
+    //GESTION DE LA CONNEXION A INTERNET
     private NetworkStateReceiver networkStateReceiver;
     private TextView etatConnexion;
 
+    //GESTION DES INFORMATIONS A ENREGISTRER
+    public static final String EXTRA_LOGIN = "LOGIN";
+
+    // METHODE POUR LES TOASTS
     public void alerter(String s) {
         Toast myToast = Toast.makeText(this, s, Toast.LENGTH_SHORT);
         myToast.show();
@@ -58,65 +67,61 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //AJOUT DES INFORMATIONS DE LA TOOLBAR
+        toolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // GESTION DE LA CONNEXION
         networkStateReceiver = new NetworkStateReceiver();
         networkStateReceiver.addListener(this);
         this.registerReceiver(networkStateReceiver, new IntentFilter(android.net.ConnectivityManager.CONNECTIVITY_ACTION));
         etatConnexion= (TextView) findViewById(R.id.etatConnexion);
 
-        //sauvegarderUserToJsonFile(myUsersList);
-
+        //BIND DES VIEWS POUR LA CONNEXION
         edtPseudo = (EditText) findViewById(R.id.edtPseudo);
         btnConnexion = (Button) findViewById(R.id.btnPseudo);
         txtPseudo = (TextView) findViewById(R.id.txtPseudo);
         edtMdp = (EditText) findViewById(R.id.edtMdp);
         txtMdp = (TextView) findViewById(R.id.txtMdp);
 
-        toolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
+        // INITIALISATION DE LA LISTE DES UTILISATEURS ENREGISTRÉS
         myUsersList = getUsersFromFile();
 
+        //LISTENER SUR LE BOUTON DE CONNEXION
         btnConnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ToDoListActivity.class);
                 User myUser = null;
                 String login = edtPseudo.getText().toString();
-                Boolean autorisation = true;
-                if ((edtPseudo.getText().toString().matches(""))|
-                    (edtMdp.getText().toString().matches("")))
-                {
+
+                // Pour pouvoir appuyer sur OK, on doit avoir les deux champs mot de passe et
+                //login remplis
+                if ((edtPseudo.getText().toString().matches("")) |
+                        (edtMdp.getText().toString().matches(""))) {
                     alerter("Entrez un pseudo et un mot de passe");
-                    autorisation = false;
 
                 }
 
-                else if (myUsersList!=null) {
+                else{
+
+                    //On vérifie si le login entré est dans la liste du fichier enregistré
                     for (User u : myUsersList) {
                         if (u.getLogin().equals(login)) {
                             myUser = u;
-                            //alerter("Ce pseudo existe déjà");
                         }
                     }
-                }
 
-                else if (myUsersList==null){
-                    myUsersList = new ArrayList<>();
-                    myUser = new User(login);
-                    myUsersList.add(myUser);
-                }
+                    //S'il n'y est pas, on créé un nouvel utilisateur avec le login rentré
+                    // et on sauvegarde le fichier Json avec le nouvel utilisateur
+                    if (myUser==null){
+                        myUser = new User(login);
+                        myUsersList.add(myUser);
+                        sauvegarderUserToJsonFile(myUsersList);
+                    }
 
-                //alerter(String.valueOf(myUsersList.size()));
-
-                if (myUser==null){
-                    myUser = new User(login);
-                    myUsersList.add(myUser);
-                }
-
-
-                if (autorisation) {
+                    //Ensuite, on envoie le login du string avec la clé "EXTRA_LOGIN"
                     intent.putExtra(EXTRA_LOGIN, myUser.getLogin());
-                    sauvegarderUserToJsonFile(myUsersList);
                     startActivity(intent);
                 }
             }
@@ -124,12 +129,14 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
 
     }
 
+    // On retire le listener de connexion lorsqu'on quitte l'application
     public void onDestroy() {
         super.onDestroy();
         networkStateReceiver.removeListener(this);
         this.unregisterReceiver(networkStateReceiver);
     }
 
+    //Ajout du menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -137,11 +144,13 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         return true;
     }
 
+    //Ajout de la gestion du click sur les items du menu
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         switch (id) {
+            // MENU SETTINGS AVEC LA LISTE DES UTILISATEURS
             case R.id.menu_settings:
 
                 if (myUsersList!=null){
@@ -150,6 +159,8 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
                     break;
                 }
                 else alerter("Veuillez d'abord créer un pseudo");
+
+            // MENU SETTINGS URL AVEC L'URL UTILISEE PAR L'API
             case R.id.menu_settings_url:
 
                 Intent toSettingsURL = new Intent(MainActivity.this,SettingsURL.class);
@@ -194,24 +205,26 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //partie suggestions editText
-/*        if (usersList != null) {
-            Log.i(TAG, "getUsersFromFile: ");
-            for (User p : usersList) {
-                p.onDeserialization();
-                autoCompleteAdapter.add(p.getUsername());
-            }
-        }*/
 
-        return usersList;
+        // SI ON A PAS REUSSI A RECUPERER DES ELEMENTS DANS LE FICHIER JSON, ON RETOURNE
+        // UNE ARRAYLIST VIDE
+        if (usersList==null) return new ArrayList<>();
+        // SINON ON RETOURNE LA LISTE DES UTILISATEURS RECUPEREE
+        else return usersList;
     }
 
+
+
+    // PARTIE VERIFICATION DE LA CONNEXION
+
+    //Si la connexion est ok: bouton connexion disponible et texte informatif
     @Override
     public void networkAvailable() {
         btnConnexion.setEnabled(true);
         etatConnexion.setText("Connexion OK");
     }
 
+    //Si la connexion pas ok: bouton connexion pas disponible et texte informatif
     @Override
     public void networkUnavailable() {
         btnConnexion.setEnabled(false);
