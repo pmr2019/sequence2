@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -22,34 +23,32 @@ import com.google.gson.reflect.TypeToken;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import PMR.ToDoList.Model.ToDoList;
 import PMR.ToDoList.Model.User;
 import PMR.ToDoList.R;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NetworkStateReceiver.NetworkStateReceiverListener {
 
     private static final String TAG = "Romain";
     private EditText edtPseudo;
-    private Button btnPseudo;
+    private Button btnConnexion;
     private TextView txtPseudo;
+    private EditText edtMdp;
+    private TextView txtMdp;
     public static final String EXTRA_LOGIN = "LOGIN";
     private androidx.appcompat.widget.Toolbar toolbar;
 
     public static ArrayList<User> myUsersList;
 
-    private void alerter(String s) {
+    private NetworkStateReceiver networkStateReceiver;
+    private TextView etatConnexion;
+
+    public void alerter(String s) {
         Toast myToast = Toast.makeText(this, s, Toast.LENGTH_SHORT);
         myToast.show();
     }
@@ -59,28 +58,39 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        networkStateReceiver = new NetworkStateReceiver();
+        networkStateReceiver.addListener(this);
+        this.registerReceiver(networkStateReceiver, new IntentFilter(android.net.ConnectivityManager.CONNECTIVITY_ACTION));
+        etatConnexion= (TextView) findViewById(R.id.etatConnexion);
+
         //sauvegarderUserToJsonFile(myUsersList);
 
         edtPseudo = (EditText) findViewById(R.id.edtPseudo);
-        btnPseudo = (Button) findViewById(R.id.btnPseudo);
+        btnConnexion = (Button) findViewById(R.id.btnPseudo);
         txtPseudo = (TextView) findViewById(R.id.txtPseudo);
+        edtMdp = (EditText) findViewById(R.id.edtMdp);
+        txtMdp = (TextView) findViewById(R.id.txtMdp);
+
         toolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         myUsersList = getUsersFromFile();
 
-        btnPseudo.setOnClickListener(new View.OnClickListener() {
+        btnConnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ToDoListActivity.class);
                 User myUser = null;
                 String login = edtPseudo.getText().toString();
                 Boolean autorisation = true;
-                if (edtPseudo.getText().toString().matches("")) {
-                    alerter("Entrez votre pseudo");
+                if ((edtPseudo.getText().toString().matches(""))|
+                    (edtMdp.getText().toString().matches("")))
+                {
+                    alerter("Entrez un pseudo et un mot de passe");
                     autorisation = false;
 
                 }
+
                 else if (myUsersList!=null) {
                     for (User u : myUsersList) {
                         if (u.getLogin().equals(login)) {
@@ -114,6 +124,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void onDestroy() {
+        super.onDestroy();
+        networkStateReceiver.removeListener(this);
+        this.unregisterReceiver(networkStateReceiver);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -134,7 +150,12 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 }
                 else alerter("Veuillez d'abord créer un pseudo");
-        }
+            case R.id.menu_settings_url:
+
+                Intent toSettingsURL = new Intent(MainActivity.this,SettingsURL.class);
+                startActivity(toSettingsURL);
+                    break;
+                }
         return super.onOptionsItemSelected(item);
     }
 
@@ -185,6 +206,17 @@ public class MainActivity extends AppCompatActivity {
         return usersList;
     }
 
+    @Override
+    public void networkAvailable() {
+        btnConnexion.setEnabled(true);
+        etatConnexion.setText("Connexion OK");
+    }
+
+    @Override
+    public void networkUnavailable() {
+        btnConnexion.setEnabled(false);
+        etatConnexion.setText("Veuillez vous connecter à internet");
+    }
 }
 
 

@@ -3,6 +3,10 @@
 
     <item
         android:id="@+id/menu_settings"
-        android:title="Settings"/>
+        android:title="Liste Utilisateurs"/>
+
+    <item
+        android:id="@+id/menu_settings_url"
+        android:title="URL API"/>
 
 </menu>
