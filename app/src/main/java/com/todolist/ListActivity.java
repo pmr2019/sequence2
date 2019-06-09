@@ -60,7 +60,7 @@ public class ListActivity extends AppCompatActivity {
                 url, TodoListService.class);
 
         recyclerView = findViewById(R.id.list_activity);
-        listAdapter = new ListAdapter(new ArrayList<String>());
+        listAdapter = new ListAdapter(new ArrayList<DataEntity>());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(listAdapter);
 
@@ -72,6 +72,24 @@ public class ListActivity extends AppCompatActivity {
         getCurrentUserId(hash, pseudo);
     }
 
+    class DataEntity {
+        private String listName;
+        private String id;
+
+        DataEntity(String listName, String id) {
+            this.listName = listName;
+            this.id = id;
+        }
+
+        String getListName() {
+            return listName;
+        }
+
+        String getListId() {
+            return id;
+        }
+    }
+
     private void recyclerViewConfig(String hash) {
         Call<Lists> call = todoListService.getLists(hash);
 
@@ -80,7 +98,7 @@ public class ListActivity extends AppCompatActivity {
             public void onResponse(Call<Lists> call, Response<Lists> response) {
                 if (response.isSuccessful()) {
                     for (Lists.ListsBean l : response.body().getLists()) {
-                        listAdapter.addData(l.getLabel());
+                        listAdapter.addData(new DataEntity(l.getLabel(), l.getId()));
                     }
                 }
             }
@@ -122,7 +140,7 @@ public class ListActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<NewListInfo> call, Response<NewListInfo> response) {
                     if (response.isSuccessful()) {
-                        listAdapter.addData(list_name);
+                        listAdapter.addData(new DataEntity(list_name, response.body().getList().getId()));
                         edt_list.setText("");
                     }
                 }
@@ -136,12 +154,12 @@ public class ListActivity extends AppCompatActivity {
     }
 
     class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> implements ItemTouchHelperAdapter {
-        private final List<String> lists;
-        ListAdapter(List<String> lists) {
+        private final List<DataEntity> lists;
+        ListAdapter(List<DataEntity> lists) {
             this.lists = lists;
         }
 
-        void addData(String list) {
+        void addData(DataEntity list) {
             lists.add(list);
             notifyItemInserted(lists.size());
         }
@@ -156,7 +174,7 @@ public class ListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
-            String data = lists.get(position);
+            String data = lists.get(position).getListName();
 
             holder.bind(data);
         }
@@ -170,31 +188,13 @@ public class ListActivity extends AppCompatActivity {
         // Triggered when item swiped to left
         @Override
         public void onItemDissmiss(int position) {
-            Call<Lists> call1 = todoListService.getLists(hash);
-            final String list_selected = lists.get(position);
+            String list_selected = lists.get(position).getListId();
+            Call<ResponseBody> call = todoListService.deleteList(hash, userId, list_selected);
 
-            call1.enqueue(new Callback<Lists>() {
+            call.enqueue(new Callback<ResponseBody>() {
                 @Override
-                public void onResponse(Call<Lists> call, Response<Lists> response) {
-                    if (response.isSuccessful()) {
-                        for (Lists.ListsBean l : response.body().getLists()) {
-                            if (l.getLabel().equals(list_selected)) {
-                                Call<ResponseBody> call2 = todoListService.deleteList(hash, userId, l.getId());
+                public void onResponse(Call call, Response response) {
 
-                                call2.enqueue(new Callback() {
-                                    @Override
-                                    public void onResponse(Call call, Response response) {
-
-                                    }
-
-                                    @Override
-                                    public void onFailure(Call call, Throwable t) {
-
-                                    }
-                                });
-                            }
-                        }
-                    }
                 }
 
                 @Override
@@ -211,7 +211,7 @@ public class ListActivity extends AppCompatActivity {
         // Triggered when item dragged to other position
         @Override
         public void onItemMove(int fromPosition, int toPosition) {
-            String tmp = lists.get(fromPosition);
+            DataEntity tmp = lists.get(fromPosition);
             lists.remove(fromPosition);
             lists.add(toPosition > fromPosition ? toPosition - 1 : toPosition, tmp);
             notifyItemMoved(fromPosition,toPosition);
@@ -234,30 +234,12 @@ public class ListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                    Call<Lists> call = todoListService.getLists(hash);
-                    final String list_selected = lists.get(getAdapterPosition());
-
-                    call.enqueue(new Callback<Lists>() {
-                        @Override
-                        public void onResponse(Call<Lists> call, Response<Lists> response) {
-                            if (response.isSuccessful()) {
-                                for (Lists.ListsBean l : response.body().getLists()) {
-                                    if (l.getLabel().equals(list_selected)) {
-                                        Intent i = new Intent(ListActivity.this, ItemActivity.class);
-                                        i.putExtra("hash", hash);
-                                        i.putExtra("url", url);
-                                        i.putExtra("listId", l.getId());
-                                        startActivity(i);
-                                    }
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call call, Throwable t) {
-
-                        }
-                    });
+                    String list_selected = lists.get(getAdapterPosition()).getListId();
+                    Intent i = new Intent(ListActivity.this, ItemActivity.class);
+                    i.putExtra("hash", hash);
+                    i.putExtra("url", url);
+                    i.putExtra("listId", list_selected);
+                    startActivity(i);
                 }
             }
         }

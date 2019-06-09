@@ -69,6 +69,31 @@ public class ItemActivity extends AppCompatActivity {
         recyclerViewConfig(hash, listId);
     }
 
+    // Class contains item name and check status
+    class DataEntity {
+        private String itemName;
+        private String itemId;
+        private Boolean checked;
+
+        DataEntity(String itemName, String itemId, String checked) {
+            this.itemName = itemName;
+            this.itemId = itemId;
+            this.checked = checked.equals("1");
+        }
+
+        String getItemName() {
+            return itemName;
+        }
+
+        String getItemId() {
+            return itemId;
+        }
+
+        Boolean getChecked() {
+            return checked;
+        }
+    }
+
     private void recyclerViewConfig(String hash, String listId) {
         Call<Items> call = todoListService.getItems(hash, listId);
 
@@ -77,7 +102,7 @@ public class ItemActivity extends AppCompatActivity {
             public void onResponse(Call<Items> call, Response<Items> response) {
                 if (response.isSuccessful()) {
                     for (Items.ItemsBean i: response.body().getItems()) {
-                        itemAdapter.addData(new DataEntity(i.getLabel(), i.getChecked()));
+                        itemAdapter.addData(new DataEntity(i.getLabel(),i.getId(), i.getChecked()));
                     }
                 }
             }
@@ -87,25 +112,6 @@ public class ItemActivity extends AppCompatActivity {
 
             }
         });
-    }
-
-    // Class contains item name and check status
-    class DataEntity {
-        private String itemName;
-        private Boolean checked;
-
-        DataEntity(String itemName, String checked) {
-            this.itemName = itemName;
-            this.checked = checked.equals("1");
-        }
-
-        String getItemName() {
-            return itemName;
-        }
-
-        Boolean getChecked() {
-            return checked;
-        }
     }
 
     // Function bind to the "OK" button as onClick event for a new item
@@ -120,7 +126,7 @@ public class ItemActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<NewItemInfo> call, Response<NewItemInfo> response) {
                     if (response.isSuccessful()) {
-                        itemAdapter.addData(new DataEntity(item_name, "0"));
+                        itemAdapter.addData(new DataEntity(item_name, response.body().getItem().getId(), "0"));
                         edt_item.setText("");
                     }
                 }
@@ -169,31 +175,13 @@ public class ItemActivity extends AppCompatActivity {
         // Triggered when item swiped to left
         @Override
         public void onItemDissmiss(int position) {
-            Call<Items> call1 = todoListService.getItems(hash, listId);
-            final String item_selected = data.get(position).getItemName();
+            String item_selected = data.get(position).getItemId();
+            Call<ResponseBody> call = todoListService.deleteItem(hash, listId, item_selected);
 
-            call1.enqueue(new Callback<Items>() {
+            call.enqueue(new Callback<ResponseBody>() {
                 @Override
-                public void onResponse(Call<Items> call, Response<Items> response) {
-                    if (response.isSuccessful()) {
-                        for (Items.ItemsBean i : response.body().getItems()) {
-                            if (i.getLabel().equals(item_selected)) {
-                                Call<ResponseBody> call2 = todoListService.deleteItem(hash, listId, i.getId());
+                public void onResponse(Call call, Response response) {
 
-                                call2.enqueue(new Callback() {
-                                    @Override
-                                    public void onResponse(Call call, Response response) {
-
-                                    }
-
-                                    @Override
-                                    public void onFailure(Call call, Throwable t) {
-
-                                    }
-                                });
-                            }
-                        }
-                    }
                 }
 
                 @Override
@@ -232,39 +220,21 @@ public class ItemActivity extends AppCompatActivity {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Call<Items> call1 = todoListService.getItems(hash, listId);
-                final String item_selected = data.get(getAdapterPosition()).getItemName();
+                String item_selected = data.get(getAdapterPosition()).getItemId();
+                Call call;
 
-                call1.enqueue(new Callback<Items>() {
+                if (isChecked) {
+                    call = todoListService.changeItem(
+                            hash, listId, item_selected, "1");
+                } else {
+                    call = todoListService.changeItem(
+                            hash, listId, item_selected, "0");
+                }
+
+                call.enqueue(new Callback() {
                     @Override
-                    public void onResponse(Call<Items> call, Response<Items> response) {
-                        if (response.isSuccessful()) {
-                            for (Items.ItemsBean i : response.body().getItems()) {
-                                if (i.getLabel().equals(item_selected)) {
-                                    Call call2;
+                    public void onResponse(Call call, Response response) {
 
-                                    if (i.getChecked().equals("0")) {
-                                        call2 = todoListService.changeItem(
-                                                hash, listId, i.getId(), "1");
-                                    } else {
-                                        call2 = todoListService.changeItem(
-                                                hash, listId, i.getId(), "0");
-                                    }
-
-                                    call2.enqueue(new Callback() {
-                                        @Override
-                                        public void onResponse(Call call, Response response) {
-
-                                        }
-
-                                        @Override
-                                        public void onFailure(Call call, Throwable t) {
-
-                                        }
-                                    });
-                                }
-                            }
-                        }
                     }
 
                     @Override

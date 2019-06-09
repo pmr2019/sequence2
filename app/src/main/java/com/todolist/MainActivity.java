@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    // Open an existing list activity or create a new one
+    // Login as an existing user in the setting, or authenticate from API and get hash code
     // regarding if the pseudo exist or not in the preference
     public void login(View v) {
         final String pseudo = edt_pseudo.getText().toString();
@@ -127,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-
     }
 
     public void signin(View v) {
@@ -158,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
 
         Call<ResponseBody> call = todoListService.signin(setting.getLastUser().getHash(), pseudo, password);
 
-        call.enqueue(new Callback() {
+        call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call call, Response response) {
                 if (response.isSuccessful()) {
