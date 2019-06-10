@@ -2,6 +2,7 @@ package com.example.td_wang_yang_wei;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -205,7 +206,7 @@ public class ChoixListeActivity extends AppCompatActivity {
                 textView = itemView.findViewById(R.id.nom_Liste);
                 imageButton=itemView.findViewById(R.id.listSupp);
                 imageButton.setOnClickListener(this);
-                itemView.setOnClickListener(this);
+                textView.setOnClickListener(this);
             }
 
             void bind(String data) {
@@ -216,9 +217,10 @@ public class ChoixListeActivity extends AppCompatActivity {
             //sauter au ItemActivity quand on clique la liste.
             @Override
             public void onClick(View v) {
+                Log.d("id",""+v.getId());
+                Log.d("id1",""+R.id.nom_Liste);
                 switch (v.getId()){
                     case R.id.nom_Liste:
-
                         if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                             Call<Lists> call = requestService.getLists(hash);
                             final String listeCliquee = lists.get(getAdapterPosition());
@@ -240,7 +242,8 @@ public class ChoixListeActivity extends AppCompatActivity {
                                     alerter("pas de connexion");
                                 }
                             });
-                        }
+
+                        }break;
                     case R.id.listSupp:
                         Call<Lists> callTotal = requestService.getLists(hash);
                         final String listCliquee = lists.get(getAdapterPosition());
@@ -273,6 +276,7 @@ public class ChoixListeActivity extends AppCompatActivity {
 
                         lists.remove(getAdapterPosition());
                         notifyItemRemoved(getAdapterPosition());
+                        break;
                 }
 
                 }

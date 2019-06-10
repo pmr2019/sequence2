@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -187,13 +189,16 @@ public class ShowListeActivity extends AppCompatActivity {
         }
 
         //creer MyviewHolder dans le class Adapter
-        class MyViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener{
+        class MyViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener, View.OnClickListener{
 
             private final CheckBox checkBox;
+            private final ImageButton imageButton;
 
             MyViewHolder(@NonNull View itemView){
                 super(itemView);
                 checkBox = itemView.findViewById(R.id.CBItem);
+                imageButton=itemView.findViewById(R.id.itemSupp);
+                imageButton.setOnClickListener(this);
                 checkBox.setOnCheckedChangeListener(this);
             }
             void bind(Item data){
@@ -232,14 +237,47 @@ public class ShowListeActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call call, Throwable t) {
-
+                        alerter("pas de connexion");
                     }
                 });
 
             }
 
 
+            @Override
+            public void onClick(View v) {
+                Call<Items> callTotal = requestService.getItems(hash, listId);
+                final String item_selected = ItemsData.get(getAdapterPosition()).getDescription();
+
+                callTotal.enqueue(new Callback<Items>() {
+                    @Override
+                    public void onResponse(Call<Items> call, Response<Items> response) {
+                        if (response.isSuccessful()) {
+                            for (Items.ItemsBean i : response.body().getItems()) {
+                                if (i.getLabel().equals(item_selected)) {
+                                    Call<ResponseBody> callSupp = requestService.deleteItem(hash, listId, i.getId());
+
+                                    callSupp.enqueue(new Callback() {
+                                        @Override
+                                        public void onResponse(Call call, Response response) { }
+
+                                        @Override
+                                        public void onFailure(Call call, Throwable t) { }
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Throwable t) {
+                        alerter("pas de connexion");
+                    }
+                });
+                ItemsData.remove(getAdapterPosition());
+                notifyItemRemoved(getAdapterPosition());
             }
+        }
         }
 
 }
