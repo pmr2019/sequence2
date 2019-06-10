@@ -31,7 +31,7 @@ public class ChoixListeActivity extends AppCompatActivity {
 
     //recevoir le EditText Button et RecyclerView
     private EditText edtListe;
-    private Button btnListe;
+    private Button btnListe;//pas grave car on ajoute une fonction de addnewlist sur ce bouton
 
     private RecyclerView recyclerView;
    // private ListeAdapter listAdapter;
@@ -56,13 +56,11 @@ public class ChoixListeActivity extends AppCompatActivity {
         edtListe = findViewById(R.id.edtliste);
         btnListe = findViewById(R.id.btnListe);
 
+        //obtenir les donnees de MainActivity
         hash = getIntent().getStringExtra("hash");
         url = getIntent().getStringExtra("url");
         pseudo = getIntent().getStringExtra("pseudo");
 
-
-
-        requestService = requestServiceFactory.createService(url, requestService.class);
 
         listeAdapter=new ListeAdapter((new ArrayList<String>()));
         recyclerView = findViewById(R.id.recyclerView);
@@ -70,7 +68,10 @@ public class ChoixListeActivity extends AppCompatActivity {
         recyclerView.setAdapter(listeAdapter);
 
 
-        //obtenir la liste de noms des listes dans le profile
+        //creer un instance de requestService
+        requestService = requestServiceFactory.createService(url, requestService.class);
+
+        //obtenir la liste de nom de liste dans le profile
         getListedeLabel(hash);
         getUserIdconneted(hash,pseudo);
 
@@ -85,7 +86,7 @@ public class ChoixListeActivity extends AppCompatActivity {
         myToast.show();
     }
 
-    //la function pour creer une nouvelle liste quand on cliquer le button "creer votre liste"
+    //la fonction pour creer une nouvelle liste quand on cliquer le button "creer votre liste"
     public void addnewlist(View v) {
         final String liste = edtListe.getText().toString();
         if (liste.equals("")) {

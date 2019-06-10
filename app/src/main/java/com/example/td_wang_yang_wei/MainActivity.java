@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // et affichons le profil sur lequel vous avez cliqué dans le champ de saisie
         if (getIntent().getStringExtra("pseudo") != null) {
             edtPseudo.setText(getIntent().getStringExtra("pseudo"));
+
             Utilisateur u= listeDeUtilisateur.ChercheUtilisateur(getIntent().getStringExtra("pseudo"));
             edtPasse.setText(u.getMotDePasse());
         }
@@ -139,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if(pseudo.equals("")||pass.equals("")){
                     alerter("le pseudo ou passe manque");
                 }else {
+                    //eviter le cas de repetition
                     if(listeDeUtilisateur.VerifierPresence(pseudo)){
                         alerter("le nom est occpué");
                         break;
@@ -148,9 +150,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         alerter("manque de compte nécessaire");
                         break;
                     }
+
+                    //creer un instance de requestService pour le requete reseau
                     requestService requestService = requestServiceFactory.createService(listeDeUtilisateur.getUrl(), requestService.class);
 
+                    //Encapsuler les requetes reseau
                     Call<ResponseBody> call = requestService.creer(listeDeUtilisateur.getUtilisateurs().get(listeDeUtilisateur.getUtilisateurs().size()-1).getHash(), pseudo, pass);
+
+                    //Envoyer les requetes reseau & presenter le resultat
                     call.enqueue(new Callback() {
                         @Override
                         public void onResponse(Call call, Response response) {
@@ -187,8 +194,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                          else alerter("Revévifiez votre mot de passe");
                     }else {
 
+                        //creer un instance de requestService pour le requete reseau
                         requestService post_request= requestServiceFactory.createService(listeDeUtilisateur.getUrl(), requestService.class);
 
+                        //Encapsuler les requetes reseau
                         Call<Contenu> call = post_request.authenticate(pseudo,pass);
                         Log.d("url",""+listeDeUtilisateur.getUrl());
 
@@ -197,10 +206,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             public void onResponse(Call<Contenu> call, Response<Contenu> response) {
                                 if(response.isSuccessful()){
                                     Log.d("hhhhh","true");
+                                    //ajouter un nouveau utilisateur
                                     listeDeUtilisateur.AjouterUtilisateur(new Utilisateur(pseudo,pass,response.body().hash));
                                     sauvegarderUtilisateur(listeDeUtilisateur);
                                     ConvertToListe(pseudo,response.body().hash,listeDeUtilisateur.getUrl());
-                                }else alerter("le nom n'est pas ou le mot est incorrect");
+                                }else alerter("le nom n'exist pas ou le mot de passe est incorrect");
                             }
 
                             @Override
@@ -209,7 +219,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
                         });
                     }
-                    //entrez un profil existant
                 }
             break;
 
@@ -237,8 +246,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
-
+    /**
+     * Obtenez la liste de utilisateur existant
+     * @return ListeDeUtilisateur
+     */
     public ListeDeUtilisateur getProfiles() {
         SharedPreferences preferences = getSharedPreferences("utilisateurs", MODE_PRIVATE);
         GsonBuilder builder=new GsonBuilder();
@@ -248,9 +259,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return LU;
     }
 
-
-
-
+    /**
+     * Mise a jour ce utilisateur
+     * @param l
+     */
     public void sauvegarderUtilisateur(ListeDeUtilisateur l){
         Gson gson=new Gson();
         String fileContents = gson.toJson(l);
