@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:gravity="right">
 
     <TextView
         android:id="@+id/nom_Liste"
-        android:layout_width="match_parent"
+        android:layout_width="369dp"
         android:layout_height="60dp"
-        android:textSize="35sp"
         android:gravity="center_vertical"
-        android:paddingLeft="20dp" />
+        android:paddingLeft="20dp"
+        android:textSize="35sp" />
 
+    <ImageButton
+        android:id="@+id/listSupp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@android:drawable/ic_delete" />
 </LinearLayout>

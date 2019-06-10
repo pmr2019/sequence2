@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -197,10 +199,12 @@ public class ChoixListeActivity extends AppCompatActivity {
         class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
             private final TextView textView;
-
+            private final ImageButton imageButton;
             MyViewHolder(@NonNull View itemView) {
                 super(itemView);
                 textView = itemView.findViewById(R.id.nom_Liste);
+                imageButton=itemView.findViewById(R.id.listSupp);
+                imageButton.setOnClickListener(this);
                 itemView.setOnClickListener(this);
             }
 
@@ -212,27 +216,65 @@ public class ChoixListeActivity extends AppCompatActivity {
             //sauter au ItemActivity quand on clique la liste.
             @Override
             public void onClick(View v) {
-                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                    Call<Lists> call = requestService.getLists(hash);
-                    final String listeCliquee = lists.get(getAdapterPosition());
-                    call.enqueue(new Callback<Lists>() {
-                        @Override
-                        public void onResponse(Call<Lists> call, Response<Lists> response) {
-                            if (response.isSuccessful()) {
-                                if(!response.body().getLists().isEmpty())
-                                for (int i=0;i<response.body().getLists().size();i++) {
-                                    if (response.body().getLists().get(i).getLabel().equals(listeCliquee)) {
-                                        convertToItems(hash,url,response.body().getLists().get(i).getId());
+                switch (v.getId()){
+                    case R.id.nom_Liste:
+
+                        if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                            Call<Lists> call = requestService.getLists(hash);
+                            final String listeCliquee = lists.get(getAdapterPosition());
+                            call.enqueue(new Callback<Lists>() {
+                                @Override
+                                public void onResponse(Call<Lists> call, Response<Lists> response) {
+                                    if (response.isSuccessful()) {
+                                        if(!response.body().getLists().isEmpty())
+                                        for (int i=0;i<response.body().getLists().size();i++) {
+                                            if (response.body().getLists().get(i).getLabel().equals(listeCliquee)) {
+                                                convertToItems(hash,url,response.body().getLists().get(i).getId());
+                                            }
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call call, Throwable t) {
+                                    alerter("pas de connexion");
+                                }
+                            });
+                        }
+                    case R.id.listSupp:
+                        Call<Lists> callTotal = requestService.getLists(hash);
+                        final String listCliquee = lists.get(getAdapterPosition());
+
+                        callTotal.enqueue(new Callback<Lists>() {
+                            @Override
+                            public void onResponse(Call<Lists> call, Response<Lists> response) {
+                                if (response.isSuccessful()) {
+                                    for (Lists.ListsBean l : response.body().getLists()) {
+                                        if (l.getLabel().equals(listCliquee)) {
+                                            Call<ResponseBody> callSupp = requestService.deleteList(hash, userId, l.getId());
+
+                                            callSupp.enqueue(new Callback() {
+                                                @Override
+                                                public void onResponse(Call call, Response response) { }
+
+                                                @Override
+                                                public void onFailure(Call call, Throwable t) { }
+                                            });
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        @Override
-                        public void onFailure(Call call, Throwable t) {
-                            alerter("pas de connexion");
-                        }
-                    });
+                            @Override
+                            public void onFailure(Call call, Throwable t) {
+
+                            }
+                        });
+
+                        lists.remove(getAdapterPosition());
+                        notifyItemRemoved(getAdapterPosition());
+                }
+
                 }
             }
             public void convertToItems(String hash,String url,String id){
@@ -244,4 +286,4 @@ public class ChoixListeActivity extends AppCompatActivity {
             }
         }
     }
-}
+
