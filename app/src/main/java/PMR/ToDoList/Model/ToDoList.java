@@ -1,37 +1,44 @@
 package PMR.ToDoList.Model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class ToDoList implements java.io.Serializable{
+public class ToDoList implements Parcelable {
 
     private String nameToDoList;
     private ArrayList<Task> tasksList;
-    private HashMap<UUID, Task> tasksMap;
-    private UUID idList;
-
-    public ToDoList () {
-        tasksList = new ArrayList<Task>();
-        this.idList = UUID.randomUUID();
-        onDeserialization();
-    }
 
     public ToDoList (String titreListeToDo, ArrayList<Task> lesItems) {
         this.nameToDoList = titreListeToDo;
-        lesItems = new ArrayList<Task>();
         this.tasksList = lesItems;
-        this.idList = UUID.randomUUID();
-        onDeserialization();
     }
 
     public ToDoList(String titreListeToDo) {
         this.nameToDoList = titreListeToDo;
         tasksList = new ArrayList<Task>();
-        this.idList = UUID.randomUUID();
-        onDeserialization();
     }
+
+    protected ToDoList(Parcel in) {
+        nameToDoList = in.readString();
+        tasksList = in.createTypedArrayList(Task.CREATOR);
+    }
+
+    public static final Creator<ToDoList> CREATOR = new Creator<ToDoList>() {
+        @Override
+        public ToDoList createFromParcel(Parcel in) {
+            return new ToDoList(in);
+        }
+
+        @Override
+        public ToDoList[] newArray(int size) {
+            return new ToDoList[size];
+        }
+    };
 
     public String getNameToDoList() {
         return nameToDoList;
@@ -39,10 +46,6 @@ public class ToDoList implements java.io.Serializable{
 
     public ArrayList<Task> getLesItems() {
         return tasksList;
-    }
-
-    public UUID getIdList() {
-        return idList;
     }
 
     public void setLesItems(ArrayList<Task> lesItems) {
@@ -83,17 +86,22 @@ public class ToDoList implements java.io.Serializable{
         return retour;
     }
 
-    public void onDeserialization() {
-        tasksMap = new HashMap<>();
-        for (Task task : tasksList) {
-            tasksMap.put(task.getIdTask(), task);
-        }
-    }
-
     @Override
     public String toString() {
         String retour;
         retour = "Liste : " + this.getNameToDoList()+ "Items : " + this.getLesItems().toString();
         return retour;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.nameToDoList);
+
+        dest.writeTypedList(this.tasksList);
     }
 }

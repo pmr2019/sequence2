@@ -9,7 +9,7 @@ import java.util.List;
 import java.io.Serializable;
 import java.util.UUID;
 
-public class User implements Serializable {
+public class User implements Parcelable {
 
     private String pseudo;
     private String password;
@@ -21,6 +21,24 @@ public class User implements Serializable {
         this.pseudo = pseudo;
         this.password = password;
     }
+
+    protected User(Parcel in) {
+        pseudo = in.readString();
+        password = in.readString();
+        hash = in.readString();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 
     public String getPseudo() {
         return pseudo;
@@ -82,5 +100,19 @@ public class User implements Serializable {
                 ", password='" + password + '\'' +
                 ", hash='" + hash + '\'' +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.pseudo);
+        dest.writeString(this.password);
+        dest.writeString(this.hash);
+
+        dest.writeTypedList(this.ToDoLists);
     }
 }
