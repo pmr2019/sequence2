@@ -91,20 +91,12 @@ public class ToDoListActivity extends AppCompatActivity {
          */
         Intent intentMain = getIntent();
         for(User u : myUsersList){
-            if(u.getLogin().matches(intentMain.getSerializableExtra(EXTRA_LOGIN).toString()))
-                user = u;
+            if(u.getPseudo().matches(intentMain.getSerializableExtra(EXTRA_LOGIN).toString())) user = u;
         }
 
-        //Initialisation des to do lists comme étant les to do lists du user passé
-        //depuis la main activity
-        toDoLists = user.getMesListeToDo();
-
-        //On met le sous-titre grace au login du user
-        toolbar.setSubtitle(user.getLogin());
-
-        //Crétaion du recyclerview et remplissage avec les to do lists du user passé
-        //depuis la main activity
-        buildRecyclerView(user.getMesListeToDo());
+        toDoLists = user.getToDoLists();
+        toolbar.setSubtitle(user.getPseudo());
+        buildRecyclerView(user.getToDoLists());
 
         // Création items pour l'insertion des to do lists.
         btnInsertToDoList=findViewById(R.id.btnInsertToDoList);
@@ -149,7 +141,7 @@ public class ToDoListActivity extends AppCompatActivity {
             public void onDeleteClick(int position) {
 
                 toDoLists.remove(position);
-               // user.setMesListeToDo(toDoLists);
+                user.setToDoLists(toDoLists);
                 sauvegarderToJsonFile(myUsersList);
                 toDoListAdapter.notifyItemRemoved(position);
             }

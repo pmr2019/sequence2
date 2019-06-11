@@ -53,7 +53,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.Settin
     @Override
     public void onBindViewHolder(@NonNull SettingViewHolder holder, int position) {
         User user = settings.get(position);
-        holder.login.setText(user.getLogin());
+        holder.login.setText(user.getPseudo());
     }
 
     @Override

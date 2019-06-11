@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -19,6 +20,8 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONException;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -48,6 +51,11 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
 
     //LISTE DES UTILISATEURS ENREGISTRÉS DANS LA BASE DE DONNÉES
     public static ArrayList<User> myUsersList;
+
+    //UTILISATEUR INITIANT LA CONNEXION
+    private User myUser;
+    private String pseudo;
+    private String password;
 
     //GESTION DE LA CONNEXION A INTERNET
     private NetworkStateReceiver networkStateReceiver;
@@ -86,9 +94,6 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         edtMdp = (EditText) findViewById(R.id.edtMdp);
         txtMdp = (TextView) findViewById(R.id.txtMdp);
 
-        // INITIALISATION DE LA LISTE DES UTILISATEURS ENREGISTRÉS
-        myUsersList = getUsersFromFile();
-
         //LISTENER SUR LE BOUTON DE CONNEXION
         btnConnexion.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,24 +112,12 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
 
                 else{
 
-                    //On vérifie si le login entré est dans la liste du fichier enregistré
-                    for (User u : myUsersList) {
-                        if (u.getLogin().equals(login)) {
-                            myUser = u;
-                        }
-                    }
+                    pseudo = edtPseudo.getText().toString();
+                    password = edtMdp.getText().toString();
 
-                    //S'il n'y est pas, on créé un nouvel utilisateur avec le login rentré
-                    // et on sauvegarde le fichier Json avec le nouvel utilisateur
-                    if (myUser==null){
-                        myUser = new User(login);
-                        myUsersList.add(myUser);
-                        sauvegarderUserToJsonFile(myUsersList);
-                    }
+                    AsyncTask task = new PostAsyncTask();
+                    task.execute();
 
-                    //Ensuite, on envoie le login du string avec la clé "EXTRA_LOGIN"
-                    intent.putExtra(EXTRA_LOGIN, myUser.getLogin());
-                    startActivity(intent);
                 }
             }
         });
@@ -231,6 +224,43 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
     public void networkUnavailable() {
         btnConnexion.setEnabled(false);
         etatConnexion.setText("Veuillez vous connecter à internet");
+    }
+
+    //PARTIE ASYNCTASK
+
+    public class PostAsyncTask extends AsyncTask<Object, Void, String>{
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Object... objects) {
+            try {
+                return (new DataProvider()).getHash(pseudo, password, "POST");
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return "Veuillez rentrer un pseudo et un mot de passe valides";
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String hash){
+            super.onPostExecute(hash);
+            alerter(hash);
+
+            if (hash!=null) {
+                myUser = new User (pseudo, password);
+                myUser.setHash(hash);
+
+                Intent toToDoListActivity = new Intent(MainActivity.this, ToDoListActivity.class);
+                toToDoListActivity.putExtra(EXTRA_LOGIN, myUser.getHash());
+                startActivity(toToDoListActivity);
+            }
+
+        }
+
     }
 }
 
