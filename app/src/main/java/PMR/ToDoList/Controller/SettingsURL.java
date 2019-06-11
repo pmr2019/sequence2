@@ -9,6 +9,9 @@ import android.widget.Toast;
 
 import PMR.ToDoList.R;
 
+/*
+Classe affichant l'URL de l'API utilisé par l'application.
+ */
 public class SettingsURL extends AppCompatActivity {
 
     private EditText urlApi;

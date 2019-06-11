@@ -37,6 +37,10 @@ import PMR.ToDoList.R;
 import static PMR.ToDoList.Controller.MainActivity.myUsersList;
 import static android.content.Intent.EXTRA_USER;
 
+/*
+Activité comportant un recyclerview qui affiche tous les utilisateurs déjà rentrés dans
+l'application.
+ */
 public class SettingsActivity extends AppCompatActivity {
 
     // PARTIE TOOLBAR
@@ -50,7 +54,9 @@ public class SettingsActivity extends AppCompatActivity {
     //PARTIE DONNEES
     private ArrayList<User> settings = myUsersList;
 
-
+/*
+Initialisation de la toolbar et du recyclerview lié à cette activité
+ */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +67,9 @@ public class SettingsActivity extends AppCompatActivity {
         buildRecyclerView(settings);
     }
 
+    /*
+    Création du Recyclerview et de l'adapter
+     */
     public void buildRecyclerView(ArrayList<User> list){
         settingRecyclerView= findViewById(R.id.rvTodoList);
         settingRecyclerView.setHasFixedSize(true);
@@ -69,13 +78,13 @@ public class SettingsActivity extends AppCompatActivity {
         settingRecyclerView.setLayoutManager(settingLayoutManager);
         settingRecyclerView.setAdapter(settingsAdapter);
 
-
+        //Réalisation de la fonction "delete" dans l'activité settings.
         settingsAdapter.setOnItemClickListener(new SettingsAdapter.OnItemClickListener() {
             @Override
             public void onDeleteClick(int position) {
-                settings.remove(position);
-                sauvegarderUserToJsonFile(settings);
-                settingsAdapter.notifyItemRemoved(position);
+                settings.remove(position); //On retire de la liste des utilisateurs celui qu'on a cliqué
+                sauvegarderUserToJsonFile(settings); //On resauvegarde le fichier json
+                settingsAdapter.notifyItemRemoved(position); //On met à jour
             }
         });
     }
@@ -87,23 +96,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     //Partie GSON
 
-/*    public void readUserFromJsonFile() {
-        String sJasonLu = "";
-        final GsonBuilder builder = new GsonBuilder();
-        final Gson gson = builder.create();
-
-        try {
-            FileInputStream inputStream = openFileInput("pseudos");
-            int content;
-            while ((content = inputStream.read()) != -1) {
-                sJasonLu = sJasonLu + (char)content;
-            }
-            inputStream.close();
-            userSettings = (User) gson.fromJson(sJasonLu, User.class);
-        } catch (Exception e) {
-        }
-    }*/
-
+    //Fonction de sauvegarde
     public void sauvegarderUserToJsonFile(ArrayList myList) {
 
         final GsonBuilder builder = new GsonBuilder(); //assure la qualité des données Json

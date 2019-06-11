@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import PMR.ToDoList.Model.Task;
 import PMR.ToDoList.R;
 
+/*
+Adapter lié au recyclerview utilisé dans l'activité Tsk
+ */
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHolder> {
 
     private ArrayList<Task> tasks;
@@ -37,6 +40,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
     public void setOnItemClickListener(OnItemClickListener listener){
         taskListener=listener;
     }
+
+    //METHODES A IMPLEMENTER DANS UN ADAPTER
 
     @NonNull
     @Override

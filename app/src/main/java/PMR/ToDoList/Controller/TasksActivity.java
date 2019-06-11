@@ -66,10 +66,15 @@ public class TasksActivity extends AppCompatActivity {
 
         //tasks.add(new Task("toDo1"));
 
-
+/*
+        On récupère la to do list passée depuis l'activité to do list dans l'intent. S'il correspond
+        à une des to do lists enregistrés dans la liste des utilisateurs, on récupère l'utilisateur
+        concerné pour extraire ses to do listes.
+         */
         Intent intentToDoList = getIntent();
         for(ToDoList tdl : toDoLists){
-            if(tdl.getIdList().equals(intentToDoList.getSerializableExtra(EXTRA_IDLIST))) todolist = tdl;
+            if(tdl.getIdList().equals(intentToDoList.getSerializableExtra(EXTRA_IDLIST)))
+                todolist = tdl;
         }
 
         tasks=todolist.getLesItems();
@@ -142,6 +147,8 @@ public class TasksActivity extends AppCompatActivity {
     public void buildToolbar(){
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Mes Tasks");
+
     }
 
 

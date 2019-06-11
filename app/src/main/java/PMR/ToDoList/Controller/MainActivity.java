@@ -70,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         //AJOUT DES INFORMATIONS DE LA TOOLBAR
         toolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Connexion");
+
 
         // GESTION DE LA CONNEXION
         networkStateReceiver = new NetworkStateReceiver();

@@ -15,6 +15,12 @@ import java.util.ArrayList;
 import PMR.ToDoList.Model.User;
 import PMR.ToDoList.R;
 
+/*
+Classe pour la création d'un Adapter pour l'activité Settings, qui utilise un viewHolder
+définit plus bas.
+Dans cette classe, on créé une interface OnItemClickListener pour pouvoir cliquer
+sur chacun des éléments du Recyclerview
+ */
 public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.SettingViewHolder> {
 
     private ArrayList<User> settings;
@@ -35,6 +41,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.Settin
         settingListener =listener;
     }
 
+    // METHODES A IMPLEMENTER DANS L'ADAPTER
     @NonNull
     @Override
     public SettingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -54,6 +61,11 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.Settin
         return settings.size();
     }
 
+    /*
+    Classe du View Holder lié à l'adapter ci-dessus.
+    On y ajoute un Onclicklistener définit plus haut pour écouter les clics sur
+    chacun des items de la liste du recyclerview.
+     */
     public class SettingViewHolder extends RecyclerView.ViewHolder{
 
         public TextView login;

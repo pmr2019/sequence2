@@ -39,6 +39,10 @@ import static PMR.ToDoList.Controller.MainActivity.EXTRA_LOGIN;
 import static PMR.ToDoList.Controller.MainActivity.myUsersList;
 import static android.content.Intent.EXTRA_USER;
 
+/*
+Classe lié à l'activité qui affiche l'ensemble des to do lists de l'utilisateur.
+On peut également créer et détruire des to do lists via cette activité.
+ */
 public class ToDoListActivity extends AppCompatActivity {
 
     // PARTIE TOOLBAR
@@ -61,11 +65,18 @@ public class ToDoListActivity extends AppCompatActivity {
 
     public static final String EXTRA_IDLIST = "IDLIST";
 
+    //Fonction pour la création de toasts pour le débug notamment.
     private void alerter(String s) {
         Toast myToast = Toast.makeText(this, s, Toast.LENGTH_SHORT);
         myToast.show();
     }
 
+    /*
+    Méthode onCreate
+    On récupère le login passé depuis la main activité dans l'intent. S'il correspond
+    à un des login enregistrés dans la liste des utilisateurs, on récupère l'utilisateur
+    concerné pour extraire ses to do listes.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,17 +84,29 @@ public class ToDoListActivity extends AppCompatActivity {
 
         buildToolbar();
 
+        /*
+        On récupère le login passé depuis la main activité dans l'intent. S'il correspond
+        à un des login enregistrés dans la liste des utilisateurs, on récupère l'utilisateur
+        concerné pour extraire ses to do listes.
+         */
         Intent intentMain = getIntent();
         for(User u : myUsersList){
-            if(u.getLogin().matches(intentMain.getSerializableExtra(EXTRA_LOGIN).toString())) user = u;
+            if(u.getLogin().matches(intentMain.getSerializableExtra(EXTRA_LOGIN).toString()))
+                user = u;
         }
 
+        //Initialisation des to do lists comme étant les to do lists du user passé
+        //depuis la main activity
         toDoLists = user.getMesListeToDo();
 
+        //On met le sous-titre grace au login du user
         toolbar.setSubtitle(user.getLogin());
 
+        //Crétaion du recyclerview et remplissage avec les to do lists du user passé
+        //depuis la main activity
         buildRecyclerView(user.getMesListeToDo());
 
+        // Création items pour l'insertion des to do lists.
         btnInsertToDoList=findViewById(R.id.btnInsertToDoList);
         textInsertToDoList=findViewById(R.id.textInsertToDoList);
 
@@ -92,7 +115,7 @@ public class ToDoListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String nameToDoList= textInsertToDoList.getText().toString();
-                textInsertToDoList.setText("");
+                textInsertToDoList.setText(""); // on réinitialise la zone d'insertion de to do list
 
                 if (!nameToDoList.equals("")){
                     user.ajouteListe(new ToDoList(nameToDoList));
@@ -126,7 +149,7 @@ public class ToDoListActivity extends AppCompatActivity {
             public void onDeleteClick(int position) {
 
                 toDoLists.remove(position);
-                user.setMesListeToDo(toDoLists);
+               // user.setMesListeToDo(toDoLists);
                 sauvegarderToJsonFile(myUsersList);
                 toDoListAdapter.notifyItemRemoved(position);
             }
@@ -136,6 +159,7 @@ public class ToDoListActivity extends AppCompatActivity {
     public void buildToolbar(){
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Mes To Do Lists");
     }
 
 

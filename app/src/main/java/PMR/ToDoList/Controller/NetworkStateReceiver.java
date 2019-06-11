@@ -9,6 +9,11 @@ import android.net.NetworkInfo;
 import java.util.HashSet;
 import java.util.Set;
 
+
+/*
+Cette classe permet d'ajouter à la MainActivity un Listener sur la connexion réseau
+De cette manière, on peut rendre disponible ou non le bouton de connexion.
+ */
 public class NetworkStateReceiver extends BroadcastReceiver {
 
     protected Set<NetworkStateReceiverListener> listeners;
@@ -19,6 +24,8 @@ public class NetworkStateReceiver extends BroadcastReceiver {
         connected = null;
     }
 
+    //Méthode permettant de mettre l'état à "connecté au réseau" ou non, puis de
+    // lancer les méthodes networkAvailable et networkUnavailable à l'aide de notifyStateToAll
     public void onReceive(Context context, Intent intent) {
         if(intent == null || intent.getExtras() == null)
             return;
@@ -35,11 +42,13 @@ public class NetworkStateReceiver extends BroadcastReceiver {
         notifyStateToAll();
     }
 
+    // Utilise notifyState sur tous les listeners
     private void notifyStateToAll() {
         for(NetworkStateReceiverListener listener : listeners)
             notifyState(listener);
     }
 
+    // Utilise networkAvailable ou networkUnavailable suivant l'état de la connexion
     private void notifyState(NetworkStateReceiverListener listener) {
         if(connected == null || listener == null)
             return;
@@ -50,11 +59,13 @@ public class NetworkStateReceiver extends BroadcastReceiver {
             listener.networkUnavailable();
     }
 
+    //ajoute un listener et utilise notifyState dessus
     public void addListener(NetworkStateReceiverListener l) {
         listeners.add(l);
         notifyState(l);
     }
 
+    //enlève un listener.
     public void removeListener(NetworkStateReceiverListener l) {
         listeners.remove(l);
     }

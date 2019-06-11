@@ -37,10 +37,6 @@ public class ToDoList implements java.io.Serializable{
         return nameToDoList;
     }
 
-    public void setTitreListeToDo(String titreListeToDo) {
-        this.nameToDoList = titreListeToDo;
-    }
-
     public ArrayList<Task> getLesItems() {
         return tasksList;
     }
@@ -52,10 +48,12 @@ public class ToDoList implements java.io.Serializable{
     public void setLesItems(ArrayList<Task> lesItems) {
         this.tasksList = lesItems;
     }
+
     public void ajouterItem(Task unItem)
     {
         this.tasksList.add(unItem);
     }
+
     public Boolean validerItem(String s)
     {
         int indice = -1;

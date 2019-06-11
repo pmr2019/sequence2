@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import PMR.ToDoList.Model.ToDoList;
 import PMR.ToDoList.R;
 
+/*
+Adapter lié au recyclerview utilisé dans l'activité To Do List
+ */
 public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoListViewHolder> {
 
     private ArrayList<ToDoList> toDoLists;
@@ -34,6 +37,8 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
     public void setOnItemClickListener(OnItemClickListener listener){
         toDoListListener=listener;
     }
+
+    // METHODES A IMPLEMENTER DANS l'INTERFACE D'UN ADAPTER
 
     @NonNull
     @Override
