@@ -9,23 +9,26 @@ import java.util.UUID;
 
 
 public class Task implements Parcelable {
-    private String description;
-    private Boolean fait;
+    private int id;
+    private String label;
+    private String url;
+    private int checked;
 
-    public Task(String description, Boolean fait) {
-        this.description = description;
-        this.fait = fait;
+    public Task(int id, String label) {
+        this.id = id;
+        this.label = label;
     }
 
-    public Task(String description) {
-        this.description = description;
-        this.fait = Boolean.FALSE;
+    public Task(int id, String label, String url, int checked) {
+        this.id = id;
+        this.label = label;
+        this.url = url;
+        this.checked = checked;
     }
 
     protected Task(Parcel in) {
-        description = in.readString();
-        byte tmpFait = in.readByte();
-        fait = tmpFait == 0 ? null : tmpFait == 1;
+        label = in.readString();
+        checked = in.readInt();
     }
 
     public static final Creator<Task> CREATOR = new Creator<Task>() {
@@ -40,26 +43,42 @@ public class Task implements Parcelable {
         }
     };
 
-    public String getDescription() {
-        return description;
+    public int getId() {
+        return id;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public String getLabel() {
+        return label;
     }
 
-    public Boolean getFait() {
-        return fait;
+    public String getUrl() {
+        return url;
     }
 
-    public void setFait(Boolean fait) {
-        this.fait = fait;
+    public int getChecked() {
+        return checked;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setChecked(int checked) {
+        this.checked = checked;
     }
 
     @Override
     public String toString() {
-        return ("Item : "+ this.getDescription() + " - Fait : " +this.getFait().toString());
-
+        return "Task{" +
+                "id=" + id +
+                ", label='" + label + '\'' +
+                ", url='" + url + '\'' +
+                ", checked=" + checked +
+                '}';
     }
 
     @Override
@@ -69,7 +88,7 @@ public class Task implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.description);
-        dest.writeByte((byte) (this.fait ? 1 : 0));
+        dest.writeString(this.label);
+        dest.writeInt(this.checked);
     }
 }

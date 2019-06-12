@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -19,6 +20,8 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONException;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -90,13 +93,10 @@ public class ToDoListActivity extends AppCompatActivity {
         concerné pour extraire ses to do listes.
          */
         Intent intentMain = getIntent();
-        for(User u : myUsersList){
-            if(u.getPseudo().matches(intentMain.getSerializableExtra(EXTRA_LOGIN).toString())) user = u;
-        }
+        user = intentMain.getParcelableExtra(EXTRA_LOGIN);
 
-        toDoLists = user.getToDoLists();
-        toolbar.setSubtitle(user.getPseudo());
-        buildRecyclerView(user.getToDoLists());
+        AsyncTask task = new PostAsyncTask();
+        task.execute();
 
         // Création items pour l'insertion des to do lists.
         btnInsertToDoList=findViewById(R.id.btnInsertToDoList);
@@ -110,9 +110,8 @@ public class ToDoListActivity extends AppCompatActivity {
                 textInsertToDoList.setText(""); // on réinitialise la zone d'insertion de to do list
 
                 if (!nameToDoList.equals("")){
-                    user.ajouteListe(new ToDoList(nameToDoList));
+                    //user.ajouteListe(new ToDoList(nameToDoList));
                     toDoListAdapter.notifyItemInserted(toDoListAdapter.getItemCount()-1);
-                    sauvegarderToJsonFile(myUsersList);
                 }
             }
         });
@@ -134,7 +133,9 @@ public class ToDoListActivity extends AppCompatActivity {
             //BOUTON QUAND ON CLIQUE SUR UNE CARD
             public void onItemClick(int position) {
                 Intent intent=new Intent(ToDoListActivity.this,TasksActivity.class);
-                intent.putExtra(EXTRA_IDLIST, toDoLists.get(position).getIdList());
+                intent.putExtra(EXTRA_LOGIN, user);
+                intent.putExtra(EXTRA_IDLIST, user.getToDoLists().get(position));
+                alerter(String.valueOf(user.getToDoLists().get(position).getId()));
                 startActivity(intent);            }
             //BOUTON QUAND ON CLIQUE SUR DELETE
             @Override
@@ -142,7 +143,6 @@ public class ToDoListActivity extends AppCompatActivity {
 
                 toDoLists.remove(position);
                 user.setToDoLists(toDoLists);
-                sauvegarderToJsonFile(myUsersList);
                 toDoListAdapter.notifyItemRemoved(position);
             }
         });
@@ -154,24 +154,30 @@ public class ToDoListActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Mes To Do Lists");
     }
 
+    //PARTIE ASYNCTASK
 
-    public void sauvegarderToJsonFile(ArrayList myList) {
+    public class PostAsyncTask extends AsyncTask<Object, Void, ArrayList<ToDoList>> {
 
-        final GsonBuilder builder = new GsonBuilder(); //assure la qualité des données Json
-        final Gson gson = builder.setPrettyPrinting().create();
-        String fileName = "pseudos"; //nom du fichier Json
-        FileOutputStream outputStream; //permet de sérialiser correctement user
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
 
-        String fileContents = gson.toJson(myList);
+        @Override
+        protected ArrayList<ToDoList> doInBackground(Object... objects) {
+            try {
+                return (new DataProvider()).getToDoLists(user.getHash(), "POST");
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return new ArrayList<>();
+            }
+        }
 
-        try {
-            outputStream = openFileOutput("pseudos", Context.MODE_PRIVATE);
-            outputStream.write(fileContents.getBytes());
-            outputStream.close();
-            Log.i("TODO_Romain", "Sauvegarde du fichier Json");
-        } catch (Exception e) {
-            e.printStackTrace();
+        @Override
+        protected void onPostExecute(ArrayList<ToDoList> myToDoList){
+            super.onPostExecute(myToDoList);
+            user.setToDoLists(myToDoList);
+            buildRecyclerView(myToDoList);
         }
     }
-
 }

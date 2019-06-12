@@ -51,7 +51,7 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
     @Override
     public void onBindViewHolder(@NonNull ToDoListViewHolder holder, int position) {
         ToDoList toDoList = toDoLists.get(position);
-        holder.nameToDoList.setText(toDoList.getNameToDoList());
+        holder.nameToDoList.setText(toDoList.getLabel());
     }
 
     @Override

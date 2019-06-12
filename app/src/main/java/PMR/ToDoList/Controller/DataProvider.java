@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,11 +15,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
+import PMR.ToDoList.Model.Task;
 import PMR.ToDoList.Model.ToDoList;
 import PMR.ToDoList.Model.User;
 
@@ -75,21 +79,57 @@ public class DataProvider {
 
         String response = requete(qs, "POST");
 
-        //Gson gson = new Gson();
-        //User myUser = gson.fromJson(response, User.class);
-
         JSONObject json = new JSONObject(response);
         String hash = json.getString("hash");
 
         return hash;
     }
 
-/*    public List<ToDoList> getToDoLists (String hash, String methode){
+    public ArrayList<ToDoList> getToDoLists (String hash, String methode) throws JSONException {
 
         String qs = "lists?hash=" + hash;
         String response = requete (qs, "GET");
 
         JSONObject json = new JSONObject(response);
+        JSONArray jsonArray = json.getJSONArray("lists");
 
-    }*/
+        ArrayList<ToDoList> myToDoLists = new ArrayList<>();
+
+        for (int i=0; i<jsonArray.length(); i++){
+            JSONObject ToDoList = jsonArray.getJSONObject(i);
+
+            int id = ToDoList.getInt("id");
+            String label = ToDoList.getString("label");
+
+            ToDoList myToDoList = new ToDoList(id, label);
+            myToDoLists.add(myToDoList);
+        }
+
+        return myToDoLists;
+    }
+
+    public ArrayList<Task> getTasks (String hash, int id, String methode) throws JSONException {
+
+        String qs = "lists/" + id + "/items?hash=" + hash;
+        String response = requete (qs, methode);
+
+        JSONObject json = new JSONObject(response);
+        JSONArray jsonArray = json.getJSONArray("items");
+
+        ArrayList<Task> myTasks = new ArrayList<>();
+
+        for (int i=0; i<jsonArray.length(); i++){
+            JSONObject task = jsonArray.getJSONObject(i);
+
+            int idTask = task.getInt("id");
+            String labelTask = task.getString("label");
+            String url = task.getString("url");
+            int checked = task.getInt("checked");
+
+            Task myTask = new Task(idTask, labelTask, url, checked);
+            myTasks.add(myTask);
+        }
+
+        return myTasks;
+    }
 }

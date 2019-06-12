@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -18,6 +19,8 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.json.JSONException;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -52,6 +55,9 @@ public class TasksActivity extends AppCompatActivity {
     //TO DO LIST DE LA TACHE
     private ToDoList todolist;
 
+    //USER EN QUESTION
+    private User user;
+
     private void alerter(String s) {
         Toast myToast = Toast.makeText(this, s, Toast.LENGTH_SHORT);
         myToast.show();
@@ -71,17 +77,16 @@ public class TasksActivity extends AppCompatActivity {
         à une des to do lists enregistrés dans la liste des utilisateurs, on récupère l'utilisateur
         concerné pour extraire ses to do listes.
          */
-        Intent intentToDoList = getIntent();
-        for(ToDoList tdl : toDoLists){
-            if(tdl.getIdList().equals(intentToDoList.getSerializableExtra(EXTRA_IDLIST)))
-                todolist = tdl;
-        }
 
-        tasks=todolist.getLesItems();
+        Intent intentMain = getIntent();
+        user = intentMain.getParcelableExtra(EXTRA_LOGIN);
+        todolist = intentMain.getParcelableExtra(EXTRA_IDLIST);
 
-        //tasks.add(new Task("toDo2"));
+        alerter(String.valueOf(todolist.getId()));
+        alerter(todolist.getLabel());
 
-        buildRecyclerView(tasks);
+        //AsyncTask task = new PostAsyncTask();
+        //task.execute();
 
         btnInsertTask=findViewById(R.id.btnInsertTask);
         textInsertTask=findViewById(R.id.textInsertTask);
@@ -94,8 +99,7 @@ public class TasksActivity extends AppCompatActivity {
                 textInsertTask.setText("");
 
                 if (!nameTask.equals("")){
-                    tasks.add(new Task(nameTask));
-                    sauvegarderToJsonFile(toDoLists);
+
                     taskAdapter.notifyItemInserted(taskAdapter.getItemCount()-1);
                 }
             }
@@ -127,19 +131,16 @@ public class TasksActivity extends AppCompatActivity {
             @Override
             public void onDeleteClick(int position) {
                 tasks.remove(position);
-                sauvegarderToJsonFile(myUsersList);
                 taskAdapter.notifyItemRemoved(position);
             }
 
             //BOUTON QUAND ON CLIQUE SUR UNE CHECKBOX
             @Override
             public void onCheckBoxClick(int position) {
-                if (tasks.get(position).getFait()) {
-                    tasks.get(position).setFait(false);
+                if (tasks.get(position).getChecked()==1) {
+                    tasks.get(position).setChecked(0);
                 }
-                else {tasks.get(position).setFait(true);}
-                sauvegarderToJsonFile(toDoLists);
-
+                else {tasks.get(position).setChecked(1);}
             }
         });
     }
@@ -151,23 +152,28 @@ public class TasksActivity extends AppCompatActivity {
 
     }
 
+    public class PostAsyncTask extends AsyncTask<Object, Void, ArrayList<Task>> {
 
-    public void sauvegarderToJsonFile(ArrayList myList) {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
 
-        final GsonBuilder builder = new GsonBuilder(); //assure la qualité des données Json
-        final Gson gson = builder.setPrettyPrinting().create();
-        String fileName = "pseudos"; //nom du fichier Json
-        FileOutputStream outputStream; //permet de sérialiser correctement user
+        @Override
+        protected ArrayList<Task> doInBackground(Object... objects) {
+            try {
+                return (new DataProvider()).getTasks(user.getHash(), todolist.getId(), "GET");
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return new ArrayList<>();
+            }
+        }
 
-        String fileContents = gson.toJson(myList);
-
-        try {
-            outputStream = openFileOutput("pseudos", Context.MODE_PRIVATE);
-            outputStream.write(fileContents.getBytes());
-            outputStream.close();
-            Log.i("TODO_Romain", "Sauvegarde du fichier Json");
-        } catch (Exception e) {
-            e.printStackTrace();
+        @Override
+        protected void onPostExecute(ArrayList<Task> myTasks){
+            super.onPostExecute(myTasks);
+            alerter(String.valueOf(todolist.getId()));
+            buildRecyclerView(myTasks);
         }
     }
 

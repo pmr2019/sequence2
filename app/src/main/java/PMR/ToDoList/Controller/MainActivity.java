@@ -255,12 +255,10 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
                 myUser.setHash(hash);
 
                 Intent toToDoListActivity = new Intent(MainActivity.this, ToDoListActivity.class);
-                toToDoListActivity.putExtra(EXTRA_LOGIN, myUser.getHash());
+                toToDoListActivity.putExtra(EXTRA_LOGIN, myUser);
                 startActivity(toToDoListActivity);
             }
-
         }
-
     }
 }
 

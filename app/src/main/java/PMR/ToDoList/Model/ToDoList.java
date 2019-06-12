@@ -10,22 +10,29 @@ import java.util.UUID;
 
 public class ToDoList implements Parcelable {
 
-    private String nameToDoList;
+    private int id;
+    private String label;
     private ArrayList<Task> tasksList;
 
-    public ToDoList (String titreListeToDo, ArrayList<Task> lesItems) {
-        this.nameToDoList = titreListeToDo;
-        this.tasksList = lesItems;
+    public ToDoList(int id, String label) {
+        this.id = id;
+        this.label = label;
     }
 
-    public ToDoList(String titreListeToDo) {
-        this.nameToDoList = titreListeToDo;
-        tasksList = new ArrayList<Task>();
+    public ToDoList(int id, String label, ArrayList<Task> tasksList) {
+        this.id = id;
+        this.label = label;
+        this.tasksList = tasksList;
     }
 
     protected ToDoList(Parcel in) {
-        nameToDoList = in.readString();
+        id = in.readInt();
+        label = in.readString();
         tasksList = in.createTypedArrayList(Task.CREATOR);
+    }
+
+    public int getId() {
+        return id;
     }
 
     public static final Creator<ToDoList> CREATOR = new Creator<ToDoList>() {
@@ -40,12 +47,24 @@ public class ToDoList implements Parcelable {
         }
     };
 
-    public String getNameToDoList() {
-        return nameToDoList;
+    public String getLabel() {
+        return label;
     }
 
-    public ArrayList<Task> getLesItems() {
+    public ArrayList<Task> getTasksList() {
         return tasksList;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public void setTasksList(ArrayList<Task> tasksList) {
+        this.tasksList = tasksList;
     }
 
     public void setLesItems(ArrayList<Task> lesItems) {
@@ -63,7 +82,7 @@ public class ToDoList implements Parcelable {
 
         if ((indice = rechercherItem(s)) >=0)
         {
-            this.tasksList.get(indice).setFait(Boolean.TRUE);
+            this.tasksList.get(indice).setChecked(1);
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
@@ -76,7 +95,7 @@ public class ToDoList implements Parcelable {
         Boolean trouve = Boolean.FALSE;
         for (int i=0; i < this.tasksList.size() ;i++)
         {
-            if (this.tasksList.get(i).getDescription() == s)
+            if (this.tasksList.get(i).getLabel() == s)
             {
                 retour=i;
                 i=this.tasksList.size();
@@ -86,11 +105,21 @@ public class ToDoList implements Parcelable {
         return retour;
     }
 
+    /*public void onDeserialization() {
+        tasksMap = new HashMap<>();
+        for (Task task : tasksList) {
+            tasksMap.put(task.getIdTask(), task);
+        }
+    }
+    */
+
     @Override
     public String toString() {
-        String retour;
-        retour = "Liste : " + this.getNameToDoList()+ "Items : " + this.getLesItems().toString();
-        return retour;
+        return "ToDoList{" +
+                "id=" + id +
+                ", label='" + label + '\'' +
+                ", tasksList=" + tasksList +
+                '}';
     }
 
     @Override
@@ -100,8 +129,8 @@ public class ToDoList implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.nameToDoList);
-
+        dest.writeString(this.label);
+        dest.writeInt(this.id);
         dest.writeTypedList(this.tasksList);
     }
 }
