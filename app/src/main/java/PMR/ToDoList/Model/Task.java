@@ -14,6 +14,8 @@ public class Task implements Parcelable {
     private String url;
     private int checked;
 
+    //CONSTRUCTEURS
+
     public Task(int id, String label) {
         this.id = id;
         this.label = label;
@@ -32,17 +34,7 @@ public class Task implements Parcelable {
         id = in.readInt();
     }
 
-    public static final Creator<Task> CREATOR = new Creator<Task>() {
-        @Override
-        public Task createFromParcel(Parcel in) {
-            return new Task(in);
-        }
-
-        @Override
-        public Task[] newArray(int size) {
-            return new Task[size];
-        }
-    };
+    //GETTERS & SETTERS
 
     public int getId() {
         return id;
@@ -72,15 +64,18 @@ public class Task implements Parcelable {
         this.checked = checked;
     }
 
-    @Override
-    public String toString() {
-        return "Task{" +
-                "id=" + id +
-                ", label='" + label + '\'' +
-                ", url='" + url + '\'' +
-                ", checked=" + checked +
-                '}';
-    }
+    // PARCELABLE IMPLEMENTATION
+    public static final Creator<Task> CREATOR = new Creator<Task>() {
+        @Override
+        public Task createFromParcel(Parcel in) {
+            return new Task(in);
+        }
+
+        @Override
+        public Task[] newArray(int size) {
+            return new Task[size];
+        }
+    };
 
     @Override
     public int describeContents() {
@@ -93,4 +88,18 @@ public class Task implements Parcelable {
         dest.writeInt(this.checked);
         dest.writeInt(this.id);
     }
+
+    //Methodes utiles
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", label='" + label + '\'' +
+                ", url='" + url + '\'' +
+                ", checked=" + checked +
+                '}';
+    }
+
+
 }
