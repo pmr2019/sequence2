@@ -29,6 +29,7 @@ public class Task implements Parcelable {
     protected Task(Parcel in) {
         label = in.readString();
         checked = in.readInt();
+        id = in.readInt();
     }
 
     public static final Creator<Task> CREATOR = new Creator<Task>() {
@@ -90,5 +91,6 @@ public class Task implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.label);
         dest.writeInt(this.checked);
+        dest.writeInt(this.id);
     }
 }

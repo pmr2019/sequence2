@@ -82,8 +82,7 @@ public class TasksActivity extends AppCompatActivity {
         user = intentMain.getParcelableExtra(EXTRA_LOGIN);
         todolist = intentMain.getParcelableExtra(EXTRA_IDLIST);
 
-        alerter(String.valueOf(todolist.getId()));
-        alerter(todolist.getLabel());
+        //alerter(String.valueOf(todolist.getId()));
 
         //AsyncTask task = new PostAsyncTask();
         //task.execute();
