@@ -30,20 +30,17 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     //Initialisation de paramètres
-
     private Button btnOk = null;
     private Button btnSign=null;
     private EditText edtPseudo = null;
     private EditText edtPasse=null;
     private ListeDeUtilisateur listeDeUtilisateur;
 
-
     //Alerter pour savoir le processus de la programme et alerter les utilisateurs
     public void alerter(String s) {
         Toast myToast = Toast.makeText(this,s,Toast.LENGTH_SHORT);
         myToast.show();
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,10 +68,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 edtPasse.setText((listeDeUtilisateur.getUtilisateurs().get(listeDeUtilisateur.getUtilisateurs().size() - 1)).getMotDePasse());
             } else listeDeUtilisateur = new ListeDeUtilisateur();
         }
-
-
-        //vérifier l'état de réseau
-        //this.verifReseau();
     }
 
     //detect l'état de network
@@ -139,18 +132,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if(pseudo.equals("")||pass.equals("")){
                     alerter("le pseudo ou passe manque");
                 }else {
+                    //éviter le cas de répétition
                     if(listeDeUtilisateur.VerifierPresence(pseudo)){
                         alerter("le nom est occpué");
                         break;
                     }
-                    //on a besoin d'un hash code pour creer un nouveau compte
+                    //on a besoin d'un hash code de compte existant pour creer un nouveau compte
                     if(listeDeUtilisateur.getUtilisateurs().isEmpty()){
                         alerter("manque de compte nécessaire");
                         break;
                     }
+
+                    //créer un instance de requestService
                     requestService requestService = requestServiceFactory.createService(listeDeUtilisateur.getUrl(), requestService.class);
 
+                    //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
                     Call<ResponseBody> call = requestService.creer(listeDeUtilisateur.getUtilisateurs().get(listeDeUtilisateur.getUtilisateurs().size()-1).getHash(), pseudo, pass);
+
+                    //Envoyer la demande d'envoyer et collecter les résultats
                     call.enqueue(new Callback() {
                         @Override
                         public void onResponse(Call call, Response response) {
@@ -162,45 +161,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }
                         @Override
                         public void onFailure(Call call, Throwable t) {
-
                         }
                     });
-
                 }
-
-
-
                 break;
 
             case R.id.btnOK:
-
                 //éviter le cas d'entrée vide
                 if(pseudo.equals("")||pass.equals("")){
                     alerter("le pseudo ou passe manque");
                 }
                 else {
                     //cherchez dans la liste de utilisateurs
+                    // entrez dans la liste correspondante après la vérification de mot de passe
                     if(listeDeUtilisateur.VerifierPresence(pseudo)){
                         Utilisateur u=listeDeUtilisateur.ChercheUtilisateur(pseudo);
                         if(u.verifierMotDePasse(pass))
                             ConvertToListe(u.getPseudo(),u.getHash(),listeDeUtilisateur.getUrl());
                          else alerter("Revévifiez votre mot de passe");
                     }else {
-
+                        //Si cet utilisateur n'appartient pas à la liste de préférences
+                        //on fait la connexion auprès de l'API Renvoie un hash sans délai d'expiration
+                        //créer un instance de requestService
                         requestService post_request= requestServiceFactory.createService(listeDeUtilisateur.getUrl(), requestService.class);
 
+                        //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
                         Call<Contenu> call = post_request.authenticate(pseudo,pass);
                         Log.d("url",""+listeDeUtilisateur.getUrl());
 
+                        //Envoyer la demande d'envoyer et collecter les résultats
                         call.enqueue(new Callback<Contenu>() {
                             @Override
                             public void onResponse(Call<Contenu> call, Response<Contenu> response) {
                                 if(response.isSuccessful()){
                                     Log.d("hhhhh","true");
+                                    //met à jour la liste de préférences
                                     listeDeUtilisateur.AjouterUtilisateur(new Utilisateur(pseudo,pass,response.body().hash));
                                     sauvegarderUtilisateur(listeDeUtilisateur);
                                     ConvertToListe(pseudo,response.body().hash,listeDeUtilisateur.getUrl());
-                                }else alerter("le nom n'est pas ou le mot est incorrect");
+                                }else alerter("le nom n'est pas ou le mot de passe est incorrect");
                             }
 
                             @Override
@@ -209,11 +208,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
                         });
                     }
-                    //entrez un profil existant
                 }
             break;
-
-
 
             case R.id.edtPseudo:
                 alerter("saisir ton pseudo");
@@ -236,9 +232,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startActivity(liste);
     }
 
-
-
-
+    //Obtenir la liste d'utilisateurs
     public ListeDeUtilisateur getProfiles() {
         SharedPreferences preferences = getSharedPreferences("utilisateurs", MODE_PRIVATE);
         GsonBuilder builder=new GsonBuilder();
