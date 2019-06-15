@@ -30,15 +30,9 @@ public class ChoixListeActivity extends AppCompatActivity {
 
     //recevoir le EditText Button et RecyclerView
     private EditText edtListe;
-    private Button btnListe;
-
     private RecyclerView recyclerView;
-   // private ListeAdapter listAdapter;
+
     private ListeAdapter listeAdapter;
-
-
-    //Transpoteur de liste de nom de liste
-
 
     private String hash;
     private String url;
@@ -53,14 +47,13 @@ public class ChoixListeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_choix_liste);
 
         edtListe = findViewById(R.id.edtliste);
-        btnListe = findViewById(R.id.btnListe);
 
+        //Obtenir les données transférées de MainActivity
         hash = getIntent().getStringExtra("hash");
         url = getIntent().getStringExtra("url");
         pseudo = getIntent().getStringExtra("pseudo");
 
-
-
+        //créer un instance de requestService
         requestService = requestServiceFactory.createService(url, requestService.class);
 
         listeAdapter=new ListeAdapter((new ArrayList<String>()));
@@ -94,8 +87,11 @@ public class ChoixListeActivity extends AppCompatActivity {
                 alerter("Déjà existe");
             }else {
 
+                //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
                 Call<NouveauListe> call = requestService.addList(hash, userId, liste);
 
+                //Envoyer la demande d'envoyer et collecter les résultats
+                //si succès ajouter une nouvelle liste
                 call.enqueue(new Callback<NouveauListe>() {
                     @Override
                     public void onResponse(Call<NouveauListe> call, Response<NouveauListe> response) {
@@ -107,7 +103,6 @@ public class ChoixListeActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call call, Throwable t) {
-
                     }
                 });
         }}
@@ -116,7 +111,11 @@ public class ChoixListeActivity extends AppCompatActivity {
 
     public void getListedeLabel(String hash){
 
+        //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
         Call<Lists> call = requestService.getLists(hash);
+
+        //Envoyer la demande d'envoyer et collecter les résultats
+        //si succès récupérer des listes de l'utilisateur courant; le hash peut être fourni en chaîne de requête
         call.enqueue(new Callback<Lists>() {
             @Override
             public void onResponse(Call<Lists> call, Response<Lists> response) {
@@ -138,8 +137,12 @@ public class ChoixListeActivity extends AppCompatActivity {
 
     }
     private void getUserIdconneted(String hash, final String pseudo) {
+
+        //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
         Call<Users> call = requestService.getUsers(hash);
 
+        //Envoyer la demande d'envoyer et collecter les résultats
+        //si succès récupérer le ID d'utilisateur courant
         call.enqueue(new Callback<Users>() {
             @Override
             public void onResponse(Call<Users> call, Response<Users> response) {
@@ -185,7 +188,6 @@ public class ChoixListeActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
             String data = lists.get(position);
-
             holder.bind(data);
         }
 
@@ -218,10 +220,12 @@ public class ChoixListeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 switch (v.getId()){
                     case R.id.nom_Liste:
-
                         if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                            //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
                             Call<Lists> call = requestService.getLists(hash);
                             final String listeCliquee = lists.get(getAdapterPosition());
+                            //Envoyer la demande d'envoyer et collecter les résultats
+                            //si succès entrer dans la liste des Items de Liste courante
                             call.enqueue(new Callback<Lists>() {
                                 @Override
                                 public void onResponse(Call<Lists> call, Response<Lists> response) {
@@ -242,9 +246,12 @@ public class ChoixListeActivity extends AppCompatActivity {
                             });
                         }
                     case R.id.listSupp:
+                        //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
                         Call<Lists> callTotal = requestService.getLists(hash);
                         final String listCliquee = lists.get(getAdapterPosition());
 
+                        //Envoyer la demande d'envoyer et collecter les résultats
+                        //si succès supprimer la Liste courante
                         callTotal.enqueue(new Callback<Lists>() {
                             @Override
                             public void onResponse(Call<Lists> call, Response<Lists> response) {
@@ -252,7 +259,6 @@ public class ChoixListeActivity extends AppCompatActivity {
                                     for (Lists.ListsBean l : response.body().getLists()) {
                                         if (l.getLabel().equals(listCliquee)) {
                                             Call<ResponseBody> callSupp = requestService.deleteList(hash, userId, l.getId());
-
                                             callSupp.enqueue(new Callback() {
                                                 @Override
                                                 public void onResponse(Call call, Response response) { }
@@ -277,6 +283,13 @@ public class ChoixListeActivity extends AppCompatActivity {
 
                 }
             }
+
+        /**
+         * Entrez dans la liste d'Items
+         * @param hash
+         * @param url
+         * @param id
+         */
             public void convertToItems(String hash,String url,String id){
                 Intent i = new Intent(ChoixListeActivity.this, ShowListeActivity.class);
                 i.putExtra("hash", hash);
