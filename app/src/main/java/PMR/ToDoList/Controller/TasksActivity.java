@@ -32,7 +32,8 @@ import PMR.ToDoList.R;
 
 import static PMR.ToDoList.Controller.MainActivity.EXTRA_LOGIN;
 import static PMR.ToDoList.Controller.MainActivity.myUsersList;
-import static PMR.ToDoList.Controller.ToDoListActivity.EXTRA_IDLIST;
+import static PMR.ToDoList.Controller.ToDoListActivity.EXTRA_HASH;
+import static PMR.ToDoList.Controller.ToDoListActivity.EXTRA_TODOLIST;
 import static PMR.ToDoList.Controller.ToDoListActivity.toDoLists;
 
 public class TasksActivity extends AppCompatActivity {
@@ -54,8 +55,7 @@ public class TasksActivity extends AppCompatActivity {
 
     //TO DO LIST DE LA TACHE
     private ToDoList todolist;
-
-    //USER EN QUESTION
+    private String hash;
     private User user;
 
     private void alerter(String s) {
@@ -78,14 +78,12 @@ public class TasksActivity extends AppCompatActivity {
         concerné pour extraire ses to do listes.
          */
 
-        Intent intentMain = getIntent();
-        user = intentMain.getParcelableExtra(EXTRA_LOGIN);
-        todolist = intentMain.getParcelableExtra(EXTRA_IDLIST);
+        Intent intentTaskActivity = getIntent();
+        todolist = intentTaskActivity.getParcelableExtra(EXTRA_TODOLIST);
+        hash = intentTaskActivity.getStringExtra(EXTRA_HASH);
 
-        //alerter(String.valueOf(todolist.getId()));
-
-        //AsyncTask task = new PostAsyncTask();
-        //task.execute();
+        AsyncTask task = new PostAsyncTask();
+        task.execute();
 
         btnInsertTask=findViewById(R.id.btnInsertTask);
         textInsertTask=findViewById(R.id.textInsertTask);
@@ -161,7 +159,7 @@ public class TasksActivity extends AppCompatActivity {
         @Override
         protected ArrayList<Task> doInBackground(Object... objects) {
             try {
-                return (new DataProvider()).getTasks(user.getHash(), todolist.getId(), "GET");
+                return (new DataProvider()).getTasks(hash, todolist.getId(), "GET");
             } catch (JSONException e) {
                 e.printStackTrace();
                 return new ArrayList<>();
@@ -171,7 +169,7 @@ public class TasksActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(ArrayList<Task> myTasks){
             super.onPostExecute(myTasks);
-            alerter(String.valueOf(todolist.getId()));
+            todolist.setTasksList(myTasks);
             buildRecyclerView(myTasks);
         }
     }

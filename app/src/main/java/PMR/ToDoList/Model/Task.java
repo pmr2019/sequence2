@@ -11,7 +11,6 @@ import java.util.UUID;
 public class Task implements Parcelable {
     private int id;
     private String label;
-    private String url;
     private int checked;
 
     //CONSTRUCTEURS
@@ -21,10 +20,9 @@ public class Task implements Parcelable {
         this.label = label;
     }
 
-    public Task(int id, String label, String url, int checked) {
+    public Task(int id, String label, int checked) {
         this.id = id;
         this.label = label;
-        this.url = url;
         this.checked = checked;
     }
 
@@ -36,28 +34,25 @@ public class Task implements Parcelable {
 
     //GETTERS & SETTERS
 
+
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getLabel() {
         return label;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public int getChecked() {
-        return checked;
-    }
-
     public void setLabel(String label) {
         this.label = label;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public int getChecked() {
+        return checked;
     }
 
     public void setChecked(int checked) {
@@ -96,7 +91,6 @@ public class Task implements Parcelable {
         return "Task{" +
                 "id=" + id +
                 ", label='" + label + '\'' +
-                ", url='" + url + '\'' +
                 ", checked=" + checked +
                 '}';
     }

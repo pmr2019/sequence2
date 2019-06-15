@@ -29,6 +29,7 @@ public class ToDoList implements Parcelable {
     protected ToDoList(Parcel in) {
         id = in.readInt();
         label = in.readString();
+        tasksList= new ArrayList<>();
         in.readTypedList(this.tasksList, Task.CREATOR);
     }
 
@@ -84,9 +85,8 @@ public class ToDoList implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.label);
         dest.writeInt(this.id);
-
+        dest.writeString(this.label);
         dest.writeTypedList(this.tasksList);
     }
 

@@ -23,6 +23,7 @@ public class User implements Parcelable {
         pseudo = in.readString();
         password = in.readString();
         hash = in.readString();
+        toDoLists = new ArrayList<>();
         in.readTypedList(this.toDoLists, ToDoList.CREATOR);
     }
 
@@ -54,7 +55,7 @@ public class User implements Parcelable {
     }
 
     public void setToDoLists(ArrayList<ToDoList> toDoLists) {
-        toDoLists = toDoLists;
+        this.toDoLists = toDoLists;
     }
 
     // PARCELABLE IMPLEMENTATION

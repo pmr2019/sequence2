@@ -66,7 +66,9 @@ public class ToDoListActivity extends AppCompatActivity {
     //USER DE LA TACHE
     private User user;
 
-    public static final String EXTRA_IDLIST = "IDLIST";
+    public static final String EXTRA_HASH = "TAG_HASH";
+    public static final String EXTRA_TODOLIST = "TAG_TODOLIST";
+
 
     //Fonction pour la création de toasts pour le débug notamment.
     private void alerter(String s) {
@@ -133,10 +135,10 @@ public class ToDoListActivity extends AppCompatActivity {
             //BOUTON QUAND ON CLIQUE SUR UNE CARD
             public void onItemClick(int position) {
                 Intent intent=new Intent(ToDoListActivity.this,TasksActivity.class);
-                intent.putExtra(EXTRA_LOGIN, user);
-                intent.putExtra(EXTRA_IDLIST, user.getToDoLists().get(position));
-                alerter(String.valueOf(user.getToDoLists().get(position).getId()));
-                startActivity(intent);            }
+                intent.putExtra(EXTRA_HASH, user.getHash());
+                intent.putExtra(EXTRA_TODOLIST, user.getToDoLists().get(position));
+                startActivity(intent);
+                }
             //BOUTON QUAND ON CLIQUE SUR DELETE
             @Override
             public void onDeleteClick(int position) {

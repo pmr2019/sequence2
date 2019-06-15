@@ -126,7 +126,7 @@ public class DataProvider {
             String url = task.getString("url");
             int checked = task.getInt("checked");
 
-            Task myTask = new Task(idTask, labelTask, url, checked);
+            Task myTask = new Task(idTask, labelTask, checked);
             myTasks.add(myTask);
         }
 
