@@ -58,19 +58,20 @@ public class ChoixListeActivity extends AppCompatActivity {
         pseudo = getIntent().getStringExtra("pseudo");
 
 
+        //créer adapter
         listeAdapter=new ListeAdapter((new ArrayList<String>()));
-        recyclerView = findViewById(R.id.recyclerView);
-        //afficher la liste de noms dans le RecyclerView
-        recyclerView.setAdapter(listeAdapter);
-
 
         //creer un instance de requestService
         requestService = requestServiceFactory.createService(url, requestService.class);
 
-        //obtenir la liste de nom de liste dans le profile
+        //obtenir la liste de nom de liste dans cet utilisateur
         getListedeLabel(hash);
+
         getUserIdconneted(hash,pseudo);
 
+        //afficher la liste de noms dans le RecyclerView
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setAdapter(listeAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -85,9 +86,11 @@ public class ChoixListeActivity extends AppCompatActivity {
     //la fonction pour creer une nouvelle liste quand on cliquer le button "creer votre liste"
     public void addnewlist(View v) {
         final String liste = edtListe.getText().toString();
+        //éviter le cas d'entrée vide
         if (liste.equals("")) {
             alerter("tapez la nouvelle liste");
         } else {
+            //éviter le cas de répétition
             if(listeAdapter.verfierNom(liste)){
                 alerter("Déjà existe");
             }else {
@@ -115,6 +118,10 @@ public class ChoixListeActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * obtenir la liste de liste d'utilisateur courant
+     * @param hash
+     */
     public void getListedeLabel(String hash){
 
         //Encapsuler la demande d'envoyer d'après les règles de Interface requestService

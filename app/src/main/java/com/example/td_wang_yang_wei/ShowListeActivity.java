@@ -54,17 +54,19 @@ public class ShowListeActivity extends AppCompatActivity {
 
         edtItem = findViewById(R.id.edit_item);
 
+        //obtenir les donnees de ChoixListeActivity
         hash = getIntent().getStringExtra("hash");
         url = getIntent().getStringExtra("url");
         listId = getIntent().getStringExtra("listId");
         alerter(listId);
-        //obtenir list de item
-        //ItemsData = ItemsData(profile,liste);
 
         //creer Adapter
         itemAdapter = new ItemAdapter(new ArrayList<Item>());
 
+        //creer un instance de requestService
         requestService = requestServiceFactory.createService(url, requestService.class);
+
+        //obtenir les items de ce Liste
         getListedeItem(hash,listId);
         //afficher la liste de noms dans le RecyclerView
         recyclerView = findViewById(R.id.list_show);
@@ -95,13 +97,18 @@ public class ShowListeActivity extends AppCompatActivity {
     //ajouter nouveau item
     public void addnewitem(View v) {
         final String item = edtItem.getText().toString();
+        //éviter le cas d'entrée vide
         if (item.equals("")) {
             alerter("tapez la nouvelle item");
         } else {
+            //éviter le cas de répétition
             if (itemAdapter.verifierNom(item)) {
                 alerter("déjà existe");
             } else {
+                //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
                 Call<NouveauItem> call = requestService.addItem(hash, listId, item);
+                //Envoyer la demande d'envoyer et collecter les résultats
+                //si succès ajouter un nouveau Item
                 call.enqueue(new Callback<NouveauItem>() {
                     @Override
                     public void onResponse(Call<NouveauItem> call, Response<NouveauItem> response) {
@@ -119,8 +126,11 @@ public class ShowListeActivity extends AppCompatActivity {
         }
     }
 
-
-
+    /**
+     * obtenir la liste de Item de Liste courant
+     * @param hash
+     * @param id
+     */
     public void getListedeItem(String hash,String id){
 
         Call<Items> call = requestService.getItems(hash,id);
@@ -212,36 +222,39 @@ public class ShowListeActivity extends AppCompatActivity {
                 switch(v.getId()){
                     case R.id.CBItem:
                         if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                        Call<Items> callChange = requestService.getItems(hash, listId);
-                        final String itemCliquee = ItemsData.get(getAdapterPosition()).getDescription();
-                        callChange.enqueue(new Callback<Items>() {
-                            @Override
-                            public void onResponse(Call<Items> call, Response<Items> response) {
-                                if (response.isSuccessful()) {
-                                    if(!response.body().getItems().isEmpty())
-                                        for (int i=0;i<response.body().getItems().size();i++) {
-                                            if (response.body().getItems().get(i).getLabel().equals(itemCliquee)) {
-                                                Call callSave;
-                                                if (response.body().getItems().get(i).getChecked().equals("0")) {
-                                                    callSave = requestService.cliqueItem(hash, listId, response.body().getItems().get(i).getId(), "1");
-                                                } else {
-                                                    callSave = requestService.cliqueItem(hash, listId, response.body().getItems().get(i).getId(), "0");
+                            //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
+                            Call<Items> callChange = requestService.getItems(hash, listId);
+                            final String itemCliquee = ItemsData.get(getAdapterPosition()).getDescription();
+                            //Envoyer la demande d'envoyer et collecter les résultats
+                            //si succès
+                            callChange.enqueue(new Callback<Items>() {
+                                @Override
+                                public void onResponse(Call<Items> call, Response<Items> response) {
+                                    if (response.isSuccessful()) {
+                                        if(!response.body().getItems().isEmpty())
+                                            for (int i=0;i<response.body().getItems().size();i++) {
+                                                if (response.body().getItems().get(i).getLabel().equals(itemCliquee)) {
+                                                    Call callSave;
+                                                    if (response.body().getItems().get(i).getChecked().equals("0")) {
+                                                        callSave = requestService.cliqueItem(hash, listId, response.body().getItems().get(i).getId(), "1");
+                                                    } else {
+                                                        callSave = requestService.cliqueItem(hash, listId, response.body().getItems().get(i).getId(), "0");
+                                                    }
+                                                    callSave.enqueue(new Callback() {
+                                                        @Override
+                                                        public void onResponse(Call call, Response response) { }
+                                                        @Override
+                                                        public void onFailure(Call call, Throwable t) { }
+                                                    });
                                                 }
-                                                callSave.enqueue(new Callback() {
-                                                    @Override
-                                                    public void onResponse(Call call, Response response) { }
-                                                    @Override
-                                                    public void onFailure(Call call, Throwable t) { }
-                                                });
                                             }
-                                        }
+                                    }
                                 }
-                            }
 
-                            @Override
-                            public void onFailure(Call call, Throwable t) {
-                                alerter("pas de connexion");
-                            }
+                                @Override
+                                public void onFailure(Call call, Throwable t) {
+                                    alerter("pas de connexion");
+                                }
                         });break;}
 
                     case R.id.itemSupp:
