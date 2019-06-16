@@ -145,4 +145,10 @@ public class DataProvider {
         String qs = "/lists?label=" + label + "&hash=" + hash;
         requete (qs, methode);
     }
+
+    public void postItem (int idList, String label, String hash, String methode){
+
+        String qs = "/lists/" + idList + "/items?label=" + label + "&hash=" + hash;
+        requete (qs, methode);
+    }
 }

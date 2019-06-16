@@ -48,6 +48,7 @@ public class TasksActivity extends AppCompatActivity {
 
     //PARTIE DONNEES
     private ArrayList<Task> tasks;
+    String nameTask;
 
     //INSERT TASK
     private Button btnInsertTask;
@@ -91,10 +92,15 @@ public class TasksActivity extends AppCompatActivity {
         btnInsertTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String nameTask= textInsertTask.getText().toString();
+                nameTask= textInsertTask.getText().toString();
                 textInsertTask.setText("");
 
                 if (!nameTask.equals("")){
+                    AsyncTask task2 = new PostAsyncTaskAdd();
+                    task2.execute();
+
+                    AsyncTask task3 = new PostAsyncTask();
+                    task3.execute();
 
                     taskAdapter.notifyItemInserted(taskAdapter.getItemCount()-1);
                 }
@@ -164,6 +170,27 @@ public class TasksActivity extends AppCompatActivity {
             todolist.setTasksList(myTasks);
             buildRecyclerView(myTasks);
         }
+    }
+
+    public class PostAsyncTaskAdd extends AsyncTask<Object, Void, Integer> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Integer doInBackground(Object... objects) {
+            (new DataProvider()).postItem(todolist.getId(), nameTask, hash, "POST");
+            return 1;
+        }
+
+        @Override
+        protected void onPostExecute(Integer id) {
+            super.onPostExecute(id);
+            Log.i("TAG", "Item créé correctement");
+        }
+
     }
 
 }
