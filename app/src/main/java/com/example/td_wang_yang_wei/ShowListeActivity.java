@@ -133,7 +133,10 @@ public class ShowListeActivity extends AppCompatActivity {
      */
     public void getListedeItem(String hash,String id){
 
+        //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
         Call<Items> call = requestService.getItems(hash,id);
+        //Envoyer la demande d'envoyer et collecter les résultats
+        //si succès obtenir la liste de Item
         call.enqueue(new Callback<Items>() {
             @Override
             public void onResponse(Call<Items> call, Response<Items> response) {
@@ -226,7 +229,7 @@ public class ShowListeActivity extends AppCompatActivity {
                             Call<Items> callChange = requestService.getItems(hash, listId);
                             final String itemCliquee = ItemsData.get(getAdapterPosition()).getDescription();
                             //Envoyer la demande d'envoyer et collecter les résultats
-                            //si succès
+                            //si succès, transformer 0 en 1 / transformer 1 en 0
                             callChange.enqueue(new Callback<Items>() {
                                 @Override
                                 public void onResponse(Call<Items> call, Response<Items> response) {
@@ -259,37 +262,39 @@ public class ShowListeActivity extends AppCompatActivity {
 
                     case R.id.itemSupp:
                         if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                        Call<Items> callTotal = requestService.getItems(hash, listId);
-                        final String item_selected = ItemsData.get(getAdapterPosition()).getDescription();
+                            //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
+                            Call<Items> callTotal = requestService.getItems(hash, listId);
+                            final String item_selected = ItemsData.get(getAdapterPosition()).getDescription();
 
-                        callTotal.enqueue(new Callback<Items>() {
-                            @Override
-                            public void onResponse(Call<Items> call, Response<Items> response) {
-                                if (response.isSuccessful()) {
-                                    for (Items.ItemsBean i : response.body().getItems()) {
-                                        if (i.getLabel().equals(item_selected)) {
-                                            Call<ResponseBody> callSupp = requestService.deleteItem(hash, listId, i.getId());
+                            //Envoyer la demande d'envoyer et collecter les résultats
+                            //si succès supprimer l'Item cliqué
+                            callTotal.enqueue(new Callback<Items>() {
+                                @Override
+                                public void onResponse(Call<Items> call, Response<Items> response) {
+                                    if (response.isSuccessful()) {
+                                        for (Items.ItemsBean i : response.body().getItems()) {
+                                            if (i.getLabel().equals(item_selected)) {
+                                                Call<ResponseBody> callSupp = requestService.deleteItem(hash, listId, i.getId());
+                                                callSupp.enqueue(new Callback() {
+                                                    @Override
+                                                    public void onResponse(Call call, Response response) { }
 
-                                            callSupp.enqueue(new Callback() {
-                                                @Override
-                                                public void onResponse(Call call, Response response) { }
-
-                                                @Override
-                                                public void onFailure(Call call, Throwable t) { }
-                                            });
+                                                    @Override
+                                                    public void onFailure(Call call, Throwable t) { }
+                                                });
+                                            }
                                         }
                                     }
                                 }
-                            }
 
-                            @Override
-                            public void onFailure(Call call, Throwable t) {
-                                alerter("pas de connexion");
-                            }
-                        });
-                        ItemsData.remove(getAdapterPosition());
-                        notifyItemRemoved(getAdapterPosition());
-                        break;}
+                                @Override
+                                public void onFailure(Call call, Throwable t) {
+                                    alerter("pas de connexion");
+                                }
+                            });
+                            ItemsData.remove(getAdapterPosition());
+                            notifyItemRemoved(getAdapterPosition());
+                            break;}
                 }
 
 

@@ -37,6 +37,7 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        //obtenir la liste de préférences
         listeDeUtilisateur=getProfiles();
         listeDeNom=ListeDeNom(listeDeUtilisateur.getUtilisateurs());
         settingAdapter=new SettingAdapter(listeDeNom);
@@ -49,6 +50,11 @@ public class SettingsActivity extends AppCompatActivity {
         edtUrl.setText(listeDeUtilisateur.getUrl());
     }
 
+    /**
+     * obtenir la liste d'utilisateur
+     * @param u
+     * @return
+     */
     public List<String> ListeDeNom(List<Utilisateur> u){
         List<String>data=new ArrayList<>();
         if(!u.isEmpty()){
@@ -58,6 +64,10 @@ public class SettingsActivity extends AppCompatActivity {
         }return null;
     }
 
+    /**
+     * obtenir la listeDeutilisateur correspondant
+     * @return
+     */
     public ListeDeUtilisateur getProfiles() {
         SharedPreferences preferences = getSharedPreferences("utilisateurs", MODE_PRIVATE);
         GsonBuilder builder=new GsonBuilder();
@@ -101,7 +111,6 @@ public class SettingsActivity extends AppCompatActivity {
             SettingViewHolder(@NonNull View itemView) {
                 super(itemView);
                 textView = itemView.findViewById(R.id.setting_name);
-
                 itemView.setOnClickListener(this);
             }
 
@@ -109,7 +118,7 @@ public class SettingsActivity extends AppCompatActivity {
                 textView.setText(data);
             }
 
-            //sauter au MainActivity corresponde quand on clique la liste.
+            //sauter au MainActivity correspondant quand on clique la liste.
             @Override
             public void onClick(View v) {
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
