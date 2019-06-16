@@ -53,6 +53,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.Settin
     @Override
     public void onBindViewHolder(@NonNull SettingViewHolder holder, int position) {
         User user = settings.get(position);
+        holder.hash.setText(user.getHash());
         holder.login.setText(user.getPseudo());
     }
 
@@ -69,12 +70,14 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.Settin
     public class SettingViewHolder extends RecyclerView.ViewHolder{
 
         public TextView login;
+        public TextView hash;
         public ImageView btnDeleteSetting;
 
         public SettingViewHolder(@NonNull View itemView,  final OnItemClickListener settingListener) {
             super(itemView);
             login=itemView.findViewById(R.id.textSetting);
             btnDeleteSetting=itemView.findViewById(R.id.btnDeleteSetting);
+            hash=itemView.findViewById(R.id.hash);
 
             btnDeleteSetting.setOnClickListener(new View.OnClickListener() {
                 @Override

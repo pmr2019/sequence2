@@ -26,6 +26,8 @@ import PMR.ToDoList.Model.Task;
 import PMR.ToDoList.Model.ToDoList;
 import PMR.ToDoList.Model.User;
 
+import static PMR.ToDoList.Controller.MainActivity.urlApi;
+
 public class DataProvider {
 
     private String convertStreamToString(InputStream in) throws IOException {
@@ -48,7 +50,7 @@ public class DataProvider {
 
     public String requete(String qs, String methode) {
 
-        String urlData = "http://tomnab.fr/todo-api/";
+        String urlData = urlApi;
 
         if (qs != null)
         {

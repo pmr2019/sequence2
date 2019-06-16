@@ -27,6 +27,8 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -51,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
 
     //LISTE DES UTILISATEURS ENREGISTRÉS DANS LA BASE DE DONNÉES
     public static ArrayList<User> myUsersList;
+    private TextView tvUrlApi;
+    public static String urlApi;
 
     //UTILISATEUR INITIANT LA CONNEXION
     private User myUser;
@@ -74,6 +78,15 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        myUsersList = getUsersFromFile();
+        try {
+            urlApi= getUrlApiFromJson();
+        } catch (IOException e) {
+            e.printStackTrace();
+            urlApi= "http://tomnab.fr/todo-api/";
+            sauvegarderUrlApiToJsonFile(urlApi);
+        }
 
         //AJOUT DES INFORMATIONS DE LA TOOLBAR
         toolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.toolbar);
@@ -148,12 +161,15 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
             // MENU SETTINGS AVEC LA LISTE DES UTILISATEURS
             case R.id.menu_settings:
 
-                if (myUsersList!=null){
+                if (!myUsersList.isEmpty()){
                     Intent toSettings = new Intent(MainActivity.this,SettingsActivity.class);
                     startActivity(toSettings);
                     break;
                 }
-                else alerter("Veuillez d'abord créer un pseudo");
+                else {
+                    alerter("Veuillez d'abord vous connecter");
+                    break;
+                }
 
             // MENU SETTINGS URL AVEC L'URL UTILISEE PAR L'API
             case R.id.menu_settings_url:
@@ -181,7 +197,6 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
             outputStream = openFileOutput("pseudos", Context.MODE_PRIVATE);
             outputStream.write(fileContents.getBytes());
             outputStream.close();
-            Log.i("TODO_Romain", "Sauvegarde du fichier Json");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -208,6 +223,48 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         else return usersList;
     }
 
+
+    //Partie GSON
+    //Ecrire des données dans la mémoire interne du téléphone
+
+    public void sauvegarderUrlApiToJsonFile(String urlApi) {
+
+        final GsonBuilder builder = new GsonBuilder(); //assure la qualité des données Json
+        final Gson gson = builder.setPrettyPrinting().create();
+        String fileName = "UrlApi"; //nom du fichier Json
+        FileOutputStream outputStream; //permet de sérialiser correctement user
+
+        String fileContents = gson.toJson(urlApi);
+
+        try {
+            outputStream = openFileOutput("UrlApi", Context.MODE_PRIVATE);
+            outputStream.write(fileContents.getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //Fonction recréant à chaque ouverture de l'appli une liste de users
+    private String getUrlApiFromJson() throws IOException {
+        InputStream in = openFileInput("UrlApi");
+        try {
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+            return sb.toString();
+        }finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 
     // PARTIE VERIFICATION DE LA CONNEXION
@@ -248,11 +305,23 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         @Override
         protected void onPostExecute(String hash){
             super.onPostExecute(hash);
-            alerter(hash);
 
             if (hash!=null) {
                 myUser = new User (pseudo, password);
                 myUser.setHash(hash);
+
+                boolean estDansSettings=false;
+
+                for (int i = 0; i < myUsersList.size(); i++) {
+                    if (myUsersList.get(i).getHash().equals(myUser.getHash())) {
+                        estDansSettings=true;
+                    }
+                }
+
+                if (!estDansSettings){
+                    myUsersList.add(myUser);
+                    sauvegarderUserToJsonFile(myUsersList);
+                }
 
                 Intent toToDoListActivity = new Intent(MainActivity.this, ToDoListActivity.class);
                 toToDoListActivity.putExtra(EXTRA_LOGIN, myUser);

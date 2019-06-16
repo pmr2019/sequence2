@@ -3,6 +3,8 @@ package PMR.ToDoList.Model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 
 public class User implements Parcelable {
