@@ -156,6 +156,10 @@ public class TasksActivity extends AppCompatActivity {
 
     }
 
+    //PARTIE ASYNCTASK
+
+    //AsyncTask responsable de la récupération de la liste des items
+
     public class PostAsyncTask extends AsyncTask<Object, Void, ArrayList<Task>> {
 
         @Override
@@ -181,6 +185,8 @@ public class TasksActivity extends AppCompatActivity {
         }
     }
 
+    //AsyncTask responsable de l'ajout d'un item
+
     public class PostAsyncTaskAdd extends AsyncTask<Object, Void, Integer> {
 
         @Override
@@ -201,6 +207,8 @@ public class TasksActivity extends AppCompatActivity {
         }
 
     }
+
+    //AsyncTask responsable de statut "coché" / "décoché" d'un item
 
     public class PostAsyncTaskChecked extends AsyncTask<Object, Void, Integer> {
 
