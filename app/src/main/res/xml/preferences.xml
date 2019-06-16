@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:title="Login"
+        android:key="login"
+        android:defaultValue=""
+        />
+
+    <EditTextPreference
+        android:title="API_URL"
+        android:key="api_url"
+        android:defaultValue="http://tomnab.fr/todo-api"
+        />
+</PreferenceScreen>
