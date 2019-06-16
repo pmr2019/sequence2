@@ -105,9 +105,9 @@ public class ShowListeActivity extends AppCompatActivity {
             if (itemAdapter.verifierNom(item)) {
                 alerter("déjà existe");
             } else {
-                //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
+                //Encapsuler la requête d'après les règles de Interface requestService
                 Call<NouveauItem> call = requestService.addItem(hash, listId, item);
-                //Envoyer la demande d'envoyer et collecter les résultats
+                //Envoyer la requête et collecter les résultats
                 //si succès ajouter un nouveau Item
                 call.enqueue(new Callback<NouveauItem>() {
                     @Override
@@ -133,9 +133,9 @@ public class ShowListeActivity extends AppCompatActivity {
      */
     public void getListedeItem(String hash,String id){
 
-        //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
+        //Encapsuler la requête d'après les règles de Interface requestService
         Call<Items> call = requestService.getItems(hash,id);
-        //Envoyer la demande d'envoyer et collecter les résultats
+        //Envoyer la requête et collecter les résultats
         //si succès obtenir la liste de Item
         call.enqueue(new Callback<Items>() {
             @Override
@@ -225,10 +225,10 @@ public class ShowListeActivity extends AppCompatActivity {
                 switch(v.getId()){
                     case R.id.CBItem:
                         if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                            //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
+                            //Encapsuler la requête d'après les règles de Interface requestService
                             Call<Items> callChange = requestService.getItems(hash, listId);
                             final String itemCliquee = ItemsData.get(getAdapterPosition()).getDescription();
-                            //Envoyer la demande d'envoyer et collecter les résultats
+                            //Envoyer la requête et collecter les résultats
                             //si succès, transformer 0 en 1 / transformer 1 en 0
                             callChange.enqueue(new Callback<Items>() {
                                 @Override
@@ -262,11 +262,11 @@ public class ShowListeActivity extends AppCompatActivity {
 
                     case R.id.itemSupp:
                         if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                            //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
+                            //Encapsuler la requête d'après les règles de Interface requestService
                             Call<Items> callTotal = requestService.getItems(hash, listId);
                             final String item_selected = ItemsData.get(getAdapterPosition()).getDescription();
 
-                            //Envoyer la demande d'envoyer et collecter les résultats
+                            //Envoyer la requête et collecter les résultats
                             //si succès supprimer l'Item cliqué
                             callTotal.enqueue(new Callback<Items>() {
                                 @Override

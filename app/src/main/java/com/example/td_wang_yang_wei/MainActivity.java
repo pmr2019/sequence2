@@ -146,10 +146,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     //créer un instance de requestService
                     requestService requestService = requestServiceFactory.createService(listeDeUtilisateur.getUrl(), requestService.class);
 
-                    //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
+                    //Encapsuler la requête d'après les règles de Interface requestService
                     Call<ResponseBody> call = requestService.creer(listeDeUtilisateur.getUtilisateurs().get(listeDeUtilisateur.getUtilisateurs().size()-1).getHash(), pseudo, pass);
 
-                    //Envoyer la demande d'envoyer et collecter les résultats
+                    //Envoyer la requête et collecter les résultats
                     //si succès créer un nouveau utilisateur
                     call.enqueue(new Callback() {
                         @Override
@@ -186,11 +186,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         //créer un instance de requestService
                         requestService post_request= requestServiceFactory.createService(listeDeUtilisateur.getUrl(), requestService.class);
 
-                        //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
+                        //Encapsuler la requête d'après les règles de Interface requestService
                         Call<Contenu> call = post_request.authenticate(pseudo,pass);
                         Log.d("url",""+listeDeUtilisateur.getUrl());
 
-                        //Envoyer la demande d'envoyer et collecter les résultats
+                        //Envoyer la requête et collecter les résultats
                         //si succès ajouter cet utilisateur dans la liste de préférences & entrer dans la liste correspondant
                         call.enqueue(new Callback<Contenu>() {
                             @Override

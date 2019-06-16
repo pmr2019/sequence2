@@ -66,7 +66,6 @@ public class ChoixListeActivity extends AppCompatActivity {
 
         //obtenir la liste de nom de liste dans cet utilisateur
         getListedeLabel(hash);
-
         getUserIdconneted(hash,pseudo);
 
         //afficher la liste de noms dans le RecyclerView
@@ -95,10 +94,10 @@ public class ChoixListeActivity extends AppCompatActivity {
                 alerter("Déjà existe");
             }else {
 
-                //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
+                //Encapsuler la requête d'après les règles de Interface requestService
                 Call<NouveauListe> call = requestService.addList(hash, userId, liste);
 
-                //Envoyer la demande d'envoyer et collecter les résultats
+                //Envoyer la requête et collecter les résultats
                 //si succès ajouter une nouvelle liste
                 call.enqueue(new Callback<NouveauListe>() {
                     @Override
@@ -124,10 +123,10 @@ public class ChoixListeActivity extends AppCompatActivity {
      */
     public void getListedeLabel(String hash){
 
-        //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
+        //Encapsuler la requête d'après les règles de Interface requestService
         Call<Lists> call = requestService.getLists(hash);
 
-        //Envoyer la demande d'envoyer et collecter les résultats
+        //Envoyer la requête et collecter les résultats
         //si succès récupérer des listes de l'utilisateur courant; le hash peut être fourni en chaîne de requête
         call.enqueue(new Callback<Lists>() {
             @Override
@@ -151,10 +150,10 @@ public class ChoixListeActivity extends AppCompatActivity {
     }
     private void getUserIdconneted(String hash, final String pseudo) {
 
-        //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
+        //Encapsuler la requête d'après les règles de Interface requestService
         Call<Users> call = requestService.getUsers(hash);
 
-        //Envoyer la demande d'envoyer et collecter les résultats
+        //Envoyer la requête et collecter les résultats
         //si succès récupérer le ID d'utilisateur courant
         call.enqueue(new Callback<Users>() {
             @Override
@@ -237,11 +236,11 @@ public class ChoixListeActivity extends AppCompatActivity {
                 switch (v.getId()){
                     case R.id.nom_Liste:
                         if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                            //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
+                            //Encapsuler la requête d'après les règles de Interface requestService
                             Call<Lists> call = requestService.getLists(hash);
                             final String listeCliquee = lists.get(getAdapterPosition());
 
-                            //Envoyer la demande d'envoyer et collecter les résultats
+                            //Envoyer la requête et collecter les résultats
                             //si succès entrer dans la liste des Items de Liste courante
                             call.enqueue(new Callback<Lists>() {
                                 @Override
@@ -264,11 +263,11 @@ public class ChoixListeActivity extends AppCompatActivity {
 
                         }break;
                     case R.id.listSupp:
-                        //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
+                        //Encapsuler la requête d'après les règles de Interface requestService
                         Call<Lists> callTotal = requestService.getLists(hash);
                         final String listCliquee = lists.get(getAdapterPosition());
 
-                        //Envoyer la demande d'envoyer et collecter les résultats
+                        //Envoyer la requête et collecter les résultats
                         //si succès obtenir les listes de cet utilisateur courant
                         callTotal.enqueue(new Callback<Lists>() {
                             @Override
@@ -276,10 +275,10 @@ public class ChoixListeActivity extends AppCompatActivity {
                                 if (response.isSuccessful()) {
                                     for (Lists.ListsBean l : response.body().getLists()) {
                                         if (l.getLabel().equals(listCliquee)) {
-                                            //Encapsuler la demande d'envoyer d'après les règles de Interface requestService
+                                            //Encapsuler la requête d'après les règles de Interface requestService
                                             Call<ResponseBody> callSupp = requestService.deleteList(hash, userId, l.getId());
 
-                                            //Envoyer la demande d'envoyer et collecter les résultats
+                                            //Envoyer la requête et collecter les résultats
                                             callSupp.enqueue(new Callback() {
                                                 @Override
                                                 public void onResponse(Call call, Response response) { }
