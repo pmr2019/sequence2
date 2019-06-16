@@ -150,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Call<ResponseBody> call = requestService.creer(listeDeUtilisateur.getUtilisateurs().get(listeDeUtilisateur.getUtilisateurs().size()-1).getHash(), pseudo, pass);
 
                     //Envoyer la demande d'envoyer et collecter les résultats
+                    //si succès créer un nouveau utilisateur
                     call.enqueue(new Callback() {
                         @Override
                         public void onResponse(Call call, Response response) {
@@ -190,6 +191,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Log.d("url",""+listeDeUtilisateur.getUrl());
 
                         //Envoyer la demande d'envoyer et collecter les résultats
+                        //si succès ajouter cet utilisateur dans la liste de préférences & entrer dans la liste correspondant
                         call.enqueue(new Callback<Contenu>() {
                             @Override
                             public void onResponse(Call<Contenu> call, Response<Contenu> response) {
@@ -221,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
-     * entrez un profil existant
+     * entrer un utilisateur existant
      * @param pseudo
      */
     public void ConvertToListe(String pseudo,String hash,String url){
