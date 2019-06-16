@@ -47,8 +47,8 @@ public class TasksActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager taskLayoutManager;
 
     //PARTIE DONNEES
-    private ArrayList<Task> tasks;
-    String nameTask;
+    private String nameTask;
+    private Task taskChecked;
 
     //INSERT TASK
     private Button btnInsertTask;
@@ -132,10 +132,19 @@ public class TasksActivity extends AppCompatActivity {
             //BOUTON QUAND ON CLIQUE SUR UNE CHECKBOX
             @Override
             public void onCheckBoxClick(int position) {
-                if (tasks.get(position).getChecked()==1) {
-                    tasks.get(position).setChecked(0);
+                if (todolist.getTasksList().get(position).getChecked()==1) {
+                    todolist.getTasksList().get(position).setChecked(0);
+                    taskChecked = todolist.getTasksList().get(position);
+
+                    AsyncTask task4 = new PostAsyncTaskChecked();
+                    task4.execute();
+
                 }
-                else {tasks.get(position).setChecked(1);}
+                else {todolist.getTasksList().get(position).setChecked(1);}
+                    taskChecked = todolist.getTasksList().get(position);
+
+                    AsyncTask task4 = new PostAsyncTaskChecked();
+                    task4.execute();
             }
         });
     }
@@ -188,7 +197,28 @@ public class TasksActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Integer id) {
             super.onPostExecute(id);
-            Log.i("TAG", "Item créé correctement");
+            Log.i("TAG", "Tâche bien ajoutée");
+        }
+
+    }
+
+    public class PostAsyncTaskChecked extends AsyncTask<Object, Void, Integer> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Integer doInBackground(Object... objects) {
+            (new DataProvider()).itemChecked(todolist.getId(), taskChecked.getId(),taskChecked.getChecked(), hash, "PUT");
+            return 1;
+        }
+
+        @Override
+        protected void onPostExecute(Integer id) {
+            super.onPostExecute(id);
+            Log.i("TAG", "Item correctement coché");
         }
 
     }

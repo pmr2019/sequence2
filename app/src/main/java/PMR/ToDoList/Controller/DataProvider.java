@@ -151,4 +151,10 @@ public class DataProvider {
         String qs = "/lists/" + idList + "/items?label=" + label + "&hash=" + hash;
         requete (qs, methode);
     }
+
+    public void itemChecked (int idList, int idTask, int checked, String hash, String methode){
+
+        String qs = "/lists/" + idList + "/items/" + idTask + "?check=" + checked + "&hash=" + hash;
+        requete (qs, methode);
+    }
 }
