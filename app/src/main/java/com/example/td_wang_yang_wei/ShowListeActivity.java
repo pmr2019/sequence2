@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -189,7 +188,7 @@ public class ShowListeActivity extends AppCompatActivity {
         }
 
         //creer MyviewHolder dans le class Adapter
-        class MyViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener, View.OnClickListener{
+        class MyViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener{
 
             private final CheckBox checkBox;
             private final ImageButton imageButton;
@@ -199,85 +198,92 @@ public class ShowListeActivity extends AppCompatActivity {
                 checkBox = itemView.findViewById(R.id.CBItem);
                 imageButton=itemView.findViewById(R.id.itemSupp);
                 imageButton.setOnClickListener(this);
-                checkBox.setOnCheckedChangeListener(this);
+                checkBox.setOnClickListener(this);
             }
             void bind(Item data){
                 checkBox.setText(data.getDescription());
                 checkBox.setChecked(data.getFait());
             }
 
-            
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Call<Items> callChange = requestService.getItems(hash, listId);
-                final String itemCliquee = ItemsData.get(getAdapterPosition()).getDescription();
-                callChange.enqueue(new Callback<Items>() {
-                    @Override
-                    public void onResponse(Call<Items> call, Response<Items> response) {
-                        if (response.isSuccessful()) {
-                            if(!response.body().getItems().isEmpty())
-                            for (int i=0;i<response.body().getItems().size();i++) {
-                                if (response.body().getItems().get(i).getLabel().equals(itemCliquee)) {
-                                    Call callSave;
-                                    if (response.body().getItems().get(i).getChecked().equals("0")) {
-                                        callSave = requestService.cliqueItem(hash, listId, response.body().getItems().get(i).getId(), "1");
-                                    } else {
-                                        callSave = requestService.cliqueItem(hash, listId, response.body().getItems().get(i).getId(), "0");
-                                    }
-                                    callSave.enqueue(new Callback() {
-                                        @Override
-                                        public void onResponse(Call call, Response response) { }
-                                        @Override
-                                        public void onFailure(Call call, Throwable t) { }
-                                    });
-                                }
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call call, Throwable t) {
-                        alerter("pas de connexion");
-                    }
-                });
-
-            }
-
 
             @Override
             public void onClick(View v) {
-                Call<Items> callTotal = requestService.getItems(hash, listId);
-                final String item_selected = ItemsData.get(getAdapterPosition()).getDescription();
 
-                callTotal.enqueue(new Callback<Items>() {
-                    @Override
-                    public void onResponse(Call<Items> call, Response<Items> response) {
-                        if (response.isSuccessful()) {
-                            for (Items.ItemsBean i : response.body().getItems()) {
-                                if (i.getLabel().equals(item_selected)) {
-                                    Call<ResponseBody> callSupp = requestService.deleteItem(hash, listId, i.getId());
-
-                                    callSupp.enqueue(new Callback() {
-                                        @Override
-                                        public void onResponse(Call call, Response response) { }
-
-                                        @Override
-                                        public void onFailure(Call call, Throwable t) { }
-                                    });
+                switch(v.getId()){
+                    case R.id.CBItem:
+                        if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        Call<Items> callChange = requestService.getItems(hash, listId);
+                        final String itemCliquee = ItemsData.get(getAdapterPosition()).getDescription();
+                        callChange.enqueue(new Callback<Items>() {
+                            @Override
+                            public void onResponse(Call<Items> call, Response<Items> response) {
+                                if (response.isSuccessful()) {
+                                    if(!response.body().getItems().isEmpty())
+                                        for (int i=0;i<response.body().getItems().size();i++) {
+                                            if (response.body().getItems().get(i).getLabel().equals(itemCliquee)) {
+                                                Call callSave;
+                                                if (response.body().getItems().get(i).getChecked().equals("0")) {
+                                                    callSave = requestService.cliqueItem(hash, listId, response.body().getItems().get(i).getId(), "1");
+                                                } else {
+                                                    callSave = requestService.cliqueItem(hash, listId, response.body().getItems().get(i).getId(), "0");
+                                                }
+                                                callSave.enqueue(new Callback() {
+                                                    @Override
+                                                    public void onResponse(Call call, Response response) { }
+                                                    @Override
+                                                    public void onFailure(Call call, Throwable t) { }
+                                                });
+                                            }
+                                        }
                                 }
                             }
-                        }
-                    }
 
-                    @Override
-                    public void onFailure(Call call, Throwable t) {
-                        alerter("pas de connexion");
-                    }
-                });
-                ItemsData.remove(getAdapterPosition());
-                notifyItemRemoved(getAdapterPosition());
+                            @Override
+                            public void onFailure(Call call, Throwable t) {
+                                alerter("pas de connexion");
+                            }
+                        });break;}
+
+                    case R.id.itemSupp:
+                        if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        Call<Items> callTotal = requestService.getItems(hash, listId);
+                        final String item_selected = ItemsData.get(getAdapterPosition()).getDescription();
+
+                        callTotal.enqueue(new Callback<Items>() {
+                            @Override
+                            public void onResponse(Call<Items> call, Response<Items> response) {
+                                if (response.isSuccessful()) {
+                                    for (Items.ItemsBean i : response.body().getItems()) {
+                                        if (i.getLabel().equals(item_selected)) {
+                                            Call<ResponseBody> callSupp = requestService.deleteItem(hash, listId, i.getId());
+
+                                            callSupp.enqueue(new Callback() {
+                                                @Override
+                                                public void onResponse(Call call, Response response) { }
+
+                                                @Override
+                                                public void onFailure(Call call, Throwable t) { }
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call call, Throwable t) {
+                                alerter("pas de connexion");
+                            }
+                        });
+                        ItemsData.remove(getAdapterPosition());
+                        notifyItemRemoved(getAdapterPosition());
+                        break;}
+                }
+
+
+
+
             }
         }
-        }
+    }
 
 }
