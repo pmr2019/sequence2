@@ -70,10 +70,7 @@ public class TasksActivity extends AppCompatActivity {
 
         buildToolbar();
 
-        //tasks.add(new Task("toDo1"));
-
-/*
-        On récupère la to do list passée depuis l'activité to do list dans l'intent. S'il correspond
+        /*On récupère la to do list passée depuis l'activité to do list dans l'intent. S'il correspond
         à une des to do lists enregistrés dans la liste des utilisateurs, on récupère l'utilisateur
         concerné pour extraire ses to do listes.
          */
@@ -96,6 +93,10 @@ public class TasksActivity extends AppCompatActivity {
                 textInsertTask.setText("");
 
                 if (!nameTask.equals("")){
+                    //On crée une Asynctask permettant l'ajout de la nouvelle liste sur l'API, puis
+                    //on fait de nouveau appel à l'AsyncTask de récupération des items pour recréer
+                    //un nouveau layout
+
                     AsyncTask task2 = new PostAsyncTaskAdd();
                     task2.execute();
 
@@ -125,8 +126,6 @@ public class TasksActivity extends AppCompatActivity {
             //BOUTON QUAND ON CLIQUE SUR UNE CARD
             public void onItemClick(int position) {
                 //On récupère la TODOLIST en question
-                //Toast toast=Toast.makeText(getApplicationContext(),tasks.get(position).getFait().toString(),Toast.LENGTH_SHORT);
-                //toast.show();
             }
 
             //BOUTON QUAND ON CLIQUE SUR UNE CHECKBOX
@@ -136,6 +135,7 @@ public class TasksActivity extends AppCompatActivity {
                     todolist.getTasksList().get(position).setChecked(0);
                     taskChecked = todolist.getTasksList().get(position);
 
+                    //On crée une AsyncTask
                     AsyncTask task4 = new PostAsyncTaskChecked();
                     task4.execute();
 

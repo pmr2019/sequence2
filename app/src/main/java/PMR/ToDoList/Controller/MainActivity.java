@@ -98,14 +98,14 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         networkStateReceiver = new NetworkStateReceiver();
         networkStateReceiver.addListener(this);
         this.registerReceiver(networkStateReceiver, new IntentFilter(android.net.ConnectivityManager.CONNECTIVITY_ACTION));
-        etatConnexion= (TextView) findViewById(R.id.etatConnexion);
+        etatConnexion= findViewById(R.id.etatConnexion);
 
         //BIND DES VIEWS POUR LA CONNEXION
-        edtPseudo = (EditText) findViewById(R.id.edtPseudo);
-        btnConnexion = (Button) findViewById(R.id.btnPseudo);
-        txtPseudo = (TextView) findViewById(R.id.txtPseudo);
-        edtMdp = (EditText) findViewById(R.id.edtMdp);
-        txtMdp = (TextView) findViewById(R.id.txtMdp);
+        edtPseudo = findViewById(R.id.edtPseudo);
+        btnConnexion = findViewById(R.id.btnPseudo);
+        txtPseudo = findViewById(R.id.txtPseudo);
+        edtMdp = findViewById(R.id.edtMdp);
+        txtMdp = findViewById(R.id.txtMdp);
 
         //LISTENER SUR LE BOUTON DE CONNEXION
         btnConnexion.setOnClickListener(new View.OnClickListener() {
@@ -284,6 +284,8 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
     }
 
     //PARTIE ASYNCTASK
+
+    //Asynctask qui permet d'établir la connexion à l'API, et récupérer le hash de l'utilisateur
 
     public class PostAsyncTask extends AsyncTask<Object, Void, String>{
 

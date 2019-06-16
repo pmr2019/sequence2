@@ -30,6 +30,10 @@ import static PMR.ToDoList.Controller.MainActivity.urlApi;
 
 public class DataProvider {
 
+    //PARTIE REQUETE
+
+    //Fonction permettant la conversion d'un Stream en String
+
     private String convertStreamToString(InputStream in) throws IOException {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
@@ -48,9 +52,11 @@ public class DataProvider {
         }
     }
 
+    //Fonction permettant la création d'une requete URL à partir d'une URL String
+
     public String requete(String qs, String methode) {
 
-        String urlData = urlApi;
+        String urlData = "http://tomnab.fr/todo-api/";
 
         if (qs != null)
         {
@@ -74,12 +80,16 @@ public class DataProvider {
         return "";
     }
 
+    //PARTIE GET, POST, PUT
+
+    //Fonction permettant de générer la portion d'URL (String) pour récupérer un hash
+
     public String getHash (String pseudo, String password, String methode) throws JSONException {
 
 
         String qs = "authenticate?user=" + pseudo + "&password=" + password;
 
-        String response = requete(qs, "POST");
+        String response = requete(qs, methode);
 
         JSONObject json = new JSONObject(response);
         String hash = json.getString("hash");
@@ -87,10 +97,13 @@ public class DataProvider {
         return hash;
     }
 
+    //Fonction permettant de générer la portion d'URL (String) necessaire à la récupération d'une
+    //liste de ToDoLists à partir d'un hash
+
     public ArrayList<ToDoList> getToDoLists (String hash, String methode) throws JSONException {
 
         String qs = "lists?hash=" + hash;
-        String response = requete (qs, "GET");
+        String response = requete (qs, methode);
 
         JSONObject json = new JSONObject(response);
         JSONArray jsonArray = json.getJSONArray("lists");
@@ -109,6 +122,9 @@ public class DataProvider {
 
         return myToDoLists;
     }
+
+    //Fonction permettant de générer la portion d'URL (String) nécessaire à la récupération d'une
+    //liste d'items à partir d'un hash et d'un id de liste
 
     public ArrayList<Task> getTasks (String hash, int id, String methode) throws JSONException {
 
@@ -135,12 +151,8 @@ public class DataProvider {
         return myTasks;
     }
 
-    public void postUser (String pseudo, String password, String methode) {
-
-        String qs = "/users?pseudo=" + pseudo + "&pass=" + password;
-        String response = requete (qs, methode);
-
-    }
+    //Fonction permettant de générer la portion d'URL (String) nécessaire à la création d'une
+    //nouvelle ToDolist à partir d'un label
 
     public void postToDoList (String label, String hash, String methode){
 
@@ -148,11 +160,17 @@ public class DataProvider {
         requete (qs, methode);
     }
 
+    //Fonction permettant de générer la portion d'URL (String) nécessaire à la création d'un
+    //nouvel item à partir d'un label
+
     public void postItem (int idList, String label, String hash, String methode){
 
         String qs = "/lists/" + idList + "/items?label=" + label + "&hash=" + hash;
         requete (qs, methode);
     }
+
+    //Fonction permettant de générer la portion d'URL (String) nécessaire pour cocher ou décocher
+    //un item
 
     public void itemChecked (int idList, int idTask, int checked, String hash, String methode){
 

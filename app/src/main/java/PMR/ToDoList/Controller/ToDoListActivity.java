@@ -114,11 +114,12 @@ public class ToDoListActivity extends AppCompatActivity {
                 textInsertToDoList.setText(""); // on réinitialise la zone d'insertion de to do list
 
                 if (!nameToDoList.equals("")){
-                    AsyncTask task2 = new PostAsyncTaskAdd();
-                    task2.execute();
+                    AsyncTask task2 = new PostAsyncTaskAdd(); //on appelle l'asynctask responsable
+                    task2.execute();                          //de la création d'une nouvelle liste
 
-                    AsyncTask task3 = new PostAsyncTask();
-                    task3.execute();
+                    AsyncTask task3 = new PostAsyncTask();    //on appelle l'asynctask qui récupère
+                    task3.execute();                          //la liste des ToDoLists --> petit
+                                                              //défaut, réinitialise le layout
 
                     toDoListAdapter.notifyItemInserted(toDoListAdapter.getItemCount()-1);
                 }
@@ -158,6 +159,8 @@ public class ToDoListActivity extends AppCompatActivity {
 
     //PARTIE ASYNCTASK
 
+    //Asynctask qui permet de récupérer la liste des ToDoLists associées à l'utilisateur
+
     public class PostAsyncTask extends AsyncTask<Object, Void, ArrayList<ToDoList>> {
 
         @Override
@@ -168,7 +171,7 @@ public class ToDoListActivity extends AppCompatActivity {
         @Override
         protected ArrayList<ToDoList> doInBackground(Object... objects) {
             try {
-                return (new DataProvider()).getToDoLists(user.getHash(), "POST");
+                return (new DataProvider()).getToDoLists(user.getHash(), "GET");
             } catch (JSONException e) {
                 e.printStackTrace();
                 return new ArrayList<>();
@@ -182,6 +185,8 @@ public class ToDoListActivity extends AppCompatActivity {
             buildRecyclerView(myToDoList);
         }
     }
+
+    //Asynctask qui permet de créer une nouvelle liste sur l'API
 
     public class PostAsyncTaskAdd extends AsyncTask<Object, Void, Integer> {
 
