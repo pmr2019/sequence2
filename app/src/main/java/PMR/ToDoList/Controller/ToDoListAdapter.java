@@ -31,7 +31,6 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
 
     public interface OnItemClickListener {
         void onItemClick(int position);
-        void onDeleteClick(int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener){
@@ -66,12 +65,10 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
     public static class ToDoListViewHolder extends RecyclerView.ViewHolder{
 
         public TextView nameToDoList;
-        public ImageView btnDeleteToDoList;
 
         public ToDoListViewHolder(@NonNull View itemView, final OnItemClickListener toDoListListener) {
             super(itemView);
             nameToDoList = itemView.findViewById(R.id.textTodoList);
-            btnDeleteToDoList=itemView.findViewById(R.id.btnDeleteToDoList);
 
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -81,18 +78,6 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION){
                             toDoListListener.onItemClick(position);
-                        }
-                    }
-                }
-            });
-
-            btnDeleteToDoList.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (toDoListListener !=null){
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION){
-                            toDoListListener.onDeleteClick(position);
                         }
                     }
                 }

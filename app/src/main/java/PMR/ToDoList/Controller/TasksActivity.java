@@ -56,7 +56,6 @@ public class TasksActivity extends AppCompatActivity {
     //TO DO LIST DE LA TACHE
     private ToDoList todolist;
     private String hash;
-    private User user;
 
     private void alerter(String s) {
         Toast myToast = Toast.makeText(this, s, Toast.LENGTH_SHORT);
@@ -122,13 +121,6 @@ public class TasksActivity extends AppCompatActivity {
                 //On récupère la TODOLIST en question
                 //Toast toast=Toast.makeText(getApplicationContext(),tasks.get(position).getFait().toString(),Toast.LENGTH_SHORT);
                 //toast.show();
-            }
-
-            //BOUTON QUAND ON CLIQUE SUR DELETE
-            @Override
-            public void onDeleteClick(int position) {
-                tasks.remove(position);
-                taskAdapter.notifyItemRemoved(position);
             }
 
             //BOUTON QUAND ON CLIQUE SUR UNE CHECKBOX

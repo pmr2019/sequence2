@@ -29,12 +29,12 @@
             />
 
         <ImageView
-            android:id="@+id/btnDeleteToDoList"
-            android:layout_width="30dp"
+            android:id="@+id/next"
+            android:layout_width="40dp"
             android:layout_height="match_parent"
             android:layout_weight="0"
             android:padding="2dp"
-            android:src="@drawable/ic_delete_black_24dp"
+            android:src="@drawable/ic_chevron_right_black_24dp"
             android:layout_gravity="center"
             />
 

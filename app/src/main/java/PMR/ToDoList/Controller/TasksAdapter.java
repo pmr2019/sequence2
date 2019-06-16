@@ -33,7 +33,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
 
     public interface OnItemClickListener {
         void onItemClick(int position);
-        void onDeleteClick(int position);
         void onCheckBoxClick(int position);
     }
 
@@ -68,13 +67,11 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
     public static class TaskViewHolder extends RecyclerView.ViewHolder{
 
         public TextView nameTask;
-        public ImageView btnDeleteTask;
         public CheckBox checkBoxTask;
 
         public TaskViewHolder(@NonNull View itemView, final OnItemClickListener taskListener) {
             super(itemView);
             nameTask = itemView.findViewById(R.id.textTask);
-            btnDeleteTask=itemView.findViewById(R.id.btnDeleteTask);
             checkBoxTask=itemView.findViewById(R.id.checkBoxTask);
 
 
@@ -90,17 +87,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
                 }
             });
 
-            btnDeleteTask.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (taskListener !=null){
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION){
-                            taskListener.onDeleteClick(position);
-                        }
-                    }
-                }
-            });
 
             checkBoxTask.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -146,14 +146,7 @@ public class ToDoListActivity extends AppCompatActivity {
                 intent.putExtra(EXTRA_TODOLIST, user.getToDoLists().get(position));
                 startActivity(intent);
                 }
-            //BOUTON QUAND ON CLIQUE SUR DELETE
-            @Override
-            public void onDeleteClick(int position) {
 
-                toDoLists.remove(position);
-                user.setToDoLists(toDoLists);
-                toDoListAdapter.notifyItemRemoved(position);
-            }
         });
     }
 
