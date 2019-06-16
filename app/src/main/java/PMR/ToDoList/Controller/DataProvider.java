@@ -132,4 +132,17 @@ public class DataProvider {
 
         return myTasks;
     }
+
+    public void postUser (String pseudo, String password, String methode) {
+
+        String qs = "/users?pseudo=" + pseudo + "&pass=" + password;
+        String response = requete (qs, methode);
+
+    }
+
+    public void postToDoList (String label, String hash, String methode){
+
+        String qs = "/lists?label=" + label + "&hash=" + hash;
+        requete (qs, methode);
+    }
 }

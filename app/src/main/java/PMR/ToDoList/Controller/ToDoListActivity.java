@@ -65,6 +65,8 @@ public class ToDoListActivity extends AppCompatActivity {
 
     //USER DE LA TACHE
     private User user;
+    private String nameToDoList;
+    private Integer idList;
 
     public static final String EXTRA_HASH = "TAG_HASH";
     public static final String EXTRA_TODOLIST = "TAG_TODOLIST";
@@ -108,11 +110,16 @@ public class ToDoListActivity extends AppCompatActivity {
         btnInsertToDoList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String nameToDoList= textInsertToDoList.getText().toString();
+                nameToDoList = textInsertToDoList.getText().toString();
                 textInsertToDoList.setText(""); // on réinitialise la zone d'insertion de to do list
 
                 if (!nameToDoList.equals("")){
-                    //user.ajouteListe(new ToDoList(nameToDoList));
+                    AsyncTask task2 = new PostAsyncTaskAdd();
+                    task2.execute();
+
+                    AsyncTask task3 = new PostAsyncTask();
+                    task3.execute();
+
                     toDoListAdapter.notifyItemInserted(toDoListAdapter.getItemCount()-1);
                 }
             }
@@ -180,6 +187,27 @@ public class ToDoListActivity extends AppCompatActivity {
             super.onPostExecute(myToDoList);
             user.setToDoLists(myToDoList);
             buildRecyclerView(myToDoList);
+        }
+    }
+
+    public class PostAsyncTaskAdd extends AsyncTask<Object, Void, Integer> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Integer doInBackground(Object... objects) {
+            (new DataProvider()).postToDoList(nameToDoList, user.getHash(), "POST");
+            return 1;
+        }
+
+        @Override
+        protected void onPostExecute(Integer id){
+            super.onPostExecute(id);
+            idList=id;
+
         }
     }
 }
