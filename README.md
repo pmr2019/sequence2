@@ -1,2 +1,2 @@
-# sequence2
-Sequence2
+# ToDoList
+PMR Séquence 2 - Ulysse Brisson, Nathan Boyer

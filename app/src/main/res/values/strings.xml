@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">ToDoList</string>
+    <string name="pseudo">Pseudo</string>
+    <string name="settings_name">Préférences</string>
+    <string name="ajouterListe">Ajouter une ToDo Liste</string>
+    <string name="ajouterItem">Ajouter un item</string>
+    <string name="password_hint">Mot de passe</string>
+</resources>
