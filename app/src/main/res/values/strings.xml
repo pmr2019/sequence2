@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">ToDo</string>
+    <string name="ok">OK</string>
+    <string name="pseudo">Pseudo :</string>
+    <string name="nouvelle_liste">Nouvelle Liste</string>
+    <string name="new_list">Nouvelle liste</string>
+    <string name="new_item">Nouvel item</string>
+</resources>

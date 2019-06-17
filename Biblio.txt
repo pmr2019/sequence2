@@ -1,0 +1,3 @@
+Check internet access :
+https://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-times-out
+
