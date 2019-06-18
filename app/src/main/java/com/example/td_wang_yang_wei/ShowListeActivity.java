@@ -1,48 +1,50 @@
 package com.example.td_wang_yang_wei;
 
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.preference.TwoStatePreference;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.example.td_wang_yang_wei.api.Items;
+import com.example.td_wang_yang_wei.api.NouveauItem;
+import com.example.td_wang_yang_wei.R;
+import com.example.td_wang_yang_wei.api.requestService;
+import com.example.td_wang_yang_wei.api.requestServiceFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class ShowListeActivity extends AppCompatActivity {
 
-    //pour recevoir le class ProfileListeToDo et enregistrer les nouveaux donnnes
-    private ProfilListeToDo profile;
-    private String liste;
 
     //recevoir le EditText Button et RecyclerView
     private RecyclerView recyclerView;
 
     private EditText edtItem;
     private String Cat="ShowListe";
-    ItemAdapter itemAdapter;
+    private ItemAdapter itemAdapter;
+    private String hash;
+    private String url;
+    private String listId;
+    private com.example.td_wang_yang_wei.api.requestService requestService;
 
-    //Transpoteur de liste de item
-    List<Item> ItemsData;
 
     //alerter pour savoir le processus de la programme et alerter les utilisateurs
     public void alerter(String s) {
@@ -58,18 +60,20 @@ public class ShowListeActivity extends AppCompatActivity {
 
         edtItem = findViewById(R.id.edit_item);
 
-        //obtenir le Profile selon le nom qui est transmet de MainActicity
-        profile = readProfilData(getIntent().getStringExtra("profile"));
-
-        //obtenir la liste de noms des listes dans le profile
-        liste = getIntent().getStringExtra("liste");
-
-        //obtenir list de item
-        ItemsData = ItemsData(profile,liste);
+        //obtenir les donnees de ChoixListeActivity
+        hash = getIntent().getStringExtra("hash");
+        url = getIntent().getStringExtra("url");
+        listId = getIntent().getStringExtra("listId");
+        alerter(listId);
 
         //creer Adapter
-        itemAdapter = new ItemAdapter(ItemsData);
+        itemAdapter = new ItemAdapter(new ArrayList<Item>());
 
+        //creer un instance de requestService
+        requestService = requestServiceFactory.createService(url, requestService.class);
+
+        //obtenir les items de ce Liste
+        getListedeItem(hash,listId);
         //afficher la liste de noms dans le RecyclerView
         recyclerView = findViewById(R.id.list_show);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -82,9 +86,9 @@ public class ShowListeActivity extends AppCompatActivity {
         private String description;
         private Boolean fait;
 
-        Item(String d, Boolean f) {
+        Item(String d, String f) {
             this.description = d;
-            this.fait = f;
+            this.fait = f.equals("1");
         }
 
         String getDescription() {
@@ -96,70 +100,72 @@ public class ShowListeActivity extends AppCompatActivity {
         }
     }
 
-    //obtenir la lists de Item
-    public List<Item> ItemsData(ProfilListeToDo profile, String liste){
-
-        List<Item> data = new ArrayList<>();
-        for (ItemToDo tmp : profile.rechercherListe(liste).getLesItems()){
-            data.add(new Item(tmp.getDescription(), tmp.getFait()));
-        }
-
-        return data;
-    }
-
     //ajouter nouveau item
     public void addnewitem(View v) {
-        String item = edtItem.getText().toString();
+        final String item = edtItem.getText().toString();
+        //éviter le cas d'entrée vide
         if (item.equals("")) {
             alerter("tapez la nouvelle item");
         } else {
-            if (EviterMemeNom(item)) {
+            //éviter le cas de répétition
+            if (itemAdapter.verifierNom(item)) {
                 alerter("déjà existe");
             } else {
-                profile.addItem(liste, new ItemToDo(item));
-                saveProfileData(profile, profile.getLogin());
-                //ItemsData=ItemsData(profile,liste);
-                ItemsData.add(new Item(item, false));
-                Log.d("add", "" + ItemsData);
-                itemAdapter.notifyItemInserted(ItemsData.size());
-                //recyclerView.setAdapter(new ItemAdapter(ItemsData));
-                edtItem.setText("");
+                //Encapsuler la requête d'après les règles de Interface requestService
+                Call<NouveauItem> call = requestService.addItem(hash, listId, item);
+                //Envoyer la requête et collecter les résultats
+                //si succès ajouter un nouveau Item
+                call.enqueue(new Callback<NouveauItem>() {
+                    @Override
+                    public void onResponse(Call<NouveauItem> call, Response<NouveauItem> response) {
+                        if (response.isSuccessful()) {
+                            itemAdapter.add(item, "0");
+                            edtItem.setText("");
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call call, Throwable t) {
+
+                    }
+                });
             }
         }
     }
 
-    //éviter ajouter le item qui a le meme nom avec les autres
-    public boolean EviterMemeNom(String nom){
-        for(Item i:ItemsData){
-            if(nom.equals(i.getDescription()))
-                return true;
-        }
-        return false;
+    /**
+     * obtenir la liste de Item de Liste courant
+     * @param hash
+     * @param id
+     */
+    public void getListedeItem(String hash,String id){
+
+        //Encapsuler la requête d'après les règles de Interface requestService
+        Call<Items> call = requestService.getItems(hash,id);
+        //Envoyer la requête et collecter les résultats
+        //si succès obtenir la liste de Item
+        call.enqueue(new Callback<Items>() {
+            @Override
+            public void onResponse(Call<Items> call, Response<Items> response) {
+                if (response.isSuccessful()) {
+                    if(!response.body().getItems().isEmpty()){
+                        for (int i=0;i<response.body().getItems().size();i++) {
+                            itemAdapter.add(response.body().getItems().get(i).getLabel(),
+                                    response.body().getItems().get(i).getChecked());
+                        }
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, Throwable t) {
+                alerter("pas de connexion");
+            }
+        });
+
     }
 
-    //sauvegarder le profile
-    public void saveProfileData(ProfilListeToDo profile, String pseudo) {
-        Gson gson=new Gson();
-        String fileContents = gson.toJson(profile);
-        SharedPreferences preferences = getSharedPreferences(pseudo, MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("content",fileContents);
-        editor.commit();
-    }
 
-    //obtenir le proflie selon le nom
-    public ProfilListeToDo readProfilData(String pseudo) {
-
-        ProfilListeToDo profile;
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        SharedPreferences profileData = getSharedPreferences(pseudo, MODE_PRIVATE);
-        String content=profileData.getString("content","");
-
-        profile = gson.fromJson(content, ProfilListeToDo.class); // cast Profile
-
-        return profile;
-    }
     //construire ItemAdapter
     class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
         private final List<Item> ItemsData;
@@ -167,6 +173,16 @@ public class ShowListeActivity extends AppCompatActivity {
             this.ItemsData = ItemsData;
         }
 
+        private void add(String label,String f){
+            ItemsData.add(new Item(label,f));
+            notifyDataSetChanged();
+        }
+        private Boolean verifierNom(String s){
+            for(Item i :ItemsData){
+                if(i.getDescription().equals(s))
+                return true;
+            }return false;
+        }
         @NonNull
         @Override
         public ItemAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -191,29 +207,107 @@ public class ShowListeActivity extends AppCompatActivity {
         }
 
         //creer MyviewHolder dans le class Adapter
-        class MyViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener{
+        class MyViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener{
 
             private final CheckBox checkBox;
+            private final ImageButton imageButton;
 
             MyViewHolder(@NonNull View itemView){
                 super(itemView);
                 checkBox = itemView.findViewById(R.id.CBItem);
-                checkBox.setOnCheckedChangeListener(this);
+                imageButton=itemView.findViewById(R.id.itemSupp);
+                imageButton.setOnClickListener(this);
+                checkBox.setOnClickListener(this);
             }
             void bind(Item data){
                 checkBox.setText(data.getDescription());
                 checkBox.setChecked(data.getFait());
             }
 
-            
+
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                profile.rechercherListe(liste).validerItem(ItemsData.get(getAdapterPosition()).getDescription(), isChecked);
-                saveProfileData(profile, profile.getLogin());
-            }
+            public void onClick(View v) {
+
+                switch(v.getId()){
+                    case R.id.CBItem:
+                        if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                            //Encapsuler la requête d'après les règles de Interface requestService
+                            Call<Items> callChange = requestService.getItems(hash, listId);
+                            final String itemCliquee = ItemsData.get(getAdapterPosition()).getDescription();
+                            //Envoyer la requête et collecter les résultats
+                            //si succès, transformer 0 en 1 / transformer 1 en 0
+                            callChange.enqueue(new Callback<Items>() {
+                                @Override
+                                public void onResponse(Call<Items> call, Response<Items> response) {
+                                    if (response.isSuccessful()) {
+                                        if(!response.body().getItems().isEmpty())
+                                            for (int i=0;i<response.body().getItems().size();i++) {
+                                                if (response.body().getItems().get(i).getLabel().equals(itemCliquee)) {
+                                                    Call callSave;
+                                                    if (response.body().getItems().get(i).getChecked().equals("0")) {
+                                                        callSave = requestService.cliqueItem(hash, listId, response.body().getItems().get(i).getId(), "1");
+                                                    } else {
+                                                        callSave = requestService.cliqueItem(hash, listId, response.body().getItems().get(i).getId(), "0");
+                                                    }
+                                                    callSave.enqueue(new Callback() {
+                                                        @Override
+                                                        public void onResponse(Call call, Response response) { }
+                                                        @Override
+                                                        public void onFailure(Call call, Throwable t) { }
+                                                    });
+                                                }
+                                            }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call call, Throwable t) {
+                                    alerter("pas de connexion");
+                                }
+                        });break;}
+
+                    case R.id.itemSupp:
+                        if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                            //Encapsuler la requête d'après les règles de Interface requestService
+                            Call<Items> callTotal = requestService.getItems(hash, listId);
+                            final String item_selected = ItemsData.get(getAdapterPosition()).getDescription();
+
+                            //Envoyer la requête et collecter les résultats
+                            //si succès supprimer l'Item cliqué
+                            callTotal.enqueue(new Callback<Items>() {
+                                @Override
+                                public void onResponse(Call<Items> call, Response<Items> response) {
+                                    if (response.isSuccessful()) {
+                                        for (Items.ItemsBean i : response.body().getItems()) {
+                                            if (i.getLabel().equals(item_selected)) {
+                                                Call<ResponseBody> callSupp = requestService.deleteItem(hash, listId, i.getId());
+                                                callSupp.enqueue(new Callback() {
+                                                    @Override
+                                                    public void onResponse(Call call, Response response) { }
+
+                                                    @Override
+                                                    public void onFailure(Call call, Throwable t) { }
+                                                });
+                                            }
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call call, Throwable t) {
+                                    alerter("pas de connexion");
+                                }
+                            });
+                            ItemsData.remove(getAdapterPosition());
+                            notifyItemRemoved(getAdapterPosition());
+                            break;}
+                }
+
+
 
 
             }
         }
+    }
 
 }

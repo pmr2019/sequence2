@@ -7,10 +7,19 @@
 
     <CheckBox
         android:id="@+id/CBItem"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text=""/>
+        android:layout_width="363dp"
+        android:layout_height="60dp"
+        android:gravity="center_vertical"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:text=""
+        android:textSize="35sp" />
 
-
+    <ImageButton
+        android:id="@+id/itemSupp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@android:drawable/ic_delete"
+        android:contentDescription="@string/delete"/>
 
 </LinearLayout>

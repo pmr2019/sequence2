@@ -1,11 +1,12 @@
 package com.example.td_wang_yang_wei;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,17 +14,22 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.net.NetworkInfo;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.td_wang_yang_wei.DataClass.ListeDeUtilisateur;
+import com.example.td_wang_yang_wei.DataClass.Utilisateur;
+import com.example.td_wang_yang_wei.api.Contenu;
+import com.example.td_wang_yang_wei.api.requestService;
+import com.example.td_wang_yang_wei.api.requestServiceFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Implémenter l'interface principale de l'application
@@ -31,18 +37,17 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     //Initialisation de paramètres
-    public final String Cat = "toDoList";
     private Button btnOk = null;
+    private Button btnSign=null;
     private EditText edtPseudo = null;
-    public List <String>profiles;
+    private EditText edtPasse=null;
+    private ListeDeUtilisateur listeDeUtilisateur;
 
     //Alerter pour savoir le processus de la programme et alerter les utilisateurs
     public void alerter(String s) {
-        Log.i(Cat,s);
         Toast myToast = Toast.makeText(this,s,Toast.LENGTH_SHORT);
         myToast.show();
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,19 +55,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         //Connection les layouts avec des backends
+        btnSign=findViewById(R.id.btnSign);
         btnOk=findViewById(R.id.btnOK);
         edtPseudo=findViewById(R.id.edtPseudo);
+        edtPasse=findViewById(R.id.edtMotDePasse);
 
+        btnSign.setOnClickListener(this);
         btnOk.setOnClickListener(this);
         edtPseudo.setOnClickListener(this);
+        edtPasse.setOnClickListener(this);
 
-        //Le dernier pseudo saisi est automatiquement renseigné dans le champ de saisie
-        profiles=getProfiles();
-        if(profiles.size()>0){
-            edtPseudo.setText(profiles.get(profiles.size()-1));
+
+        //Le dernier pseudo et mot de passe saisi est automatiquement renseigné dans le champ de saisie
+        if(this.getProfiles()!=null) {
+            listeDeUtilisateur = getProfiles();
+
+            if (!(listeDeUtilisateur.getUtilisateurs().isEmpty())) {
+                edtPseudo.setText((listeDeUtilisateur.getUtilisateurs().get(listeDeUtilisateur.getUtilisateurs().size() - 1)).getPseudo());
+                edtPasse.setText((listeDeUtilisateur.getUtilisateurs().get(listeDeUtilisateur.getUtilisateurs().size() - 1)).getMotDePasse());
+            } else listeDeUtilisateur = new ListeDeUtilisateur();
         }
     }
 
+    //detect l'état de network
+    public void verifReseau(){
+        //obtenir l'objet de connectivityManager
+        ConnectivityManager netManager = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo=netManager.getActiveNetworkInfo();
+
+        if(networkInfo!=null){
+            btnOk.setEnabled(networkInfo.isConnected());
+                }
+        else{
+            btnOk.setEnabled(false);
+        }
+
+
+
+    }
 
     @Override
     protected void onStart() {
@@ -73,9 +103,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Lorsque nous cliquons sur un élément dans les comptes
         // nous revenons à MainActivity à partir de SettingsActivity
         // et affichons le profil sur lequel vous avez cliqué dans le champ de saisie
-        if (getIntent().getStringExtra("profile") != null) {
-            edtPseudo.setText(getIntent().getStringExtra("profile"));
+        if (getIntent().getStringExtra("pseudo") != null) {
+            edtPseudo.setText(getIntent().getStringExtra("pseudo"));
+            Utilisateur u= listeDeUtilisateur.ChercheUtilisateur(getIntent().getStringExtra("pseudo"));
+            edtPasse.setText(u.getMotDePasse());
         }
+
+        //verifiy l'état de réseau
+        this.verifReseau();
     }
 
     /**
@@ -86,90 +121,138 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
 
+        final String pseudo = edtPseudo.getText().toString();
+        final String pass=edtPasse.getText().toString();
         switch (v.getId()){
 
-            case R.id.btnOK:
-
-                String pseudo = edtPseudo.getText().toString();
-
+            case R.id.btnSign:
                 //éviter le cas d'entrée vide
-                if(pseudo.equals("")){
-                    alerter("tapez votre nom");
-                }
-                else {
-                    alerter("Pseudo: " + pseudo);
-
-                    //créez un nouveau profil
-                    if(!profiles.contains(pseudo)){
-                        setProfile(pseudo);
-                        ProfilListeToDo profile=new ProfilListeToDo(pseudo,new ArrayList<ListeToDo>());
-                        saveProfileData(profile,pseudo);
+                if(pseudo.equals("")||pass.equals("")){
+                    alerter("le pseudo ou passe manque");
+                }else {
+                    //éviter le cas de répétition
+                    if(listeDeUtilisateur.VerifierPresence(pseudo)){
+                        alerter("le nom est occpué");
+                        break;
+                    }
+                    //on a besoin d'un hash code de compte existant pour creer un nouveau compte
+                    if(listeDeUtilisateur.getUtilisateurs().isEmpty()){
+                        alerter("manque de compte nécessaire");
+                        break;
                     }
 
-                    //entrez un profil existant
-                    ConvertToListe(pseudo);
+                    //créer un instance de requestService
+                    requestService requestService = requestServiceFactory.createService(listeDeUtilisateur.getUrl(), requestService.class);
+
+                    //Encapsuler la requête d'après les règles de Interface requestService
+                    Call<ResponseBody> call = requestService.creer(listeDeUtilisateur.getUtilisateurs().get(listeDeUtilisateur.getUtilisateurs().size()-1).getHash(), pseudo, pass);
+
+                    //Envoyer la requête et collecter les résultats
+                    //si succès créer un nouveau utilisateur
+                    call.enqueue(new Callback() {
+                        @Override
+                        public void onResponse(Call call, Response response) {
+                            if (response.isSuccessful()) {
+                                alerter("crée!");
+                            } else {
+                                alerter("insuccès");
+                            }
+                        }
+                        @Override
+                        public void onFailure(Call call, Throwable t) {
+                        }
+                    });
+                }
+                break;
+
+            case R.id.btnOK:
+                //éviter le cas d'entrée vide
+                if(pseudo.equals("")||pass.equals("")){
+                    alerter("le pseudo ou passe manque");
+                }
+                else {
+                    //cherchez dans la liste de utilisateurs
+                    // entrez dans la liste correspondante après la vérification de mot de passe
+                    if(listeDeUtilisateur.VerifierPresence(pseudo)){
+                        Utilisateur u=listeDeUtilisateur.ChercheUtilisateur(pseudo);
+                        if(u.verifierMotDePasse(pass))
+                            ConvertToListe(u.getPseudo(),u.getHash(),listeDeUtilisateur.getUrl());
+                         else alerter("Revévifiez votre mot de passe");
+                    }else {
+                        //Si cet utilisateur n'appartient pas à la liste de préférences
+                        //on fait la connexion auprès de l'API Renvoie un hash sans délai d'expiration
+                        //créer un instance de requestService
+                        requestService post_request= requestServiceFactory.createService(listeDeUtilisateur.getUrl(), requestService.class);
+
+                        //Encapsuler la requête d'après les règles de Interface requestService
+                        Call<Contenu> call = post_request.authenticate(pseudo,pass);
+                        Log.d("url",""+listeDeUtilisateur.getUrl());
+
+                        //Envoyer la requête et collecter les résultats
+                        //si succès ajouter cet utilisateur dans la liste de préférences & entrer dans la liste correspondant
+                        call.enqueue(new Callback<Contenu>() {
+                            @Override
+                            public void onResponse(Call<Contenu> call, Response<Contenu> response) {
+                                if(response.isSuccessful()){
+                                    Log.d("hhhhh","true");
+                                    //met à jour la liste de préférences
+                                    listeDeUtilisateur.AjouterUtilisateur(new Utilisateur(pseudo,pass,response.body().hash));
+                                    sauvegarderUtilisateur(listeDeUtilisateur);
+                                    ConvertToListe(pseudo,response.body().hash,listeDeUtilisateur.getUrl());
+                                }else alerter("le nom n'est pas ou le mot de passe est incorrect");
+                            }
+
+                            @Override
+                            public void onFailure(Call<Contenu> call, Throwable t) {
+                                alerter("pas de connexion");
+                            }
+                        });
+                    }
                 }
             break;
 
             case R.id.edtPseudo:
                 alerter("saisir ton pseudo");
             break;
+            case R.id.edtMotDePasse:
+                alerter("saisir ton mot de passe");
+                break;
          }
     }
 
     /**
-     * entrez un profil existant
+     * entrer un utilisateur existant
      * @param pseudo
      */
-    public void ConvertToListe(String pseudo){
-        Intent liste=new Intent(this,ChoixListeActivity.class);
-        liste.putExtra("profile",pseudo);
+    public void ConvertToListe(String pseudo,String hash,String url){
+        Intent liste=new Intent(this, ChoixListeActivity.class);
+        liste.putExtra("pseudo",pseudo);
+        liste.putExtra("hash",hash);
+        liste.putExtra("url",url);
         startActivity(liste);
     }
 
-    /**
-     * ajouter un nouveau profil
-     * @param pseudo
-     * @return null
-     */
-    public void setProfile(String pseudo){
-        profiles.add(pseudo);
-        SharedPreferences preferences = getSharedPreferences("profile", MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("nbProfile", profiles.size());
-        for (int i = 0; i < profiles.size(); i++) {
-            editor.putString("" + i, profiles.get(i));
-        }
-        editor.apply();
-        editor.commit();
+    //Obtenir la liste d'utilisateurs
+    public ListeDeUtilisateur getProfiles() {
+        SharedPreferences preferences = getSharedPreferences("utilisateurs", MODE_PRIVATE);
+        GsonBuilder builder=new GsonBuilder();
+        Gson gson = builder.create();
+        String stringListUtilisateur = preferences.getString("utilisateurs", gson.toJson(new ListeDeUtilisateur()));
+        return gson.fromJson(stringListUtilisateur,ListeDeUtilisateur.class);
     }
 
-    /**
-     *générer une liste de profils
-     * @return profiles
-     */
-    public List<String> getProfiles() {
-        SharedPreferences preferences = getSharedPreferences("profile", MODE_PRIVATE);
-        List<String> profiles = new ArrayList<>();
-        int nbProfile = preferences.getInt("nbProfile", 0);
-        for (int i = 0; i < nbProfile; i++) {
-            profiles.add(preferences.getString("" + i, ""));
-        }
-        return profiles;
-    }
 
-    /**
-     *Remettre le profil modifié à la Préférence
-     * @param p
-     * @param pseudo
-     */
-    public void saveProfileData(ProfilListeToDo p, String pseudo){
+
+
+    public void sauvegarderUtilisateur(ListeDeUtilisateur l){
         Gson gson=new Gson();
-        String fileContents = gson.toJson(p);
-        SharedPreferences preferences = getSharedPreferences(pseudo, MODE_PRIVATE);
+        String fileContents = gson.toJson(l);
+        SharedPreferences preferences = getSharedPreferences("utilisateurs", MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("content",fileContents);
+        editor.putString("utilisateurs",fileContents);
         editor.commit();
+
+
     }
 
 
@@ -196,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
 
                 alerter("Menu Compte");
-                Intent account=new Intent(this,SettingsActivity.class);
+                Intent account=new Intent(this, SettingsActivity.class);
                 startActivity(account);
 
         return super.onOptionsItemSelected(item);

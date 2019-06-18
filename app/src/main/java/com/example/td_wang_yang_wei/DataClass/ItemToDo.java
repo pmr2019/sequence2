@@ -1,4 +1,5 @@
-package com.example.td_wang_yang_wei;
+package com.example.td_wang_yang_wei.DataClass;
+
 
 import java.io.Serializable;
 
@@ -16,7 +17,7 @@ public class ItemToDo implements Serializable {
         this.fait = Boolean.FALSE;
     }
 
-    public String getDescription() {
+    String getDescription() {
         return description;
     }
 
@@ -24,11 +25,11 @@ public class ItemToDo implements Serializable {
         this.description = description;
     }
 
-    public Boolean getFait() {
+    private Boolean getFait() {
         return fait;
     }
 
-    public void setFait(Boolean fait) {
+    void setFait(Boolean fait) {
         this.fait = fait;
     }
 

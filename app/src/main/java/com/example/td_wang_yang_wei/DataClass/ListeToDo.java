@@ -1,4 +1,4 @@
-package com.example.td_wang_yang_wei;
+package com.example.td_wang_yang_wei.DataClass;
 
 
 import java.io.Serializable;
@@ -9,17 +9,17 @@ public class ListeToDo implements Serializable {
     private String titreListeToDo;
     private List<ItemToDo> lesItems;
 
-    public ListeToDo() {
-        lesItems = new ArrayList<ItemToDo>();
+    ListeToDo() {
+        lesItems = new ArrayList<>();
     }
 
 
     public ListeToDo(String titreListeToDo) {
         this.titreListeToDo = titreListeToDo;
-        lesItems = new ArrayList<ItemToDo>();
+        lesItems = new ArrayList<>();
     }
 
-    public String getTitreListeToDo() {
+    String getTitreListeToDo() {
         return titreListeToDo;
     }
 
@@ -27,7 +27,7 @@ public class ListeToDo implements Serializable {
         this.titreListeToDo = titreListeToDo;
     }
 
-    public List<ItemToDo> getLesItems() {
+    private List<ItemToDo> getLesItems() {
         return lesItems;
     }
 
@@ -35,7 +35,7 @@ public class ListeToDo implements Serializable {
         this.lesItems = lesItems;
     }
 
-    public void ajouterItem(ItemToDo unItem)
+    void ajouterItem(ItemToDo unItem)
     {
         this.lesItems.add(unItem);
     }
@@ -56,7 +56,7 @@ public class ListeToDo implements Serializable {
         Boolean trouve = Boolean.FALSE;
         for (int i=0; i < this.lesItems.size() ;i++)
         {
-            if (this.lesItems.get(i).getDescription() == s)
+            if (this.lesItems.get(i).getDescription().equals(s))
             {
                 retour=i;
                 i=this.lesItems.size();

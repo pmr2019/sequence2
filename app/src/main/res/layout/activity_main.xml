@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:gravity="right"
+    android:gravity="end"
     >
 
     <LinearLayout
@@ -14,23 +14,55 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pseudo"
+            android:text="@string/pseudo"
             />
 
         <EditText
             android:id="@+id/edtPseudo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:autofillHints="@string/pseudo"
+            android:inputType="textPersonName"
+            android:text=""/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/motdepasse"
+            />
+
+        <EditText
+            android:id="@+id/edtMotDePasse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             />
 
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:orientation="horizontal">
 
-    <Button
+        <Button
+            android:id="@+id/btnSign"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/signup" />
+        <Button
         android:id="@+id/btnOK"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="OK!"
+        android:text="@string/ok"
         />
 
+    </LinearLayout>
 </LinearLayout>

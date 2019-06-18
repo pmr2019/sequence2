@@ -1,6 +1,4 @@
-package com.example.td_wang_yang_wei;
-
-import android.util.Log;
+package com.example.td_wang_yang_wei.DataClass;
 
 import java.io.Serializable;
 import java.util.ArrayList;

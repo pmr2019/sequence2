@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">ToDoListe</string>
+    <string name="pseudo">Pseudo</string>
+    <string name="changer">Changer!</string>
+    <string name="motdepasse">MotDePasse</string>
+    <string name="signup">SignUp</string>
+    <string name="ok">OK!</string>
+    <string name="delete">delete</string>
 </resources>
