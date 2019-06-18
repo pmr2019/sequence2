@@ -1,5 +1,6 @@
 package com.example.td_wang_yang_wei.api;
 
+
 import java.util.List;
 
 public class Items {
@@ -13,6 +14,7 @@ public class Items {
     private int version;
     private boolean success;
     private int status;
+
     private List<ItemsBean> items;
 
     public int getVersion() {
