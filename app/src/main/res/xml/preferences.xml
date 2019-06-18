@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference android:title="Pseudo"
+        android:key="username"
+        android:summary="Choisissez votre pseudo par défaut"></EditTextPreference>
+    <EditTextPreference
+        android:title="URL API par défaut"
+        android:key="api"
+        android:summary="L'url que vous souhaitez utiliser"></EditTextPreference>
+    <EditTextPreference
+        android:title="HASH"
+        android:key="hash"
+        android:summary=""></EditTextPreference>
+    <CheckBoxPreference android:title="Mises à jour"
+        android:defaultValue="false"
+        android:summary="Autoriser l'application à réaliser des recherches de mises à jour automatiques."
+        android:key="applicationUpdates" />
+    <ListPreference     android:title="Historique utilisateurs"
+        android:summary="Liste de tous les pseudos utilisés"
+        android:key="historique"
+        android:entries="@array/listArray"
+        android:entryValues="@array/listValues" />
+</PreferenceScreen>
