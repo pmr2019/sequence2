@@ -1,93 +1,98 @@
 package fr.ec.app.data;
 
-import android.util.Log;
-import com.google.gson.Gson;
-import fr.ec.app.data.api.PostResponse;
+import android.content.Context;
+import android.os.Handler;
+import androidx.annotation.UiThread;
+import fr.ec.app.Utils;
 import fr.ec.app.data.api.PostResponseList;
 import fr.ec.app.data.api.ProductHuntService;
 import fr.ec.app.data.api.ProductHuntServiceFactory;
-import java.io.BufferedReader;
+import fr.ec.app.data.convertr.Converter;
+import fr.ec.app.data.database.RoomProductHuntDb;
+import fr.ec.app.data.database.dao.PostDao;
+import fr.ec.app.data.model.Post;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Future;
+import retrofit2.Response;
 
 public class DataProvider {
 
-  public static final String POST_API_END_POINT =
-      "https://api.producthunt.com/v1/posts?access_token=46a03e1c32ea881c8afb39e59aa17c936ff4205a8ed418f525294b2b45b56abb";
+  private List<Future> futures = new ArrayList<>();
+  private final PostDao postDao;
+  private final ProductHuntService service =
+      ProductHuntServiceFactory.createService(ProductHuntService.class);
 
-  public static String getPostsFromWeb(String apiUrl) {
+  private final Converter converter = new Converter();
+  private final Handler uiHandler;
 
-    HttpURLConnection urlConnection = null;
-    BufferedReader reader = null;
+  public DataProvider(Context context) {
+    uiHandler = new Handler(context.getMainLooper());
+    postDao = RoomProductHuntDb.getDatabase(context).postDao();
+  }
 
-    // Contiendra la réponse JSON brute sous forme de String .
-    String posts = null;
+  //EXEMPLE AVEC UN EXECUTOR
+  public void syncPosts(final PostsListener listener) {
 
-    try {
-      // Construire l' URL de l'API ProductHunt
-      URL url = new URL(apiUrl);
-
-      // Creer de la requête http vers  l'API ProductHunt , et ouvrir la connexion
-      urlConnection = (HttpURLConnection) url.openConnection();
-      urlConnection.setRequestMethod("GET");
-      urlConnection.connect();
-
-      // Lire le  input stream et le convertir String
-      InputStream inputStream = urlConnection.getInputStream();
-      StringBuffer buffer = new StringBuffer();
-      if (inputStream == null) {
-        // Nothing to do.
-        return null;
-      }
-      reader = new BufferedReader(new InputStreamReader(inputStream));
-
-      String line;
-      while ((line = reader.readLine()) != null) {
-        buffer.append(line + "\n");
-      }
-
-      if (buffer.length() == 0) {
-        // Si le stream est vide, on revoie null;
-        return null;
-      }
-      posts = buffer.toString();
-    } catch (IOException e) {
-      Log.e("TAG", "Error ", e);
-      return null;
-    } finally {
-      if (urlConnection != null) {
-        urlConnection.disconnect();
-      }
-      if (reader != null) {
+   Future future = Utils.BACKGROUND.submit(new Runnable() {
+      @Override public void run() {
         try {
-          reader.close();
-        } catch (final IOException e) {
-          Log.e("TAG", "Error closing stream", e);
+          Response<PostResponseList> response = service.getPosts().execute();
+          if( response.isSuccessful()) {
+            final List<Post> post = converter.from(response.body().posts);
+            postDao.save(post);
+            uiHandler.post(new Runnable() {
+              @Override public void run() {
+                listener.onSuccess(post);
+              }
+            });
+
+          }else {
+            uiHandler.post(new Runnable() {
+              @Override public void run() {
+                listener.onError();
+              }
+            });
+
+          }
+
+        } catch (IOException e) {
+          uiHandler.post(new Runnable() {
+            @Override public void run() {
+              listener.onError();
+            }
+          });
         }
       }
-    }
+    });
+    futures.add(future);
 
-    return posts;
   }
 
-  public static List<PostResponse> getPosts() {
-    //String response = getPostsFromWeb(POST_API_END_POINT);
-    //Gson gson = new Gson();
-    //
-    //PostResponseList postResponseList = gson.fromJson(response, PostResponseList.class);
-    ProductHuntService service = ProductHuntServiceFactory.createService(ProductHuntService.class);
-    List<PostResponse> postResponses = new ArrayList<>(0);
-    try {
-      postResponses = service.getPosts().execute().body().posts;
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+  public void stop() {
+    for (Future future : futures) {
+      if(!future.isDone()){
+        future.cancel(true);
 
-    return postResponses;
+      }
+    }
+    futures.clear();
   }
+
+  public List<Post> loadPost() {
+    return postDao.getPosts();
+  }
+
+  public void save(List<Post> postList) {
+    postDao.save(postList);
+  }
+
+  public interface PostsListener {
+    @UiThread
+    public void onSuccess(List<Post> posts);
+    @UiThread
+    public void onError();
+  }
+
 }

@@ -11,12 +11,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.squareup.picasso.Picasso;
 import fr.ec.app.R;
 import fr.ec.app.data.api.PostResponse;
+import fr.ec.app.data.model.Post;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-  private List<PostResponse> items = new ArrayList<>(0);
+  private List<Post> items = new ArrayList<>(0);
   private final ActionListener actionListener;
 
   public ItemAdapter(ActionListener actionListener) {
@@ -47,7 +48,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
   }
 
   @Override public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-    PostResponse itemData = items.get(position);
+    Post itemData = items.get(position);
     Log.d("ItemAdapter",
         "onBindViewHolder() called with: holder = [" + holder + "], position = [" + position + "]");
     if (holder instanceof LargeItemViewHolder) {
@@ -61,7 +62,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     return items.size();
   }
 
-  public void show(List<PostResponse> posts) {
+  public void show(List<Post> posts) {
     items = posts;
     notifyDataSetChanged();
   }
@@ -78,10 +79,10 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
       subTitle = itemView.findViewById(R.id.subTitle);
     }
 
-    public void bind(PostResponse dataForHeader) {
-      textView.setText(dataForHeader.title);
-      subTitle.setText(dataForHeader.subTitle);
-      String url = dataForHeader.thumbnail.imageUrl;
+    public void bind(Post dataForHeader) {
+      textView.setText(dataForHeader.getTitle());
+      subTitle.setText(dataForHeader.getSubTitle());
+      String url = dataForHeader.getImageUrl();
       Picasso.get().load(url).into(imageView);
     }
   }
@@ -106,9 +107,9 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
       });
     }
 
-    public void bind(PostResponse dataForHeader) {
-      textView.setText(dataForHeader.title);
-      String url = dataForHeader.thumbnail.imageUrl;
+    public void bind(Post dataForHeader) {
+      textView.setText(dataForHeader.getTitle());
+      String url = dataForHeader.getImageUrl();
       Picasso.get().load(url).into(imageView);    }
   }
 
