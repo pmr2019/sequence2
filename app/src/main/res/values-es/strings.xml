@@ -1,0 +1,66 @@
+<resources>
+
+    <!-- Application -->
+    <string name="app_name">ToDoPMR</string>
+
+    <!-- MainActivity -->
+    <string name="OK">Acceder</string>
+    <string name="nom">Nombre :</string>
+    <string name="mdp">Contrasena :</string>
+    <string name="pseudo">Apodo</string>
+    <string name="set_pseudo">Escribir su apodo</string>
+    <string name="set_password">Escribir su contrasena</string>
+    <string name="pseudo_vide">Su apodo esta vacio</string>
+    <string name="password_vide">Su contrasena esta vacia</string>
+
+    <!-- SettingActivity -->
+    <string name="title_activity_settings">Preferencias</string>
+    <string name="titre_pseudo">Apodo</string>
+    <string name="detail_pseudo">Apodo del usuario</string>
+    <string name="urlAPI">URL del API</string>
+    <string name="urlAPI_summary">Direccion URL del API utilisada</string>
+    <string name="titre_historique">Historial de apodos</string>
+    <string name="detail_historique">Acceder al historial de todos los apodos</string>
+    <string name="supprimer_historique">Suprimir el historial</string>
+    <string name="liste_pseudo">Lista de los apodos utilizados</string>
+    <string name="langues">Lenguaje</string>
+
+
+    <string-array name="langues_names">
+        <item>Frances</item>
+        <!--item>values-fr</item-->
+
+        <item>Ingles</item>
+        <!--item>values-en</item-->
+
+        <item>Espanol</item>
+        <!--item>values-es</item-->
+    </string-array>
+
+    <string-array name="langues_values">
+        <!--item>Francais</item-->
+        <item>fr</item>
+
+        <!--item>Anglais</item-->
+        <item>en</item>
+
+        <!--item>Espagnol</item-->
+        <item>es</item>
+    </string-array>
+
+    <!-- CheckListActivity -->
+    <string name="nouv_liste">Nueva lista</string>
+    <string name="addListe">Agregar</string>
+    <string name="no_list">Niguna lista por el momento</string>
+    <string name="bienvenue">Bienvenido</string>
+
+    <!-- ShowListActivity -->
+    <string name="nouv_item">Nuevo item</string>
+    <string name="addItem">Agregar</string>
+    <string name="no_item">Ningun item por el momento</string>
+    <string name="liste">Lista : </string>
+
+    <!-- GenericActivity -->
+    <string name="no_login">Ningun apodo</string>
+
+</resources>

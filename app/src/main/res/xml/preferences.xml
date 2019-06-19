@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:key="langues"
+        android:title="@string/langues"
+        android:entries="@array/langues_names"
+        android:entryValues="@array/langues_values"/>
+
+    <EditTextPreference
+        android:title="@string/titre_pseudo"
+        android:key="pseudo"
+        android:defaultValue=" "
+        android:summary="@string/detail_pseudo" />
+
+    <EditTextPreference
+        android:title="@string/urlAPI"
+        android:key="API"
+        android:defaultValue="http://tomnab.fr/todo-api/\"
+        android:summary="@string/urlAPI_summary" />
+
+    <PreferenceScreen
+        android:key="acces_historique"
+        android:title="@string/titre_historique"
+        android:summary="@string/detail_historique">
+        <Preference
+            android:key="suppress_historic"
+            android:title="@string/supprimer_historique"
+            />
+        <Preference
+            android:key="historic"
+            android:title="@string/liste_pseudo"
+            android:summary=""/>
+
+    </PreferenceScreen>
+
+</PreferenceScreen>
+

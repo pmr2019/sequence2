@@ -1,0 +1,68 @@
+<resources>
+
+    <!-- Application -->
+    <string name="app_name">ToDoPMR</string>
+
+    <!-- MainActivity -->
+    <string name="OK">Accéder</string>
+    <string name="nom">Nom :</string>
+    <string name="mdp">Mot de passe :</string>
+    <string name="pseudo">Pseudo</string>
+    <string name="set_pseudo">"Saisir votre pseudo"</string>
+    <string name="set_password">Saisir votre mot de passe</string>
+    <string name="pseudo_vide">Votre pseudo est vide</string>
+    <string name="password_vide">Votre mot de passe est vide</string>
+
+    <!-- SettingActivity -->
+    <string name="title_activity_settings">Préférences</string>
+    <string name="titre_pseudo">Pseudo</string>
+    <string name="detail_pseudo">Pseudo de l\'utilisateur</string>
+    <string name="urlAPI">URL de l\'API</string>
+    <string name="urlAPI_summary">Adresse URL de l\'API utilisée</string>
+    <string name="titre_historique">Historique des pseudos</string>
+    <string name="detail_historique">Accès à l\'historique des pseudos créés</string>
+    <string name="supprimer_historique">Supprimer le pseudo actuel</string>
+    <string name="liste_pseudo">Liste des pseudos utilisés</string>
+    <string name="langues">Langues</string>
+
+    <string-array name="langues_names">
+        <item>Francais</item>
+        <!--item>values-fr</item-->
+
+        <item>Anglais</item>
+        <!--item>values-en</item-->
+
+        <item>Espagnol</item>
+        <!--item>values-es</item-->
+    </string-array>
+
+    <string-array name="langues_values">
+        <!--item>Francais</item-->
+        <item>fr</item>
+
+        <!--item>Anglais</item-->
+        <item>en</item>
+
+        <!--item>Espagnol</item-->
+        <item>es</item>
+    </string-array>
+
+    <!-- CheckListActivity -->
+    <string name="nouv_liste">Nouvelle liste</string>
+    <string name="addListe">Ajouter</string>
+    <string name="no_list">Aucune liste pour l\'instant</string>
+    <string name="bienvenue">Bienvenue </string>
+
+    <!-- ShowListActivity -->
+    <string name="nouv_item">Nouvel item</string>
+    <string name="addItem">Ajouter</string>
+    <string name="no_item">Aucun item pour l\'instant</string>
+    <string name="liste">Liste : </string>
+
+    <!-- GenericActivity -->
+    <string name="no_login">Aucun pseudo</string>
+
+</resources>
+
+
+
