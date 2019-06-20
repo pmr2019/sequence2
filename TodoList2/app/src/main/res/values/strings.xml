@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Todo list</string>
+    <string name="settingsStr">Préférences</string>
+    <string name="pseudoTextStr">Veuillez entrer votre pseudo :</string>
+    <string name="okButtonStr">OK</string>
+    <string name="newListButtonStr">Ajouter</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="mon_item">Mon item</string>
+    <string name="ma_liste">Ma liste</string>
+    <string name="passTextStr">Veuillez entrer votre mot de passe :</string>
+</resources>

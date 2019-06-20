@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        app:key="userName"
+        app:title="Pseudo"
+        app:summary="Dernier pseudo entré lors de l'utilisation de todo list"
+        android:icon="@drawable/ic_person_outline_black_24dp"/>
+
+    <EditTextPreference
+        android:key="apiUrl"
+        android:title="URL de l'API"
+        android:summary="Adresse URL de l'API grâce à laquelle on récupère les todo listes"
+        android:icon="@drawable/ic_link_black_24dp"
+        android:defaultValue="http://tomnab.fr/todo-api/"/>
+
+</PreferenceScreen>

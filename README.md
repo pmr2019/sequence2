@@ -1,2 +1,5 @@
-# sequence2
-Sequence2
+# Application TODO LIST V2
+
+LUCA JAKOMUSLKI
+
+TRISTAN BUSCEMI
