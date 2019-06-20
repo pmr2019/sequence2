@@ -22,7 +22,7 @@ import java.net.URL;
 import static android.content.Context.CONNECTIVITY_SERVICE;
 
 public class Reseau {
-
+    //banana
     private Context myContext = null;
     private String urlData = null;
 
