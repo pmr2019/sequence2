@@ -1,2 +1,2 @@
 # sequence2
-Sequence2
+NONIN Julien -- DUTILLIEUX Lydéric
