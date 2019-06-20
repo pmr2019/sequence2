@@ -30,6 +30,7 @@ import PMR.ToDoList.Model.ToDoList;
 import PMR.ToDoList.Model.User;
 import PMR.ToDoList.R;
 
+import static PMR.ToDoList.Controller.MainActivity.EXTRA_CONNEXIONOK;
 import static PMR.ToDoList.Controller.MainActivity.EXTRA_LOGIN;
 import static PMR.ToDoList.Controller.MainActivity.myUsersList;
 import static PMR.ToDoList.Controller.ToDoListActivity.EXTRA_HASH;
@@ -58,6 +59,9 @@ public class TasksActivity extends AppCompatActivity {
     private ToDoList todolist;
     private String hash;
 
+    //PARTIE GESTION DE LA CONNEXION
+    private Boolean connexionOk;
+
     private void alerter(String s) {
         Toast myToast = Toast.makeText(this, s, Toast.LENGTH_SHORT);
         myToast.show();
@@ -77,13 +81,37 @@ public class TasksActivity extends AppCompatActivity {
 
         Intent intentTaskActivity = getIntent();
         todolist = intentTaskActivity.getParcelableExtra(EXTRA_TODOLIST);
-        hash = intentTaskActivity.getStringExtra(EXTRA_HASH);
+        String stringConnexionOk = intentTaskActivity.getStringExtra(EXTRA_CONNEXIONOK);
+        connexionOk = (stringConnexionOk.equals("true"));
 
-        AsyncTask task = new PostAsyncTask();
-        task.execute();
+        if (connexionOk) hash = intentTaskActivity.getStringExtra(EXTRA_HASH);
 
+//        alerter(connexionOk.toString());
+
+        // On récupère une référence sur les inputs
         btnInsertTask=findViewById(R.id.btnInsertTask);
         textInsertTask=findViewById(R.id.textInsertTask);
+
+        // Si on avait de la connexion à l'écran de démarrage, on est en mode "En ligne" et
+        // On fait comme avant à la seule différence qu'on enregistre les données récupérées
+        // dans le SQL en plus
+        if (connexionOk==true){
+            btnInsertTask.setEnabled(true);
+            AsyncTask task = new PostAsyncTask();
+            task.execute();
+        }
+
+        //Si on n'avait pas de connexion à l'écran de démarrage, on est en mode "Hors Ligne" et
+        // On récupère les informations du SQL pour les afficher
+
+        else {
+            btnInsertTask.setEnabled(false);
+
+            ArrayList<Task> myTasks = getTasksFromSQL(todolist);
+            todolist.setTasksList(myTasks);
+            buildRecyclerView(myTasks);
+        }
+
 
         //BOUTON D'INSERTION D'UNE TACHE
         btnInsertTask.setOnClickListener(new View.OnClickListener() {
@@ -109,6 +137,21 @@ public class TasksActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    private ArrayList<Task> getTasksFromSQL(ToDoList todolist) {
+        /*
+        A ecrire
+         */
+        alerter("getTasksFromSQL OK");
+        return (new ArrayList<>());
+    }
+
+    private void saveTasksToSQL(ArrayList<Task> myTasks) {
+        /*
+        A ecrire
+         */
+        alerter("saveTasksToSQL OK");
     }
 
     public void buildRecyclerView(ArrayList<Task> list){
@@ -180,10 +223,13 @@ public class TasksActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(ArrayList<Task> myTasks){
             super.onPostExecute(myTasks);
+            saveTasksToSQL(myTasks);
             todolist.setTasksList(myTasks);
             buildRecyclerView(myTasks);
         }
     }
+
+
 
     //AsyncTask responsable de l'ajout d'un item
 

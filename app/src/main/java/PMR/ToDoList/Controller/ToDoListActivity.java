@@ -126,7 +126,7 @@ public class ToDoListActivity extends AppCompatActivity {
         else {
             btnInsertToDoList.setEnabled(false);
 
-            ArrayList<ToDoList> myToDoList=getToDoListsFromSQL();
+            ArrayList<ToDoList> myToDoList=getToDoListsFromSQL(user);
             user.setToDoLists(myToDoList);
             buildRecyclerView(myToDoList);
         }
@@ -159,7 +159,7 @@ public class ToDoListActivity extends AppCompatActivity {
 
     // FONCTIONS SQL
 
-    private ArrayList<ToDoList> getToDoListsFromSQL() {
+    private ArrayList<ToDoList> getToDoListsFromSQL(User user) {
         /*
         A ecrire
          */
