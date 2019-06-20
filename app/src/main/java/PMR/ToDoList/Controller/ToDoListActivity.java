@@ -38,6 +38,7 @@ import PMR.ToDoList.Model.ToDoList;
 import PMR.ToDoList.Model.User;
 import PMR.ToDoList.R;
 
+import static PMR.ToDoList.Controller.MainActivity.EXTRA_CONNEXIONOK;
 import static PMR.ToDoList.Controller.MainActivity.EXTRA_LOGIN;
 import static PMR.ToDoList.Controller.MainActivity.myUsersList;
 import static android.content.Intent.EXTRA_USER;
@@ -71,6 +72,9 @@ public class ToDoListActivity extends AppCompatActivity {
     public static final String EXTRA_HASH = "TAG_HASH";
     public static final String EXTRA_TODOLIST = "TAG_TODOLIST";
 
+    // GESTION DE LA CONNEXION
+    private Boolean connexionOk;
+
 
     //Fonction pour la création de toasts pour le débug notamment.
     private void alerter(String s) {
@@ -98,9 +102,10 @@ public class ToDoListActivity extends AppCompatActivity {
          */
         Intent intentMain = getIntent();
         user = intentMain.getParcelableExtra(EXTRA_LOGIN);
+        
 
-        AsyncTask task = new PostAsyncTask();
-        task.execute();
+//        AsyncTask task = new PostAsyncTask();
+//        task.execute();
 
         // Création items pour l'insertion des to do lists.
         btnInsertToDoList=findViewById(R.id.btnInsertToDoList);

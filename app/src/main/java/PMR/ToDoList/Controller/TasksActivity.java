@@ -85,7 +85,7 @@ public class TasksActivity extends AppCompatActivity {
         btnInsertTask=findViewById(R.id.btnInsertTask);
         textInsertTask=findViewById(R.id.textInsertTask);
 
-        //BOUTON D'INSERTION D'UNE TO DO LIST
+        //BOUTON D'INSERTION D'UNE TACHE
         btnInsertTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,9 +121,9 @@ public class TasksActivity extends AppCompatActivity {
 
 
         taskAdapter.setOnItemClickListener(new TasksAdapter.OnItemClickListener() {
-            @Override
 
             //BOUTON QUAND ON CLIQUE SUR UNE CARD
+            @Override
             public void onItemClick(int position) {
                 //On récupère la TODOLIST en question
             }

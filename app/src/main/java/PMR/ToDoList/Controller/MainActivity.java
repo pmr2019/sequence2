@@ -64,9 +64,13 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
     //GESTION DE LA CONNEXION A INTERNET
     private NetworkStateReceiver networkStateReceiver;
     private TextView etatConnexion;
+    private Boolean connexionOk;
+    private TextView erreurConnexion;
 
     //GESTION DES INFORMATIONS A ENREGISTRER
     public static final String EXTRA_LOGIN = "LOGIN";
+    public static final String EXTRA_CONNEXIONOK = "CONNEXIONOK";
+
 
     // METHODE POUR LES TOASTS
     public void alerter(String s) {
@@ -103,6 +107,8 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         networkStateReceiver.addListener(this);
         this.registerReceiver(networkStateReceiver, new IntentFilter(android.net.ConnectivityManager.CONNECTIVITY_ACTION));
         etatConnexion= findViewById(R.id.etatConnexion);
+        erreurConnexion = findViewById(R.id.erreurConnexion);
+        erreurConnexion.setText("");
 
         //BIND DES VIEWS POUR LA CONNEXION
         edtPseudo = findViewById(R.id.edtPseudo);
@@ -115,10 +121,6 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         btnConnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ToDoListActivity.class);
-                User myUser = null;
-                String login = edtPseudo.getText().toString();
-
                 // Pour pouvoir appuyer sur OK, on doit avoir les deux champs mot de passe et
                 //login remplis
                 if ((edtPseudo.getText().toString().matches("")) |
@@ -126,15 +128,58 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
                     alerter("Entrez un pseudo et un mot de passe");
 
                 }
-
                 else{
 
+                    // ON ENREGISTRE LES PSEUDOS ET PASSWORD UTILISES
                     pseudo = edtPseudo.getText().toString();
                     password = edtMdp.getText().toString();
 
-                    AsyncTask task = new PostAsyncTask();
-                    task.execute();
+                    if (connexionOk){
+                        AsyncTask task = new PostAsyncTask();
+                        task.execute();
+                    }
 
+                    else {
+                        // Si on a pas de connexion, on regarde si l'utilisateur
+                        //correspondant à ce pseudo/password est enregistré
+                        String hashTemporaire="";
+                        myUser=new User(pseudo,password,hashTemporaire);
+
+                        Boolean estDansSettings=false;
+                        Boolean pseudoOk=false;
+                        Boolean passwordOk=false;
+
+                        for (int i = 0; i < myUsersList.size(); i++) {
+                            if (myUsersList.get(i).getPseudo().equals(pseudo)){
+                                pseudoOk=true;
+                                if (myUsersList.get(i).getPassword().equals(password)){
+                                    passwordOk=true;
+                                    myUser.setHash(myUsersList.get(i).getHash());
+                                }
+                            }
+                        }
+
+                        // Si le mot de passe est incorrect, on informe l'utilisateur
+                        if ((pseudoOk==true) && (passwordOk==false)){
+                            erreurConnexion.setText("Mot de passe incorrect");
+                        }
+
+                        // Si l'utilisateur n'a jamais été enregistré, on informe l'utilisateur
+                        if (pseudoOk==false){
+                            erreurConnexion.setText("Sans connexion, impossible d'accéder aux ToDoLists d'un utilisateur jamais renseigné");
+                        }
+
+
+                        // Si l'utilisateur est enregistré, on passe en mode Hors connexion
+                        if ((pseudoOk==true) && (passwordOk==true)){
+                            Intent toToDoListActivity = new Intent(MainActivity.this, ToDoListActivity.class);
+                            toToDoListActivity.putExtra(EXTRA_LOGIN, myUser);
+                            toToDoListActivity.putExtra(EXTRA_CONNEXIONOK,connexionOk.toString());
+                            alerter(connexionOk.toString());
+                            startActivity(toToDoListActivity);
+                        }
+
+                    }
                 }
             }
         });
@@ -276,15 +321,17 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
     //Si la connexion est ok: bouton connexion disponible et texte informatif
     @Override
     public void networkAvailable() {
-        btnConnexion.setEnabled(true);
+        connexionOk=true;
+        erreurConnexion.setText("");
         etatConnexion.setText("Connexion OK");
     }
 
     //Si la connexion pas ok: bouton connexion pas disponible et texte informatif
     @Override
     public void networkUnavailable() {
-        btnConnexion.setEnabled(false);
-        etatConnexion.setText("Veuillez vous connecter à internet");
+        connexionOk=false;
+        etatConnexion.setText(
+                "Attention ! Vous n'êtes pas connectés à internet.");
     }
 
     //PARTIE ASYNCTASK
@@ -313,20 +360,17 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
             super.onPostExecute(hash);
 
             if (hash!=null) {
-                myUser = new User (pseudo, password);
-                myUser.setHash(hash);
+                myUser = new User (pseudo, password,hash);
 
                 boolean estDansSettings=false;
 
 
                 // ON REGARDE SI L'UTILISATEUR EST DEJA ENREGISTRE
                 for (int i = 0; i < myUsersList.size(); i++) {
-                    if (myUsersList.get(i).getHash().equals(myUser.getHash())) {
+                    if (myUsersList.get(i).equals(myUser)) {
                         estDansSettings=true;
                     }
                 }
-
-
 
 
                 if (!estDansSettings){
@@ -336,6 +380,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
 
                 Intent toToDoListActivity = new Intent(MainActivity.this, ToDoListActivity.class);
                 toToDoListActivity.putExtra(EXTRA_LOGIN, myUser);
+                toToDoListActivity.putExtra(EXTRA_CONNEXIONOK,connexionOk);
                 startActivity(toToDoListActivity);
             }
         }

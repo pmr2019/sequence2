@@ -16,9 +16,18 @@ public class User implements Parcelable {
 
     // CONSTRUCTEURS
 
-    public User(String pseudo, String password) {
+    public User(String pseudo, String password, String hash) {
         this.pseudo = pseudo;
         this.password = password;
+        this.hash=hash;
+        this.toDoLists=new ArrayList<>();
+    }
+
+    public User(User user) {
+        this.pseudo = user.pseudo;
+        this.password = user.password;
+        this.hash=user.hash;
+        this.toDoLists=new ArrayList<>();
     }
 
     protected User(Parcel in) {
@@ -35,6 +44,8 @@ public class User implements Parcelable {
     public String getPseudo() {
         return pseudo;
     }
+
+    public String getPassword() { return password; }
 
     public String getHash() {
         return hash;
@@ -112,5 +123,12 @@ public class User implements Parcelable {
                 '}';
     }
 
-
+    @Override
+    public boolean equals(@Nullable Object user) {
+            User otherUser= (User)user;
+            if (this.pseudo.equals(otherUser.getPseudo()))
+                if (this.password.equals(otherUser.getPassword()))
+                    return true;
+        return false;
+    }
 }
