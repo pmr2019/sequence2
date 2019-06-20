@@ -102,14 +102,36 @@ public class ToDoListActivity extends AppCompatActivity {
          */
         Intent intentMain = getIntent();
         user = intentMain.getParcelableExtra(EXTRA_LOGIN);
-        
+        String stringConnexionOk = intentMain.getStringExtra(EXTRA_CONNEXIONOK);
+        connexionOk = (stringConnexionOk.equals("true"));
 
-//        AsyncTask task = new PostAsyncTask();
-//        task.execute();
+//        alerter(connexionOk.toString());
 
-        // Création items pour l'insertion des to do lists.
+        // On récupère une référence sur les inputs
         btnInsertToDoList=findViewById(R.id.btnInsertToDoList);
         textInsertToDoList=findViewById(R.id.textInsertToDoList);
+
+        // Si on avait de la connexion à l'écran de démarrage, on est en mode "En ligne" et
+        // On fait comme avant à la seule différence qu'on enregistre les données récupérées
+        // dans le SQL en plus
+        if (connexionOk==true){
+            btnInsertToDoList.setEnabled(true);
+            AsyncTask task = new PostAsyncTask();
+            task.execute();
+        }
+
+        //Si on n'avait pas de connexion à l'écran de démarrage, on est en mode "Hors Ligne" et
+        // On récupère les informations du SQL pour les afficher
+
+        else {
+            btnInsertToDoList.setEnabled(false);
+
+            ArrayList<ToDoList> myToDoList=getToDoListsFromSQL();
+            user.setToDoLists(myToDoList);
+            buildRecyclerView(myToDoList);
+        }
+
+
 
         //BOUTON D'INSERTION D'UNE TO DO LIST
         btnInsertToDoList.setOnClickListener(new View.OnClickListener() {
@@ -134,6 +156,25 @@ public class ToDoListActivity extends AppCompatActivity {
 
     }
 
+
+    // FONCTIONS SQL
+
+    private ArrayList<ToDoList> getToDoListsFromSQL() {
+        /*
+        A ecrire
+         */
+        alerter("getToDoListsFromSQL OK");
+
+        return new ArrayList<>();
+    }
+
+    private void saveToDoListsToSQL(ArrayList<ToDoList> myToDoList) {
+        /*
+        A ecrire
+         */
+        alerter("saveToDoLitsToSQL OK");
+    }
+
     public void buildRecyclerView(ArrayList<ToDoList> list){
         toDoListRecyclerView = findViewById(R.id.rvTodoList);
         toDoListRecyclerView.setHasFixedSize(true);
@@ -148,8 +189,13 @@ public class ToDoListActivity extends AppCompatActivity {
             //BOUTON QUAND ON CLIQUE SUR UNE CARD
             public void onItemClick(int position) {
                 Intent intent=new Intent(ToDoListActivity.this,TasksActivity.class);
-                intent.putExtra(EXTRA_HASH, user.getHash());
+
+                // Si on a de la connexion, on passe aussi le hash pour faire les requêtes
+                if(connexionOk==true){
+                    intent.putExtra(EXTRA_HASH, user.getHash());
+                }
                 intent.putExtra(EXTRA_TODOLIST, user.getToDoLists().get(position));
+                intent.putExtra(EXTRA_CONNEXIONOK,connexionOk.toString());
                 startActivity(intent);
                 }
 
@@ -186,10 +232,14 @@ public class ToDoListActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(ArrayList<ToDoList> myToDoList){
             super.onPostExecute(myToDoList);
+            // On enregistre les to do lists dans le SQL
+            saveToDoListsToSQL(myToDoList);
             user.setToDoLists(myToDoList);
             buildRecyclerView(myToDoList);
         }
     }
+
+
 
     //Asynctask qui permet de créer une nouvelle liste sur l'API
 

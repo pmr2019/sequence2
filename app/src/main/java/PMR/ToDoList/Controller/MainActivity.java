@@ -175,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
                             Intent toToDoListActivity = new Intent(MainActivity.this, ToDoListActivity.class);
                             toToDoListActivity.putExtra(EXTRA_LOGIN, myUser);
                             toToDoListActivity.putExtra(EXTRA_CONNEXIONOK,connexionOk.toString());
-                            alerter(connexionOk.toString());
                             startActivity(toToDoListActivity);
                         }
 
@@ -380,7 +379,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
 
                 Intent toToDoListActivity = new Intent(MainActivity.this, ToDoListActivity.class);
                 toToDoListActivity.putExtra(EXTRA_LOGIN, myUser);
-                toToDoListActivity.putExtra(EXTRA_CONNEXIONOK,connexionOk);
+                toToDoListActivity.putExtra(EXTRA_CONNEXIONOK,connexionOk.toString());
                 startActivity(toToDoListActivity);
             }
         }
