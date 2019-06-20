@@ -74,12 +74,16 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         myToast.show();
     }
 
+    /*
+    ON CREATE
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         myUsersList = getUsersFromFile();
+
         try {
             urlApi= getUrlApiFromJson();
         } catch (IOException e) {
@@ -314,11 +318,16 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
 
                 boolean estDansSettings=false;
 
+
+                // ON REGARDE SI L'UTILISATEUR EST DEJA ENREGISTRE
                 for (int i = 0; i < myUsersList.size(); i++) {
                     if (myUsersList.get(i).getHash().equals(myUser.getHash())) {
                         estDansSettings=true;
                     }
                 }
+
+
+
 
                 if (!estDansSettings){
                     myUsersList.add(myUser);
