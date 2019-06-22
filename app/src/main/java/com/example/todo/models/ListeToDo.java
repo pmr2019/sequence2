@@ -1,10 +1,25 @@
 package com.example.todo.models;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
+@Entity(foreignKeys = @ForeignKey(entity = ProfilListeToDo.class,
+        parentColumns = "id",
+        childColumns = "profilListeToDoId"))
 public class ListeToDo implements Serializable {
+
+    @PrimaryKey(autoGenerate = true)
+    private int id;
+    private int profilListeToDoId;
+
     private String titreListeToDo;
+
+    @Ignore
     private ArrayList<ItemToDo> lesItems = new ArrayList<ItemToDo>();
 
     public ListeToDo() {
@@ -12,6 +27,22 @@ public class ListeToDo implements Serializable {
 
     public ListeToDo(String titreListeToDo) {
         this.titreListeToDo = titreListeToDo;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getProfilListeToDoId() {
+        return profilListeToDoId;
+    }
+
+    public void setProfilListeToDoId(int profilListeToDoId) {
+        this.profilListeToDoId = profilListeToDoId;
     }
 
     public String getTitreListeToDo() {
@@ -33,7 +64,9 @@ public class ListeToDo implements Serializable {
     @Override
     public String toString() {
         return "ListeToDo{" +
-                "titreListeToDo='" + titreListeToDo + '\'' +
+                "id=" + id +
+                ", profilListeToDoId=" + profilListeToDoId +
+                ", titreListeToDo='" + titreListeToDo + '\'' +
                 ", lesItems=" + lesItems +
                 '}';
     }

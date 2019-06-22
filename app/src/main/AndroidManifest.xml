@@ -15,10 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ShowListActivity"></activity>
-        <activity android:name=".ChoixListActivity" />
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".activities.ShowListActivity"></activity>
+        <activity android:name=".activities.ChoixListActivity" />
+        <activity android:name=".activities.SettingsActivity" />
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

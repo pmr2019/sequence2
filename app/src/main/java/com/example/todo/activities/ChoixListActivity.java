@@ -1,0 +1,253 @@
+package com.example.todo.activities;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
+import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+
+import com.example.todo.API_models.RetroMain;
+import com.example.todo.API_models.TodoInterface;
+import com.example.todo.R;
+import com.example.todo.database.MyDatabase;
+import com.example.todo.models.InternetCheck;
+import com.example.todo.models.ListeToDo;
+import com.example.todo.models.ProfilListeToDo;
+import com.example.todo.ui.RecyclerViewAdapterList;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executor;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+public class ChoixListActivity extends AppCompatActivity implements View.OnClickListener, InternetCheck.Consumer {
+    private static final String TAG = "ChoixListActivity";
+
+    //Widgets
+    private EditText edtListTitle;
+    private Button btnAddList;
+
+    //Var
+    private String pseudo;
+    private String hash;
+    private ArrayList<ListeToDo> mList = new ArrayList<ListeToDo>(); //Liste des listes to do
+    private ProfilListeToDo profil;
+    private TodoInterface service;
+    public ArrayList<Integer> indices = new ArrayList<>(); //Key : position of the list in the recylcerview, value : id of the list
+
+    // Database
+    MyDatabase myDatabase;
+    Executor executor;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_choix_list);
+        Log.d(TAG, "onCreate: started.");
+
+        // Init database and executor
+        myDatabase = MyDatabase.getInstance(this);
+        executor = command -> new Thread(command).start();
+
+        //Get pseudo active
+        Bundle data = this.getIntent().getExtras();
+        assert data != null;
+        pseudo = data.getString("pseudo", "inconnu");
+        Log.d(TAG, "pseudo : " + pseudo);
+
+        // Initialize hash & service variables
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        String baseUrl = settings.getString("APIurl", "http://tomnab.fr/");
+        hash = settings.getString("hash", "");
+        Gson gson = new GsonBuilder()
+                .serializeNulls()
+                .disableHtmlEscaping()
+                .setPrettyPrinting()
+                .create();
+        service = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build()
+                .create(TodoInterface.class);
+
+        //Init widgets
+        edtListTitle = findViewById(R.id.edtListTitle);
+        btnAddList = findViewById(R.id.btnAddList);
+
+        //Add listener
+        btnAddList.setOnClickListener(this);
+
+        new InternetCheck(this);
+        // Get todo lists from the pseudo = load profile from the API & update BDD : done in isConnectedToInternet
+        //Init reclyclerView (done in loadProfile_API if it is with the API because of the thread)
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnAddList:
+                Log.d(TAG, "onClick: clicked on : Ok.");
+                String title = edtListTitle.getText().toString();
+                if (!title.isEmpty()) {
+                    addListeToDo(title);
+                }
+        }
+    }
+
+    private void initRecyclerView() {
+        Log.d(TAG, "initRecyclerView: init RecyclerView");
+        RecyclerView recyclerView = findViewById(R.id.reclycler_view_list);
+        RecyclerViewAdapterList adapter = new RecyclerViewAdapterList(this, mList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+    }
+
+    private void refreshRecyclerView() {
+        mList.clear();
+        mList.addAll(profil.getMesListeToDo());
+        RecyclerView recyclerView = findViewById(R.id.reclycler_view_list);
+        recyclerView.getAdapter().notifyDataSetChanged();
+    }
+
+    private void addListeToDo(String title) {
+        profil.ajouteListe(new ListeToDo(title));
+        addListeToDo_API(new ListeToDo(title));
+        Log.d(TAG, "addListeToDo: " + profil.toString());
+        refreshRecyclerView();
+    }
+
+    /**
+     * Initialize profil variable from the API & launch update DB.
+     */
+    private void loadProfile_API(){
+        Call<RetroMain> call = service.getLists(hash);
+        call.enqueue(new Callback<RetroMain>() {
+            @Override
+            public void onResponse(Call<RetroMain> call, Response<RetroMain> response) {
+                if (response.body() != null) {
+                    RetroMain retroMain = response.body();
+                    if (retroMain.isSuccess()) {
+                        ArrayList<ListeToDo> listesToDo = new ArrayList<>();
+                        for (RetroMain r : retroMain.getLists()) {
+                            listesToDo.add(new ListeToDo(r.getLabel()));
+                            // Update indices map.
+                            indices.add(r.getId());
+                        }
+                        profil = new ProfilListeToDo(pseudo, listesToDo);
+                        update_DB();
+                        initRecyclerView();
+                        refreshRecyclerView();
+                    } else {
+                        Log.d(TAG, "onResponse: http code : "+retroMain.getStatus());
+                    }
+                } else {
+                    Log.d(TAG, "onResponse: empty response. HTTP CODE : "+response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RetroMain> call, Throwable t) {
+                Log.d(TAG, "onFailure: "+t.toString());
+            }
+        });
+    }
+
+    /**
+     * Update the DB with the current profilListeToDo.
+     */
+    private void update_DB() {
+        executor.execute(() -> {
+                // Add the profil if it doesn't exist yet (only one same login in the DB)
+                if (myDatabase.profilListeToDoDao().getProfilListeToDoByLogin(profil.getLogin()) == null){
+                    myDatabase.profilListeToDoDao().addProfilListeToDo(profil);
+                }
+                // Get the profil id
+                int profilListeToDoId = myDatabase.profilListeToDoDao().getIdProfilListeToDo(profil.getLogin());
+                // Delete all listeToDo associated with the profil's id
+                myDatabase.listeToDoDao().delAllListeToDo(profilListeToDoId);
+                // Insert all list loaded in loadProfil_API() in the DB
+                for (ListeToDo listeToDo : profil.getMesListeToDo()) {
+                    listeToDo.setProfilListeToDoId(profilListeToDoId);
+                    myDatabase.listeToDoDao().addListeToDo(listeToDo);
+                }
+        });
+    }
+
+    /**
+     * Add the liste to the user profile in the api.
+     * @param listeToDo
+     */
+    private void addListeToDo_API(ListeToDo listeToDo){
+        Call<RetroMain> call = service.addList(hash, listeToDo.getTitreListeToDo());
+        call.enqueue(new Callback<RetroMain>() {
+            @Override
+            public void onResponse(Call<RetroMain> call, Response<RetroMain> response) {
+                if (response.body() != null) {
+                    RetroMain retroMain = response.body();
+                    if (retroMain.isSuccess()) {
+                        Log.d(TAG, "onResponse: success adding a new listeToDo.");
+                        RetroMain rList = retroMain.getList();
+                        indices.add(rList.getId());
+                    } else {
+                        Log.d(TAG, "onResponse: http code : "+retroMain.getStatus());
+                    }
+                } else {
+                    Log.d(TAG, "onResponse: empty response. HTTP CODE : "+response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RetroMain> call, Throwable t) {
+                Log.d(TAG, "onFailure: "+t.toString());
+            }
+        });
+    }
+
+    @Override
+    public void isConnectedToInternet(Boolean internet) {
+        if (internet) {
+            // Get todo lists from the pseudo = load profile from the API & update BDD
+            loadProfile_API();
+        } else {
+//            Context context = this;
+//            executor.execute(() -> {
+//                profil = myDatabase.profilListeToDoDao().getProfilListeToDoByLogin(pseudo);
+//                List<ListeToDo> listeToDos = myDatabase.listeToDoDao().getAllListeToDo(profil.getId()); // .getId() available since we get the profil from the DB
+//                profil.setMesListeToDo(new ArrayList<>(listeToDos));
+//                ((ChoixListActivity)context).initRecyclerView();
+//                ((ChoixListActivity)context).refreshRecyclerView();
+//            });
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... voids) {
+                    profil = myDatabase.profilListeToDoDao().getProfilListeToDoByLogin(pseudo);
+                    List<ListeToDo> listeToDos = myDatabase.listeToDoDao().getAllListeToDo(profil.getId()); // .getId() available since we get the profil from the DB
+                    profil.setMesListeToDo(new ArrayList<>(listeToDos));
+                    return null;
+                }
+
+                @Override
+                protected void onPostExecute(Void aVoid) {
+                    super.onPostExecute(aVoid);
+
+                }
+            }.execute();
+        }
+    }
+}
