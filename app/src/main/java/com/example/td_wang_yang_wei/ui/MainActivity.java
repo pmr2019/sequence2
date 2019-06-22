@@ -1,4 +1,4 @@
-package com.example.td_wang_yang_wei;
+package com.example.td_wang_yang_wei.ui;
 
 
 import android.content.Context;
@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.td_wang_yang_wei.DataClass.ListeDeUtilisateur;
 import com.example.td_wang_yang_wei.DataClass.Utilisateur;
+import com.example.td_wang_yang_wei.R;
 import com.example.td_wang_yang_wei.api.Contenu;
 import com.example.td_wang_yang_wei.api.requestService;
 import com.example.td_wang_yang_wei.api.requestServiceFactory;

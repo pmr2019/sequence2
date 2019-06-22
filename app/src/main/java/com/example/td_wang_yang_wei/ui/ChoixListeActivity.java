@@ -1,4 +1,4 @@
-package com.example.td_wang_yang_wei;
+package com.example.td_wang_yang_wei.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.td_wang_yang_wei.R;
 import com.example.td_wang_yang_wei.api.Lists;
 import com.example.td_wang_yang_wei.api.NouveauListe;
 import com.example.td_wang_yang_wei.api.Users;

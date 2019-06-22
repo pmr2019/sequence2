@@ -1,4 +1,4 @@
-package com.example.td_wang_yang_wei;
+package com.example.td_wang_yang_wei.ui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.td_wang_yang_wei.DataClass.ListeDeUtilisateur;
 import com.example.td_wang_yang_wei.DataClass.Utilisateur;
+import com.example.td_wang_yang_wei.R;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
