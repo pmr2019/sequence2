@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         Intent myIntent;
         myIntent = new Intent(MainActivity.this, SettingActivity.class);
         startActivity(myIntent);
+        MainActivity.this.overridePendingTransition(0, 0);
         return true;
     }
 
@@ -129,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void signin(View v) {
+    public void signup(View v) {
         final String pseudo = edt_pseudo.getText().toString();
         final String password = edt_password.getText().toString();
 

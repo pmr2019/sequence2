@@ -88,7 +88,7 @@
             android:id="@+id/btn_signin"
             android:layout_width="333dp"
             android:layout_height="43dp"
-            android:onClick="signin"
+            android:onClick="signup"
             android:text="@string/signin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.485"
