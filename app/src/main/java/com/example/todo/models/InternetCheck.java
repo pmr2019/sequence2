@@ -18,7 +18,7 @@ public class InternetCheck extends AsyncTask<Void,Void,Boolean> {
 
     /**
      * Constructor
-     * @param consumer : Interface with only one methode : accept(bool)
+     * @param consumer : Interface with only one method : isConnectedToInternet(bool)
      */
     public  InternetCheck(Consumer consumer) {
         mConsumer = consumer;
