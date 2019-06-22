@@ -19,6 +19,9 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.td_wang_yang_wei.DataProvider;
+import com.example.td_wang_yang_wei.Database.ToDoListdb;
+import com.example.td_wang_yang_wei.Database.model.Listdb;
 import com.example.td_wang_yang_wei.R;
 import com.example.td_wang_yang_wei.api.Lists;
 import com.example.td_wang_yang_wei.api.NouveauListe;
@@ -49,12 +52,14 @@ public class ChoixListeActivity extends AppCompatActivity {
     private String pseudo;
     private String userId;
     private com.example.td_wang_yang_wei.api.requestService requestService;
+    private DataProvider dataProvider;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choix_liste);
+        dataProvider = new DataProvider(this);
 
         edtListe = findViewById(R.id.edtliste);
         btnListe = findViewById(R.id.btnListe);
@@ -64,7 +69,6 @@ public class ChoixListeActivity extends AppCompatActivity {
         url = getIntent().getStringExtra("url");
         pseudo = getIntent().getStringExtra("pseudo");
 
-
         //créer adapter
         listeAdapter=new ListeAdapter((new ArrayList<String>()));
 
@@ -72,7 +76,8 @@ public class ChoixListeActivity extends AppCompatActivity {
         requestService = requestServiceFactory.createService(url, requestService.class);
 
         //obtenir la liste de nom de liste dans cet utilisateur
-        getListedeLabel(hash);
+        sync();
+//        getListedeLabel(hash);
         getUserIdconneted(hash,pseudo);
 
         //afficher la liste de noms dans le RecyclerView
@@ -88,6 +93,30 @@ public class ChoixListeActivity extends AppCompatActivity {
         Toast myToast = Toast.makeText(this,s,Toast.LENGTH_SHORT);
         myToast.show();
     }
+
+
+//    TODO:完善异步
+    private void sync() {
+        findViewById(R.id.progess).setVisibility(View.VISIBLE);
+
+        dataProvider.syncLists(hash,new DataProvider.ListsListener() {
+            @Override public void onSuccess(List<Listdb> lists) {
+
+                for (int i = 0; i< ToDoListdb.getDatabase(getApplicationContext()).listDao().getAllLists().size(); i++) {
+                    listeAdapter.add(ToDoListdb.getDatabase(getApplicationContext()).listDao().getAllLists().get(i).getLabel());
+                }
+                findViewById(R.id.progess).setVisibility(View.GONE);
+            }
+
+            @Override public void onError() {
+                for (int i = 0; i< ToDoListdb.getDatabase(getApplicationContext()).listDao().getAllLists().size(); i++) {
+                    listeAdapter.add(ToDoListdb.getDatabase(getApplicationContext()).listDao().getAllLists().get(i).getLabel());
+                }
+                findViewById(R.id.progess).setVisibility(View.GONE);
+            }
+        });
+    }
+
 
     //la fonction pour creer une nouvelle liste quand on cliquer le button "creer votre liste"
     public void addnewlist(View v) {

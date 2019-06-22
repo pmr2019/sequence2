@@ -84,10 +84,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         NetworkInfo networkInfo=netManager.getActiveNetworkInfo();
 
         if(networkInfo!=null){
-            btnOk.setEnabled(networkInfo.isConnected());
+            btnSign.setEnabled(networkInfo.isConnected());
                 }
         else{
-            btnOk.setEnabled(false);
+            btnSign.setEnabled(false);
         }
 
 

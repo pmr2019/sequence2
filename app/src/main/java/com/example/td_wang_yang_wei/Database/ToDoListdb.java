@@ -27,8 +27,7 @@ public abstract class ToDoListdb extends RoomDatabase {
             synchronized(ToDoListdb.class){
                 if(db == null){
                     db = Room.databaseBuilder(context.getApplicationContext(),ToDoListdb.class,
-                            "todolistdatabase")
-                            .build();
+                            "todolistdatabase").allowMainThreadQueries().build();
                 }
             }
         }
