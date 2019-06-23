@@ -2,6 +2,7 @@ package com.example.td_wang_yang_wei;
 
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 
 import androidx.annotation.UiThread;
 
@@ -13,6 +14,7 @@ import com.example.td_wang_yang_wei.Database.model.Listdb;
 import com.example.td_wang_yang_wei.api.Lists;
 import com.example.td_wang_yang_wei.api.requestService;
 import com.example.td_wang_yang_wei.api.requestServiceFactory;
+import com.example.td_wang_yang_wei.ui.ChoixListeActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,6 +36,8 @@ public class DataProvider {
     private final requestService service = requestServiceFactory.createService(url,requestService.class);
     private final Converter converter = new Converter();
 
+    private static List<String> labelslist = new ArrayList<>();
+
 
     public DataProvider(Context context){
         uiHandler = new Handler(context.getMainLooper());
@@ -46,20 +50,26 @@ public class DataProvider {
         Future future = Utils.BACKGROUND.submit(new Runnable() {
             @Override public void run() {
                 try {
+                    Log.d("test",listener+"");
                     Response<Lists> response = service.getLists(hash).execute();
                     if( response.isSuccessful()) {
                         final List<Listdb> listsSave = converter.listsfrom(response.body());
                         listDao.save(listsSave);
+                        Log.d("test",listsSave+"");
+                        readLabelslist();
+                        Log.d("test",labelslist.toString());
+
                         uiHandler.post(new Runnable() {
                             @Override public void run() {
-                                listener.onSuccess(listsSave);
+                                listener.onSuccess(labelslist);
                             }
                         });
 
                     }else {
+                        readLabelslist();
                         uiHandler.post(new Runnable() {
                             @Override public void run() {
-                                listener.onError();
+                                listener.onError(labelslist);
                             }
                         });
 
@@ -68,7 +78,7 @@ public class DataProvider {
                 } catch (IOException e) {
                     uiHandler.post(new Runnable() {
                         @Override public void run() {
-                            listener.onError();
+                            listener.onError(labelslist);
                         }
                     });
                 }
@@ -78,11 +88,17 @@ public class DataProvider {
 
     }
 
+    public void readLabelslist(){
+        labelslist.clear();
+        for (int i = 0; i< listDao.getAllLists().size(); i++) {
+            labelslist.add(listDao.getAllLists().get(i).getLabel());
+        }
+    }
 
     public interface ListsListener {
         @UiThread
-        public void onSuccess(List<Listdb> lists);
+        public void onSuccess(List<String> lists);
         @UiThread
-        public void onError();
+        public void onError(List<String> lists);
     }
 }

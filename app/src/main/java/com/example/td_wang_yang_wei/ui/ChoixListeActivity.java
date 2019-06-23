@@ -100,18 +100,19 @@ public class ChoixListeActivity extends AppCompatActivity {
         findViewById(R.id.progess).setVisibility(View.VISIBLE);
 
         dataProvider.syncLists(hash,new DataProvider.ListsListener() {
-            @Override public void onSuccess(List<Listdb> lists) {
-
-                for (int i = 0; i< ToDoListdb.getDatabase(getApplicationContext()).listDao().getAllLists().size(); i++) {
-                    listeAdapter.add(ToDoListdb.getDatabase(getApplicationContext()).listDao().getAllLists().get(i).getLabel());
+            @Override public void onSuccess(List<String> labelslist) {
+                for (int i = 0; i< labelslist.size(); i++) {
+                    listeAdapter.add(labelslist.get(i));
                 }
+                Log.d("test",labelslist+"");
                 findViewById(R.id.progess).setVisibility(View.GONE);
             }
 
-            @Override public void onError() {
-                for (int i = 0; i< ToDoListdb.getDatabase(getApplicationContext()).listDao().getAllLists().size(); i++) {
-                    listeAdapter.add(ToDoListdb.getDatabase(getApplicationContext()).listDao().getAllLists().get(i).getLabel());
+            @Override public void onError(List<String> labelslistLocal) {
+                for (int i = 0; i< labelslistLocal.size(); i++) {
+                    listeAdapter.add(labelslistLocal.get(i));
                 }
+                Log.d("test",labelslistLocal+"");
                 findViewById(R.id.progess).setVisibility(View.GONE);
             }
         });
@@ -265,8 +266,6 @@ public class ChoixListeActivity extends AppCompatActivity {
             //sauter au ItemActivity quand on clique la liste.
             @Override
             public void onClick(View v) {
-                Log.d("id",""+v.getId());
-                Log.d("id1",""+R.id.nom_Liste);
                 switch (v.getId()){
                     case R.id.nom_Liste:
                         if (getAdapterPosition() != RecyclerView.NO_POSITION) {
