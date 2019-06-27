@@ -23,6 +23,7 @@ import fr.syned.sequence1_todolist.Model.Task;
 import fr.syned.sequence1_todolist.Model.ToDoList;
 import fr.syned.sequence1_todolist.R;
 
+import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_ID;
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_PROFILE;
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_UUID;
 
@@ -59,7 +60,8 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
         private CardView cardView;
         private TextView title;
         private UUID uuid;
-        private RecyclerView nestedRecyclerView;
+        private String id;
+        public RecyclerView nestedRecyclerView;
         private TextView ellipsis;
 
         public ToDoListViewHolder(@NonNull View v) {
@@ -83,6 +85,7 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoLi
         public void bind(ToDoList toDoList) {
             title.setText(toDoList.getName());
             this.uuid = toDoList.getId();
+            this.id = toDoList.getJSONId();
             List<Task> tasks = new ArrayList<>();
             if (toDoList.getTasks().size() > 10) {
                 for (int i = 0; i < 10; i++) {

@@ -2,7 +2,6 @@ package fr.syned.sequence1_todolist.Activities;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -21,19 +20,13 @@ import fr.syned.sequence1_todolist.R;
 
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_HASH;
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_USERNAME;
-import static fr.syned.sequence1_todolist.CustomApplication.profilesList;
 
 public class ProfileActivity extends BaseActivity {
 
     EditText textViewToDoListName;
     private RecyclerView recyclerView;
     public static ToDoListAdapter toDoListAdapter;
-    static public Profile profile;
-
-    public static void completeList(JSONArray items, String id) {
-        profile.getList(id).addTask(items);
-        toDoListAdapter.notifyDataSetChanged();
-    }
+    public static Profile profile;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,7 +44,6 @@ public class ProfileActivity extends BaseActivity {
         profile = new Profile(username, hash, getApplicationContext());
         super.toolbar.setSubtitle(username);
 
-//
         textViewToDoListName = findViewById(R.id.text_view_todolist_name);
         recyclerView = findViewById(R.id.todolists);
         toDoListAdapter = new ToDoListAdapter(profile.getToDoLists());
@@ -63,11 +55,7 @@ public class ProfileActivity extends BaseActivity {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeItemTouchHelper(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, recyclerView));
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
-    public static void CompleteProfile(JSONArray arr, String hash, Context c) throws JSONException {
-        for(int i = 0; i < arr.length(); i++){
-            profile.addToDoList((JSONObject) arr.get(i), hash, c);
-        }
-    }
+
     @Override
     protected int getLayoutResourceId() {
         return R.layout.activity_profile;
@@ -78,15 +66,26 @@ public class ProfileActivity extends BaseActivity {
         super.onResume();
         //if(!profilesList.contains(profile)) this.finish();
         // TODO: à faire seulement quand un changement a été fait... (Avec le StartActivityForResult)
-        //toDoListAdapter.notifyDataSetChanged();
+        toDoListAdapter.notifyDataSetChanged();
 
     }
 
     public void onClickAddBtn(View view) {
-        if (!textViewToDoListName.getText().toString().matches("")) {
-            profile.addToDoList(textViewToDoListName.getText().toString());
-            toDoListAdapter.notifyDataSetChanged();
-            textViewToDoListName.setText(null);
+//        if (!textViewToDoListName.getText().toString().matches("")) {
+//            profile.addToDoList(textViewToDoListName.getText().toString());
+//            toDoListAdapter.notifyDataSetChanged();
+//            textViewToDoListName.setText(null);
+//        }
+    }
+
+    public static void completeList(JSONArray items, String id, String hash) {
+        profile.getList(id).addTasks(items, id, hash);
+        toDoListAdapter.notifyDataSetChanged();
+    }
+
+    public static void completeProfile(JSONArray arr, String hash, Context c) throws JSONException {
+        for(int i = 0; i < arr.length(); i++){
+            profile.addToDoList((JSONObject)arr.get(i), hash, c);
         }
     }
 

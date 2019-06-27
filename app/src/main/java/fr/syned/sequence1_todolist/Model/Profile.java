@@ -17,14 +17,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import fr.syned.sequence1_todolist.Activities.Network.RequestQueueInstance;
 import fr.syned.sequence1_todolist.Activities.ProfileActivity;
-import fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters.ProfileAdapter;
 
 public class Profile implements Serializable {
     private String username;
@@ -50,32 +48,26 @@ public class Profile implements Serializable {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            Log.i("TODO", "onResponse: "+response.get("lists"));
-                            ProfileActivity.CompleteProfile((JSONArray)response.get("lists"), fhash, co);
+                            Log.i("TODO", "onResponse: " + response.get("lists"));
+                            ProfileActivity.completeProfile((JSONArray)response.get("lists"), fhash, co);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-                    }
-
-                    private void add(Object lists) {
                     }
                 }, new Response.ErrorListener() {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // TODO: Handle error
-
                     }
                 }) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("hash", fhash);
 
                 return params;
-
-
             }
         };
         RequestQueueInstance instance = RequestQueueInstance.getInstance(c);
@@ -95,22 +87,27 @@ public class Profile implements Serializable {
         this.toDoLists.add(toDoList);
         this.toDoListMap.put(toDoList.getId(), toDoList);
     }
+
     public void addToDoList(JSONObject obj, String hash, Context c) {
+        Log.i("TODO", "addToDoList: ");
         ToDoList toDoList = null;
         try {
-            toDoList = new ToDoList(obj.get("id").toString(),obj.get("label").toString(), hash, c );
+            Log.i("TODO", "addToDoList id: " + obj.get("id").toString());
+            Log.i("TODO", "addToDoList label: " + obj.get("label").toString());
+            toDoList = new ToDoList(obj.get("id").toString(),obj.get("label").toString(), hash, c);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         this.toDoLists.add(toDoList);
         this.toDoListMap.put(toDoList.getId(), toDoList);
     }
+
     public ToDoList getList(String id){
-        ToDoList t = null;
-        for (ToDoList td: toDoLists) {
-            if(td.getJSONId()==id)t=td;
+        ToDoList toDoList = null;
+        for (ToDoList tdl : toDoLists) {
+            if (tdl.getJSONId() == id) toDoList = tdl;
         }
-        return t;
+        return toDoList;
     }
 
     public String getUsername() {

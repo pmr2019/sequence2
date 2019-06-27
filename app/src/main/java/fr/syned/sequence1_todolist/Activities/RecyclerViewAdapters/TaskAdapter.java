@@ -67,7 +67,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                 @Override
                 public void onClick(View v) {
                     Task selectedTask = ToDoListActivity.toDoList.getTask(uuid);
-                    selectedTask.toggleCheckbox();
+//                    selectedTask.toggleCheckbox();
+                    selectedTask.toggleCheckbox(v.getContext());
                     if (selectedTask.isDone()) textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                     else textView.setPaintFlags(textView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                     Log.i("TAG", "onClick on checkBox: " + selectedTask.isDone());
@@ -78,7 +79,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                 @Override
                 public void onClick(View v) {
                     Task selectedTask = ToDoListActivity.toDoList.getTask(uuid);
-                    checkBox.setChecked(selectedTask.toggleCheckbox());
+//                    checkBox.setChecked(selectedTask.toggleCheckbox());
+                    checkBox.setChecked(selectedTask.toggleCheckbox(v.getContext()));
                     if (selectedTask.isDone()) textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                     else textView.setPaintFlags(textView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                     Log.i("TAG", "onClick on textView: " + selectedTask.isDone());

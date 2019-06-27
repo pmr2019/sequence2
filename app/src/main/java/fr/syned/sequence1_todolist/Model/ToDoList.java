@@ -33,6 +33,7 @@ public class ToDoList implements Serializable {
     private boolean isArchived;
     private ArrayList<Task> taskList;
     private String JSONid;
+    private String hash;
 
     private transient HashMap<UUID, Task> taskMap;
 
@@ -47,12 +48,13 @@ public class ToDoList implements Serializable {
         this();
         this.name = name;
     }
-    public ToDoList(String id, String label, String hash, Context c){
+    public ToDoList(String id, String label, final String hash, Context c){
         this();
         this.name = label;
         final String fhash = hash;
         final String fid = id;
         this.JSONid = id;
+        this.hash = hash;
         String url = "http://tomnab.fr/todo-api/lists/"+id+"/items";
         try {
             Thread.sleep(20);
@@ -65,7 +67,7 @@ public class ToDoList implements Serializable {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            ProfileActivity.completeList((JSONArray)response.get("items"), fid);
+                            ProfileActivity.completeList((JSONArray)response.get("items"), fid, hash);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -80,13 +82,11 @@ public class ToDoList implements Serializable {
                     }
                 }) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("hash", fhash);
 
                 return params;
-
-
             }
         };
         RequestQueueInstance instance = RequestQueueInstance.getInstance(c);
@@ -139,19 +139,25 @@ public class ToDoList implements Serializable {
         onDeserialization();
     }
 
-    public void addTask(JSONArray items) {
-        for(int i=0; i< items.length(); i++) {
+    public void addTasks(JSONArray items, String toDoListId, String hash) {
+        for (int i=0; i< items.length(); i++) {
+            String taskId = null;
             String taskName = null;
             String checked = null;
             try {
+                taskId = ((JSONObject)items.get(i)).get("id").toString();
                 taskName = ((JSONObject)items.get(i)).get("label").toString();
                 checked = ((JSONObject)items.get(i)).get("checked").toString();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Task task = new Task(taskName, checked);
+            Task task = new Task(taskId, taskName, checked, toDoListId, hash);
             this.taskList.add(task);
             this.taskMap.put(task.getId(), task);
         }
+    }
+
+    public String getHash() {
+        return hash;
     }
 }

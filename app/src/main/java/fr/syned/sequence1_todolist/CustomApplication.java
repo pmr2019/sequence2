@@ -28,6 +28,7 @@ public class CustomApplication extends Application {
     public static final String EXTRA_TODOLIST = "fr.syned.sequence1_todolist.TODOLIST";
     public static final String EXTRA_TASK = "fr.syned.sequence1_todolist.TASK";
     public static final String EXTRA_UUID = "fr.syned.sequence1_todolist.UUID";
+    public static final String EXTRA_ID = "fr.syned.sequence1_todolist.ID";
 
     public static final int PICK_CONTACT_REQUEST = 1;
     public static final String TAG = "ToDoList Application";

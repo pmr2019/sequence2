@@ -17,6 +17,7 @@ import fr.syned.sequence1_todolist.Model.ToDoList;
 import fr.syned.sequence1_todolist.R;
 
 import static fr.syned.sequence1_todolist.Activities.ProfileActivity.profile;
+import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_ID;
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_UUID;
 import static fr.syned.sequence1_todolist.CustomApplication.profilesList;
 
@@ -26,12 +27,15 @@ public class ToDoListActivity extends BaseActivity {
     EditText textViewTaskName;
     private RecyclerView recyclerView;
     private TaskAdapter taskAdapter;
+    private String hash;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         toDoList = profile.getToDoList((UUID) getIntent().getSerializableExtra(EXTRA_UUID));
+        hash = toDoList.getHash();
+
         Log.i("TAG", "onCreate, toDoList: " + toDoList);
 
         super.toolbar.setSubtitle(toDoList.getName());
@@ -62,6 +66,6 @@ public class ToDoListActivity extends BaseActivity {
     public void onResume() {
 
         super.onResume();
-        if(!profilesList.contains(profile)) this.finish();
+//        if(!profilesList.contains(profile)) this.finish();
     }
 }
