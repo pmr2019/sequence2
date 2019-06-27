@@ -68,6 +68,7 @@ public class MainActivity extends BaseActivity {
     public void onClickOkBtn(View view) {
         Log.i(TAG, "onClickOkBtn: ");
         TextView textView = findViewById(R.id.text_view_pseudo);
+        TextView passwordView = findViewById(R.id.text_view_password);
 
         String username = textView.getText().toString();
         if (textView.getText().toString().matches("")) {

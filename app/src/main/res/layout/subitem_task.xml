@@ -12,7 +12,8 @@
         android:layout_centerVertical="true"
         android:checked="false"
         android:scaleX="0.7"
-        android:scaleY="0.7"/>
+        android:scaleY="0.7"
+        android:enabled="false"/>
     <TextView
         android:id="@+id/text"
         android:layout_width="wrap_content"
