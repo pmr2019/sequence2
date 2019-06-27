@@ -11,14 +11,8 @@ import com.example.todo.models.ProfilListeToDo;
 @Dao
 public interface ProfilListeToDoDao {
 
-    @Query("SELECT * FROM ProfilListeToDo WHERE id = :id")
-    ProfilListeToDo getProfilListeToDo(int id);
-
-    @Query("SELECT id FROM ProfilListeToDo WHERE login = :login")
-    Integer getIdProfilListeToDo(String login);
-
     @Query("SELECT * FROM ProfilListeToDo WHERE login = :login")
-    ProfilListeToDo getProfilListeToDoByLogin(String login);
+    ProfilListeToDo getProfilListeToDo(String login);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void addProfilListeToDo(ProfilListeToDo profilListeToDo);

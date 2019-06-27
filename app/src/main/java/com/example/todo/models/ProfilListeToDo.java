@@ -10,8 +10,7 @@ import java.util.ArrayList;
 @Entity
 public class ProfilListeToDo implements Serializable {
 
-    @PrimaryKey(autoGenerate = true)
-    private int id;
+    @PrimaryKey
     private String login;
     @Ignore
     private ArrayList<ListeToDo> mesListeToDo = new ArrayList<ListeToDo>();
@@ -27,14 +26,6 @@ public class ProfilListeToDo implements Serializable {
     public ProfilListeToDo(String login, ArrayList<ListeToDo> mesListeToDo) {
         this.login = login;
         this.mesListeToDo = mesListeToDo;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getLogin() {
@@ -64,8 +55,7 @@ public class ProfilListeToDo implements Serializable {
     @Override
     public String toString() {
         return "ProfilListeToDo{" +
-                "id=" + id +
-                ", login='" + login + '\'' +
+                "login='" + login + '\'' +
                 ", mesListeToDo=" + mesListeToDo +
                 '}';
     }

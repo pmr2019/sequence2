@@ -17,11 +17,11 @@ public interface ListeToDoDao {
     ListeToDo getListeToDo(int id);
 
     @Query("SELECT * FROM ListeToDo WHERE ListeToDo.profilListeToDoId = :profileListeToDoId")
-    List<ListeToDo> getAllListeToDo(int profileListeToDoId);
+    List<ListeToDo> getAllListeToDo(String profileListeToDoId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void addListeToDo(ListeToDo listeToDo);
 
     @Query("DELETE FROM ListeToDo WHERE ListeToDo.profilListeToDoId = :profilListeToDoId")
-    void delAllListeToDo(int profilListeToDoId);
+    void delAllListeToDo(String profilListeToDoId);
 }

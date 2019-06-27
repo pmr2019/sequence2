@@ -23,6 +23,7 @@ import com.example.todo.API_models.RetroMain;
 import com.example.todo.API_models.TodoInterface;
 import com.example.todo.R;
 import com.example.todo.database.MyDatabase;
+import com.example.todo.models.DataProvider;
 import com.example.todo.models.InternetCheck;
 import com.example.todo.models.ProfilListeToDo;
 import com.google.gson.Gson;
@@ -44,12 +45,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText edtPassword;
     private Button btnOk;
 
-    //Retrofit API
-    private static Retrofit retrofit;
 
-    // Database
-    MyDatabase myDatabase;
-    Executor executor;
+    // DataProvider
+    DataProvider dataProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnOk.setOnClickListener(this);
 
         // Init databse and executor
-        myDatabase = MyDatabase.getInstance(this);
-        executor = command -> new Thread(command).start();
+        dataProvider = new DataProvider(this);
     }
 
     @Override
@@ -78,20 +75,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         edtPseudo.setText(settings.getString("pseudo",""));
         new InternetCheck(this); // Check internet connexion
-
-
-        // Test
-//        myDatabase = MyDatabase.getInstance(this);
-//        executor = command -> new Thread(command).start();
-//        executor.execute(() -> {
-//                ProfilListeToDo profilListeToDo = new ProfilListeToDo();
-//                profilListeToDo.setLogin("PremierLogin");
-//                myDatabase.profilListeToDoDao().addProfilListeToDo(profilListeToDo);
-//        });
-//        executor.execute(() -> {
-//            ProfilListeToDo profilListeToDo = myDatabase.profilListeToDoDao().getProfilListeToDoByLogin();
-//            Log.d(TAG, "onStart: profil recup="+profilListeToDo.toString());
-//        });
     }
 
     @Override
@@ -123,58 +106,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 final String pseudo = edtPseudo.getText().toString();
                 String password = edtPassword.getText().toString();
 
-                if (settings.getBoolean("isConnectedToInternet", false)) {
-                    //Verify pseudo & password with the API
-                    String baseUrl = settings.getString("APIurl", "http://tomnab.fr/");
-                    TodoInterface service = retrofitPrettyBuilder(baseUrl).create(TodoInterface.class);
-                    Call<RetroMain> call = service.authenticate(pseudo, password);
-                    call.enqueue(new Callback<RetroMain>() {
-                        @Override
-                        public void onResponse(Call<RetroMain> call, Response<RetroMain> response) {
-                            if (response.body() != null) {
-                                RetroMain retroMain = response.body();
-                                if (retroMain.isSuccess()) {
-                                    SharedPreferences.Editor editor = settings.edit();
-                                    editor.putString("pseudo", pseudo);
-                                    editor.putString("hash", retroMain.getHash());
-                                    editor.commit();
+                dataProvider.authenticate(pseudo, password, new DataProvider.PostsListener() {
+                    @Override
+                    public void onSuccess(DataProvider.DataResponse dataResponse) {
+                        MainActivity.this.dataProvider.stop();
 
-                                    //Intent to ChoixListActivity
-                                    Intent toSecondAct = new Intent(MainActivity.this, ChoixListActivity.class);
-                                    Bundle data = new Bundle();
-                                    data.putString("pseudo", pseudo);
-                                    toSecondAct.putExtras(data);
-                                    startActivity(toSecondAct);
-                                } else {
-                                    Log.d(TAG, "onResponse: http code : " + retroMain.getStatus());
-                                }
-                            } else {
-                                Log.d(TAG, "onResponse: empty response. HTTP CODE : " + response.code());
-                            }
-                        }
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putString("pseudo", pseudo);
+                        editor.putString("hash", dataResponse.getHash());
+                        editor.commit();
 
-                        @Override
-                        public void onFailure(Call<RetroMain> call, Throwable t) {
-                            Log.d(TAG, "onFailure: " + t.toString());
-                        }
-                    });
-                } else {
-                    executor.execute(() -> {
-                        ProfilListeToDo profilListeToDo = myDatabase.profilListeToDoDao().getProfilListeToDoByLogin(pseudo);
-                        Log.d(TAG, "onClick: profil recup = "+profilListeToDo.toString());
-                        if (profilListeToDo != null) {
-                            //Intent to ChoixListActivity
-                            Intent toSecondAct = new Intent(MainActivity.this, ChoixListActivity.class);
-                            Bundle data = new Bundle();
-                            data.putString("pseudo", pseudo);
-                            toSecondAct.putExtras(data);
-                            startActivity(toSecondAct);
-                        }
-                    });
-                    // Si aucun profil correspondant n'a été trouve en cache
-                    Log.i(TAG, "onClick: pseudo unknown.");
-                    Toast.makeText(this, "Mode hors ligne : pseudo inconnu.", Toast.LENGTH_SHORT).show();
-                }
+                        //Intent to ChoixListActivity
+                        Intent toSecondAct = new Intent(MainActivity.this, ChoixListActivity.class);
+                        Bundle data = new Bundle();
+                        data.putString("pseudo", pseudo);
+                        toSecondAct.putExtras(data);
+                        startActivity(toSecondAct);
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Toast.makeText(MainActivity.this, error, Toast.LENGTH_LONG).show();
+                    }
+                });
                 break;
         }
     }
@@ -188,11 +142,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return false;
     }
 
+    /**
+     * Implementation of the interface Consumer from InternetCheck.
+     * When we receive the result from an InternetCheck instance, this method is run.
+     * If the app has an access to internet, we enable the button ok, else it disables it.
+     * @param internet boolean
+     */
     @Override
     public void isConnectedToInternet(Boolean internet) {
         if (!internet){
             btnOk.setEnabled(false);
-//            Toast.makeText(this, "Aucune connexion internet.", Toast.LENGTH_SHORT).show();
             // setup the alert builder
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Aucune connexion internet");
@@ -210,31 +169,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             dialog.show();
         } else {
             btnOk.setEnabled(true);
-//            Toast.makeText(this, "Connexion internet établie.", Toast.LENGTH_SHORT).show();
         }
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean("isConnectedToInternet", internet);
         editor.commit();
-    }
-
-    /**
-     * Build a retrofit object with a special Gson object.
-     * @param baseUrl : String
-     * @return
-     */
-    public Retrofit retrofitPrettyBuilder(String baseUrl){
-        if (retrofit==null){
-            Gson gson = new GsonBuilder()
-                    .serializeNulls()
-                    .disableHtmlEscaping()
-                    .setPrettyPrinting()
-                    .create();
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(baseUrl)
-                    .addConverterFactory(GsonConverterFactory.create(gson))
-                    .build();
-        }
-        return retrofit;
     }
 }

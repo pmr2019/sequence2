@@ -9,16 +9,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 @Entity(foreignKeys = @ForeignKey(entity = ProfilListeToDo.class,
-        parentColumns = "id",
+        parentColumns = "login",
         childColumns = "profilListeToDoId"))
 public class ListeToDo implements Serializable {
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     private int id;
-    private int profilListeToDoId;
-
+    private String profilListeToDoId;
     private String titreListeToDo;
-
     @Ignore
     private ArrayList<ItemToDo> lesItems = new ArrayList<ItemToDo>();
 
@@ -27,6 +25,13 @@ public class ListeToDo implements Serializable {
 
     public ListeToDo(String titreListeToDo) {
         this.titreListeToDo = titreListeToDo;
+    }
+
+    public ListeToDo(int id, String profilListeToDoId, String titreListeToDo, ArrayList<ItemToDo> lesItems) {
+        this.id = id;
+        this.profilListeToDoId = profilListeToDoId;
+        this.titreListeToDo = titreListeToDo;
+        this.lesItems = lesItems;
     }
 
     public int getId() {

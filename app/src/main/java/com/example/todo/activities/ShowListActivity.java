@@ -48,12 +48,21 @@ public class ShowListActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_list);
 
+        //Init widgets
+        edtItemDesc = findViewById(R.id.edtItemDesc);
+        btnAddItem = findViewById(R.id.btnAddItem);
+        btnAddItem.setOnClickListener(this);
+
         //Getting the data of the intent
         Bundle data = this.getIntent().getExtras();
         assert data != null;
         idList = data.getInt("idList", 9999);
         Log.d(TAG, "idList id : " + idList);
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
         // Init hash & service.
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         String baseUrl = settings.getString("APIurl", "http://tomnab.fr/");
@@ -72,12 +81,8 @@ public class ShowListActivity extends AppCompatActivity implements View.OnClickL
         //Init variables
         getListe();
 
-        //Init widgets
-        edtItemDesc = findViewById(R.id.edtItemDesc);
-        btnAddItem = findViewById(R.id.btnAddItem);
-        btnAddItem.setOnClickListener(this);
-
         //Init reclyclerView done in getListe() because of the mutlithread.
+
     }
 
     @Override
@@ -204,7 +209,6 @@ public class ShowListActivity extends AppCompatActivity implements View.OnClickL
      */
     private void getListe(){
         Call<RetroMain> call = service.getItems(hash, idList);
-        Log.d(TAG, "getListe: "+call.request().toString());
         call.enqueue(new Callback<RetroMain>() {
             @Override
             public void onResponse(Call<RetroMain> call, Response<RetroMain> response) {

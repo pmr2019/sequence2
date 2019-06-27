@@ -17,6 +17,7 @@ import com.example.todo.API_models.RetroMain;
 import com.example.todo.API_models.TodoInterface;
 import com.example.todo.R;
 import com.example.todo.database.MyDatabase;
+import com.example.todo.models.DataProvider;
 import com.example.todo.models.InternetCheck;
 import com.example.todo.models.ListeToDo;
 import com.example.todo.models.ProfilListeToDo;
@@ -50,9 +51,8 @@ public class ChoixListActivity extends AppCompatActivity implements View.OnClick
     private TodoInterface service;
     public ArrayList<Integer> indices = new ArrayList<>(); //Key : position of the list in the recylcerview, value : id of the list
 
-    // Database
-    MyDatabase myDatabase;
-    Executor executor;
+    // DataProvider
+    DataProvider dataProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,9 +60,8 @@ public class ChoixListActivity extends AppCompatActivity implements View.OnClick
         setContentView(R.layout.activity_choix_list);
         Log.d(TAG, "onCreate: started.");
 
-        // Init database and executor
-        myDatabase = MyDatabase.getInstance(this);
-        executor = command -> new Thread(command).start();
+        // Init dataProvider
+        dataProvider = new DataProvider(this);
 
         //Get pseudo active
         Bundle data = this.getIntent().getExtras();
@@ -92,7 +91,8 @@ public class ChoixListActivity extends AppCompatActivity implements View.OnClick
         //Add listener
         btnAddList.setOnClickListener(this);
 
-        new InternetCheck(this);
+        initRecyclerView();
+        new InternetCheck(this); // To load the data, cf. isConnectedToInternet()
         // Get todo lists from the pseudo = load profile from the API & update BDD : done in isConnectedToInternet
         //Init reclyclerView (done in loadProfile_API if it is with the API because of the thread)
 
@@ -133,63 +133,6 @@ public class ChoixListActivity extends AppCompatActivity implements View.OnClick
     }
 
     /**
-     * Initialize profil variable from the API & launch update DB.
-     */
-    private void loadProfile_API(){
-        Call<RetroMain> call = service.getLists(hash);
-        call.enqueue(new Callback<RetroMain>() {
-            @Override
-            public void onResponse(Call<RetroMain> call, Response<RetroMain> response) {
-                if (response.body() != null) {
-                    RetroMain retroMain = response.body();
-                    if (retroMain.isSuccess()) {
-                        ArrayList<ListeToDo> listesToDo = new ArrayList<>();
-                        for (RetroMain r : retroMain.getLists()) {
-                            listesToDo.add(new ListeToDo(r.getLabel()));
-                            // Update indices map.
-                            indices.add(r.getId());
-                        }
-                        profil = new ProfilListeToDo(pseudo, listesToDo);
-                        update_DB();
-                        initRecyclerView();
-                        refreshRecyclerView();
-                    } else {
-                        Log.d(TAG, "onResponse: http code : "+retroMain.getStatus());
-                    }
-                } else {
-                    Log.d(TAG, "onResponse: empty response. HTTP CODE : "+response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<RetroMain> call, Throwable t) {
-                Log.d(TAG, "onFailure: "+t.toString());
-            }
-        });
-    }
-
-    /**
-     * Update the DB with the current profilListeToDo.
-     */
-    private void update_DB() {
-        executor.execute(() -> {
-                // Add the profil if it doesn't exist yet (only one same login in the DB)
-                if (myDatabase.profilListeToDoDao().getProfilListeToDoByLogin(profil.getLogin()) == null){
-                    myDatabase.profilListeToDoDao().addProfilListeToDo(profil);
-                }
-                // Get the profil id
-                int profilListeToDoId = myDatabase.profilListeToDoDao().getIdProfilListeToDo(profil.getLogin());
-                // Delete all listeToDo associated with the profil's id
-                myDatabase.listeToDoDao().delAllListeToDo(profilListeToDoId);
-                // Insert all list loaded in loadProfil_API() in the DB
-                for (ListeToDo listeToDo : profil.getMesListeToDo()) {
-                    listeToDo.setProfilListeToDoId(profilListeToDoId);
-                    myDatabase.listeToDoDao().addListeToDo(listeToDo);
-                }
-        });
-    }
-
-    /**
      * Add the liste to the user profile in the api.
      * @param listeToDo
      */
@@ -221,33 +164,27 @@ public class ChoixListActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public void isConnectedToInternet(Boolean internet) {
-        if (internet) {
-            // Get todo lists from the pseudo = load profile from the API & update BDD
-            loadProfile_API();
-        } else {
-//            Context context = this;
-//            executor.execute(() -> {
-//                profil = myDatabase.profilListeToDoDao().getProfilListeToDoByLogin(pseudo);
-//                List<ListeToDo> listeToDos = myDatabase.listeToDoDao().getAllListeToDo(profil.getId()); // .getId() available since we get the profil from the DB
-//                profil.setMesListeToDo(new ArrayList<>(listeToDos));
-//                ((ChoixListActivity)context).initRecyclerView();
-//                ((ChoixListActivity)context).refreshRecyclerView();
-//            });
-            new AsyncTask<Void, Void, Void>() {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isConnectedToInternet = settings.getBoolean("isConnectedToInternet",false);
+        if (isConnectedToInternet == false && internet == true){
+            // Modif offline will erase the online, only for the lists concerned.
+        } else if ((isConnectedToInternet == true && internet == true) || (isConnectedToInternet == false && internet == false)) {
+            dataProvider.loadListeToDo(pseudo, hash, new DataProvider.PostsListener() {
                 @Override
-                protected Void doInBackground(Void... voids) {
-                    profil = myDatabase.profilListeToDoDao().getProfilListeToDoByLogin(pseudo);
-                    List<ListeToDo> listeToDos = myDatabase.listeToDoDao().getAllListeToDo(profil.getId()); // .getId() available since we get the profil from the DB
-                    profil.setMesListeToDo(new ArrayList<>(listeToDos));
-                    return null;
+                public void onSuccess(DataProvider.DataResponse dataResponse) {
+                    ChoixListActivity.this.dataProvider.stop();
+                    profil = dataResponse.getProfilListeToDo();
+                    refreshRecyclerView();
                 }
 
                 @Override
-                protected void onPostExecute(Void aVoid) {
-                    super.onPostExecute(aVoid);
-
+                public void onError(String error) {
+                    Log.d(TAG, "onErrorFromDataProvider: "+error);
                 }
-            }.execute();
+            });
+        } else if (isConnectedToInternet == true && internet == false) {
+            // Ask if the user wants to modify offline (as in the MainActivity).
+
         }
     }
 }
