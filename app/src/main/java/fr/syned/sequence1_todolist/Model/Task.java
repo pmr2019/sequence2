@@ -26,6 +26,11 @@ public class Task implements Serializable {
         this.name = name;
     }
 
+    public Task(String taskName, String checked) {
+        this(taskName);
+        this.isDone = checked.equals("1");
+    }
+
     public String getName() {
         return name;
     }

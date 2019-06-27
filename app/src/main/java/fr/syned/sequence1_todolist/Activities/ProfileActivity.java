@@ -1,5 +1,6 @@
 package fr.syned.sequence1_todolist.Activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,11 +10,16 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters.SwipeToDelete.SwipeItemTouchHelper;
 import fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters.ToDoListAdapter;
 import fr.syned.sequence1_todolist.Model.Profile;
 import fr.syned.sequence1_todolist.R;
 
+import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_HASH;
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_USERNAME;
 import static fr.syned.sequence1_todolist.CustomApplication.profilesList;
 
@@ -21,33 +27,47 @@ public class ProfileActivity extends BaseActivity {
 
     EditText textViewToDoListName;
     private RecyclerView recyclerView;
-    private ToDoListAdapter toDoListAdapter;
+    public static ToDoListAdapter toDoListAdapter;
     static public Profile profile;
+
+    public static void completeList(JSONArray items, String id) {
+        profile.getList(id).addTask(items);
+        toDoListAdapter.notifyDataSetChanged();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         String username = getIntent().getSerializableExtra(EXTRA_USERNAME).toString();
-        Log.i("TAG", "onCreate: intent username: " + username);
+        String hash = getIntent().getSerializableExtra(EXTRA_HASH).toString();
+
+//  SEQUENCE 1
+//        Log.i("TAG", "onCreate: intent username: " + username);
 //        for (Profile p : profilesList) {
 //            if (p.getUsername().matches(username)) profile = p;
 //        }
-
+//
+        profile = new Profile(username, hash, getApplicationContext());
         super.toolbar.setSubtitle(username);
 
+//
         textViewToDoListName = findViewById(R.id.text_view_todolist_name);
         recyclerView = findViewById(R.id.todolists);
         toDoListAdapter = new ToDoListAdapter(profile.getToDoLists());
         recyclerView.setAdapter(toDoListAdapter);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-//        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
+////        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+////        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+////        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeItemTouchHelper(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, recyclerView));
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
-
+    public static void CompleteProfile(JSONArray arr, String hash, Context c) throws JSONException {
+        for(int i = 0; i < arr.length(); i++){
+            profile.addToDoList((JSONObject) arr.get(i), hash, c);
+        }
+    }
     @Override
     protected int getLayoutResourceId() {
         return R.layout.activity_profile;
@@ -56,9 +76,9 @@ public class ProfileActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(!profilesList.contains(profile)) this.finish();
+        //if(!profilesList.contains(profile)) this.finish();
         // TODO: à faire seulement quand un changement a été fait... (Avec le StartActivityForResult)
-        toDoListAdapter.notifyDataSetChanged();
+        //toDoListAdapter.notifyDataSetChanged();
 
     }
 

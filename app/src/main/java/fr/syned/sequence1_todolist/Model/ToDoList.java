@@ -1,5 +1,18 @@
 package fr.syned.sequence1_todolist.Model;
 
+import android.content.Context;
+import android.util.Log;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
@@ -7,7 +20,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+
+import fr.syned.sequence1_todolist.Activities.Network.RequestQueueInstance;
+import fr.syned.sequence1_todolist.Activities.ProfileActivity;
 
 public class ToDoList implements Serializable {
 
@@ -15,6 +32,7 @@ public class ToDoList implements Serializable {
     private String name;
     private boolean isArchived;
     private ArrayList<Task> taskList;
+    private String JSONid;
 
     private transient HashMap<UUID, Task> taskMap;
 
@@ -29,7 +47,51 @@ public class ToDoList implements Serializable {
         this();
         this.name = name;
     }
+    public ToDoList(String id, String label, String hash, Context c){
+        this();
+        this.name = label;
+        final String fhash = hash;
+        final String fid = id;
+        this.JSONid = id;
+        String url = "http://tomnab.fr/todo-api/lists/"+id+"/items";
+        try {
+            Thread.sleep(20);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, new Response.Listener<JSONObject>() {
 
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            ProfileActivity.completeList((JSONArray)response.get("items"), fid);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle error
+
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("hash", fhash);
+
+                return params;
+
+
+            }
+        };
+        RequestQueueInstance instance = RequestQueueInstance.getInstance(c);
+        instance.addToRequestQueue(jsonObjectRequest);
+    }
     public void onDeserialization() {
         taskMap = new HashMap<>();
         for (Task t : taskList) {
@@ -59,7 +121,9 @@ public class ToDoList implements Serializable {
     public Task getTask(UUID taskId) {
         return taskMap.get(taskId);
     }
-
+    public String getJSONId(){
+        return JSONid;
+    }
     public void replaceTask(Task oldTask, Task newTask) {
         Collections.replaceAll(taskList, oldTask, newTask);
         taskMap.remove(oldTask.getId());
@@ -73,5 +137,21 @@ public class ToDoList implements Serializable {
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         onDeserialization();
+    }
+
+    public void addTask(JSONArray items) {
+        for(int i=0; i< items.length(); i++) {
+            String taskName = null;
+            String checked = null;
+            try {
+                taskName = ((JSONObject)items.get(i)).get("label").toString();
+                checked = ((JSONObject)items.get(i)).get("checked").toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Task task = new Task(taskName, checked);
+            this.taskList.add(task);
+            this.taskMap.put(task.getId(), task);
+        }
     }
 }
