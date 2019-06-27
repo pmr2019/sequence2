@@ -3,7 +3,6 @@ package fr.syned.sequence1_todolist.Activities;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +12,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+
+import fr.syned.sequence1_todolist.Activities.Network.RequestQueueInstance;
 import fr.syned.sequence1_todolist.Model.Profile;
 import fr.syned.sequence1_todolist.R;
 
@@ -32,20 +35,23 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onStart(){
         super.onStart();
-        final Button bOk = findViewById(R.id.btn_ok);
-        bOk.setEnabled(false);
-        AutoCompleteTextView textView = findViewById(R.id.text_view_pseudo);
+        final Button ok_btn = findViewById(R.id.ok_btn);
+        AutoCompleteTextView textView = findViewById(R.id.username_text_view);
+
+        ok_btn.setEnabled(false);
         final Handler handler = new Handler();
-        final int delay = 1000; //milliseconds
+        final int delay = 1000; // milliseconds
 
         handler.postDelayed(new Runnable(){
             public void run(){
                 if(checkNetwork()){
-                    bOk.setEnabled(true);
+                    ok_btn.setEnabled(true);
                 }
                 handler.postDelayed(this, delay);
             }
         }, delay);
+
+        RequestQueueInstance instance = RequestQueueInstance.getInstance(getApplicationContext());
     }
 
     @Override
@@ -54,7 +60,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void setupAutoComplete() {
-        AutoCompleteTextView textView = findViewById(R.id.text_view_pseudo);
+        AutoCompleteTextView textView = findViewById(R.id.username_text_view);
         autoCompleteAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line);
         if (profilesList != null) {
             for (Profile p : profilesList) {
@@ -67,7 +73,7 @@ public class MainActivity extends BaseActivity {
 
     public void onClickOkBtn(View view) {
         Log.i(TAG, "onClickOkBtn: ");
-        TextView textView = findViewById(R.id.text_view_pseudo);
+        TextView textView = findViewById(R.id.username_text_view);
         TextView passwordView = findViewById(R.id.text_view_password);
 
         String username = textView.getText().toString();

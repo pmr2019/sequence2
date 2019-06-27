@@ -41,7 +41,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         Log.i(TAG, "onPause: ");
-        saveToJson();
+//        saveToJson();
     }
 
     @Override

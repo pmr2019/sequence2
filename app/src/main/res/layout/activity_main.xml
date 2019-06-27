@@ -29,7 +29,7 @@
         app:layout_constraintVertical_bias="0.0">
 
         <AutoCompleteTextView
-            android:id="@+id/text_view_pseudo"
+            android:id="@+id/username_text_view"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -49,7 +49,7 @@
             android:inputType="textPassword" />
 
         <Button
-            android:id="@+id/btn_ok"
+            android:id="@+id/ok_btn"
             android:layout_width="72dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

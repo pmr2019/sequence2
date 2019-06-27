@@ -34,17 +34,17 @@ public class CustomApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "onCreate: Custom App");
-        profilesList = getProfilesFromFile();
-
-        //TODO: chercher un moyen de faire ça dans le constructeur par défaut de Profile
-        if (profilesList != null) {
-            for (Profile p : profilesList) {
-                p.onDeserialization();
-                for (ToDoList t : p.getToDoLists()) {
-                    t.onDeserialization();
-                }
-            }
-        }
+//        profilesList = getProfilesFromFile();
+//
+//        // TODO: chercher un moyen de faire ça dans le constructeur par défaut de Profile
+//        if (profilesList != null) {
+//            for (Profile p : profilesList) {
+//                p.onDeserialization();
+//                for (ToDoList t : p.getToDoLists()) {
+//                    t.onDeserialization();
+//                }
+//            }
+//        }
     }
 
     private List<Profile> getProfilesFromFile() {
