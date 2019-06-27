@@ -1,11 +1,15 @@
 package fr.syned.sequence1_todolist.Activities;
 
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +28,24 @@ public class MainActivity extends BaseActivity {
     public void onResume(){
         super.onResume();
         setupAutoComplete();
+    }
+    @Override
+    public void onStart(){
+        super.onStart();
+        final Button bOk = findViewById(R.id.btn_ok);
+        bOk.setEnabled(false);
+        AutoCompleteTextView textView = findViewById(R.id.text_view_pseudo);
+        final Handler handler = new Handler();
+        final int delay = 1000; //milliseconds
+
+        handler.postDelayed(new Runnable(){
+            public void run(){
+                if(checkNetwork()){
+                    bOk.setEnabled(true);
+                }
+                handler.postDelayed(this, delay);
+            }
+        }, delay);
     }
 
     @Override
@@ -61,8 +83,39 @@ public class MainActivity extends BaseActivity {
             }
             Intent intent = new Intent(this, ProfileActivity.class);
             intent.putExtra(EXTRA_USERNAME, username);
+
             startActivity(intent);
         }
+    }
+    private boolean checkNetwork()
+    {
+        // On vérifie si le réseau est disponible,
+        // si oui on change le statut du bouton de connexion
+        ConnectivityManager cnMngr = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cnMngr.getActiveNetworkInfo();
+
+        String sType = "Aucun réseau détecté";
+        Boolean bStatut = false;
+        if (netInfo != null)
+        {
+
+            NetworkInfo.State netState = netInfo.getState();
+
+            if (netState.compareTo(NetworkInfo.State.CONNECTED) == 0)
+            {
+                bStatut = true;
+                int netType= netInfo.getType();
+                switch (netType)
+                {
+                    case ConnectivityManager.TYPE_MOBILE :
+                        sType = "Réseau mobile détecté"; break;
+                    case ConnectivityManager.TYPE_WIFI :
+                        sType = "Réseau wifi détecté"; break;
+                }
+
+            }
+        }
+        return bStatut;
     }
 }
 
