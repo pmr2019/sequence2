@@ -13,7 +13,8 @@ import com.example.todolist.modele.ListeToDo;
 
 import java.util.List;
 
-/** Définition de la classe ItemAdapterList.
+/**
+ * Définition de la classe ItemAdapterList.
  * Cette classe représente l'adapteur associé au Recycler View de l'activité ChoixList Activity
  */
 public class ItemAdapterList extends RecyclerView.Adapter<ItemAdapterList.ItemViewHolder> {
@@ -23,8 +24,10 @@ public class ItemAdapterList extends RecyclerView.Adapter<ItemAdapterList.ItemVi
     /* Écouteur d'évènement */
     private onClickListListener onClickListListener;
 
-    /** Constructeur par paramètres
-     * @param lesListes la liste des ToDoLists
+    /**
+     * Constructeur par paramètres
+     *
+     * @param lesListes           la liste des ToDoLists
      * @param onClickListListener l'écouteur d'évènement associé au contexte
      */
     public ItemAdapterList(List<ListeToDo> lesListes, onClickListListener onClickListListener) {
@@ -32,8 +35,10 @@ public class ItemAdapterList extends RecyclerView.Adapter<ItemAdapterList.ItemVi
         this.onClickListListener = onClickListListener;
     }
 
-    /** Permet de créer la vue associée à l'item
-     * @param parent le groupe de vues auquel appartiendra la nouvelle vue une fois liée
+    /**
+     * Permet de créer la vue associée à l'item
+     *
+     * @param parent   le groupe de vues auquel appartiendra la nouvelle vue une fois liée
      * @param viewType le type de vue de la nouvelle vue
      * @return la nouvelle vue
      */
@@ -41,11 +46,13 @@ public class ItemAdapterList extends RecyclerView.Adapter<ItemAdapterList.ItemVi
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ItemViewHolder(LayoutInflater.from(parent.getContext()).
-                inflate(R.layout.liste,parent,false));
+                inflate(R.layout.liste, parent, false));
     }
 
-    /** Permet d'associer les données de l'item à la vue, et de l'afficher à une position
-     * @param holder la vue associée
+    /**
+     * Permet d'associer les données de l'item à la vue, et de l'afficher à une position
+     *
+     * @param holder   la vue associée
      * @param position où afficher la vue
      */
     @Override
@@ -53,7 +60,9 @@ public class ItemAdapterList extends RecyclerView.Adapter<ItemAdapterList.ItemVi
         holder.bind(lesListes.get(position));
     }
 
-    /** Définit le nombre total d'éléments que l'on souhaite afficher
+    /**
+     * Définit le nombre total d'éléments que l'on souhaite afficher
+     *
      * @return le nombre d'éléments à afficher
      */
     @Override
@@ -61,7 +70,8 @@ public class ItemAdapterList extends RecyclerView.Adapter<ItemAdapterList.ItemVi
         return lesListes.size();
     }
 
-    /** Définition de la classe ItemviewHolder.
+    /**
+     * Définition de la classe ItemviewHolder.
      * Cette classe représente un item qui doit être lié à une vue par l'adapteur
      */
     public class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -69,7 +79,9 @@ public class ItemAdapterList extends RecyclerView.Adapter<ItemAdapterList.ItemVi
         /* Le titre de la ToDoList (l'élément à afficher dans le Recycler View) */
         public TextView titreListe;
 
-        /** Constructeur par paramètre
+        /**
+         * Constructeur par paramètre
+         *
          * @param itemView la vue associée au contexte
          */
         public ItemViewHolder(@NonNull View itemView) {
@@ -78,17 +90,20 @@ public class ItemAdapterList extends RecyclerView.Adapter<ItemAdapterList.ItemVi
             titreListe.setOnClickListener(this);
         }
 
-        /** Permet de lier les données de l'item à sa vue
-         * @param listeToDo
-         * Ici, on ajoute le titre de la ToDoList
+        /**
+         * Permet de lier les données de l'item à sa vue
+         *
+         * @param listeToDo Ici, on ajoute le titre de la ToDoList
          */
         public void bind(ListeToDo listeToDo) {
             titreListe.setText(listeToDo.getTitreListeToDo());
         }
 
-        /** Fonction par défaut de l'interface View.OnClickListener, appelée lors du clic sur la vue
+        /**
+         * Fonction par défaut de l'interface View.OnClickListener, appelée lors du clic sur la vue
+         *
          * @param v la vue cliquée
-         * Ici, lors du clic sur une ToDoList, on ouvre l'activité ShowList Activity
+         *          Ici, lors du clic sur une ToDoList, on ouvre l'activité ShowList Activity
          */
         @Override
         public void onClick(View v) {
@@ -101,7 +116,7 @@ public class ItemAdapterList extends RecyclerView.Adapter<ItemAdapterList.ItemVi
      * Interface permettant de gérer le clic sur un élément de la liste des ToDoLists
      * (Pas d'accès direct au context this depuis cette classe, il faut le passer en paramètre)
      */
-    public interface onClickListListener{
+    public interface onClickListListener {
         void clickList(int position);
     }
 }

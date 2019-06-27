@@ -5,4 +5,5 @@
     <string name="ajouterListe">Ajouter une ToDo Liste</string>
     <string name="ajouterItem">Ajouter un item</string>
     <string name="password_hint">Mot de passe</string>
+    <string name="cache">Modifier en Cache</string>
 </resources>
