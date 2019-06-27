@@ -8,11 +8,11 @@ import androidx.room.PrimaryKey;
 
 import static androidx.room.ForeignKey.CASCADE;
 
-@Entity(tableName = "items",
-        foreignKeys = @ForeignKey(entity = Listdb.class,
-                parentColumns = "id",
-                childColumns = "list_id",
-                onDelete = CASCADE))
+@Entity(tableName = "items")
+//        foreignKeys = @ForeignKey(entity = Listdb.class,
+//                parentColumns = "id",
+//                childColumns = "list_id",
+//                onDelete = CASCADE))
 public class Itemdb {
     @PrimaryKey
     @NonNull

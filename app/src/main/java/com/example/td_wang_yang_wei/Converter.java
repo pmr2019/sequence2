@@ -10,17 +10,18 @@ import java.util.List;
 
 public class Converter {
 
-    public Listdb listfrom(Lists.ListsBean listsBean) {
+    public Listdb listfrom(Lists.ListsBean listsBean, String userId) {
         Listdb list = new Listdb();
         list.setId(listsBean.getId());
         list.setLabel(listsBean.getLabel());
+        list.setUserId(userId);
         return list;
     }
 
-    public List<Listdb> listsfrom(Lists lists) {
+    public List<Listdb> listsfrom(Lists lists,String userId) {
         List<Listdb> listsSave = new ArrayList<>(lists.getLists().size());
         for (Lists.ListsBean listsBean : lists.getLists()) {
-            listsSave.add(listfrom(listsBean));
+            listsSave.add(listfrom(listsBean,userId));
         }
         return listsSave;
     }

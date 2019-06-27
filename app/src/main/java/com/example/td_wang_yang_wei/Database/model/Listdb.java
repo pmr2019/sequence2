@@ -9,14 +9,13 @@ import androidx.room.PrimaryKey;
 
 import static androidx.room.ForeignKey.CASCADE;
 
-@Entity(tableName = "lists",
-        indices = {@Index(value = {"id"})},
-        foreignKeys = @ForeignKey(entity = Userdb.class,
-                parentColumns = "id",
-                childColumns = "user_id",
-                onDelete = CASCADE))
+@Entity(tableName = "lists")
+//        indices = {@Index(value = {"id"})},
+//        foreignKeys = @ForeignKey(entity = Userdb.class,
+//                parentColumns = "id",
+//                childColumns = "user_id",
+//                onDelete = CASCADE))
 public class Listdb {
-
     @PrimaryKey
     @NonNull
     public String id;

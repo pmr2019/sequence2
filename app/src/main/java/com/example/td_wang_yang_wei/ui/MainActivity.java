@@ -183,10 +183,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         //on fait la connexion auprès de l'API Renvoie un hash sans délai d'expiration
                         //créer un instance de requestService
                         requestService post_request= requestServiceFactory.createService(listeDeUtilisateur.getUrl(), requestService.class);
+                        Log.d("test1","hhhhhhhh");
 
                         //Encapsuler la requête d'après les règles de Interface requestService
                         Call<Contenu> call = post_request.authenticate(pseudo,pass);
-                        Log.d("url",""+listeDeUtilisateur.getUrl());
 
                         //Envoyer la requête et collecter les résultats
                         //si succès ajouter cet utilisateur dans la liste de préférences & entrer dans la liste correspondant
@@ -194,12 +194,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             @Override
                             public void onResponse(Call<Contenu> call, Response<Contenu> response) {
                                 if(response.isSuccessful()){
-                                    Log.d("hhhhh","true");
+                                    Log.d("test","hhhhhhh");
                                     //met à jour la liste de préférences
                                     listeDeUtilisateur.AjouterUtilisateur(new Utilisateur(pseudo,pass,response.body().hash));
                                     sauvegarderUtilisateur(listeDeUtilisateur);
                                     ConvertToListe(pseudo,response.body().hash,listeDeUtilisateur.getUrl());
                                 }else alerter("le nom n'est pas ou le mot de passe est incorrect");
+                                Log.d("wuwuwu","NO");
                             }
 
                             @Override

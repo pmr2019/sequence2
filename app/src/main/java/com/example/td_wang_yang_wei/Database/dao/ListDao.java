@@ -16,14 +16,23 @@ public interface ListDao {
     @Query("SELECT * FROM lists")
     List<Listdb> getAllLists();
 
+    @Query("SELECT user_id FROM lists")
+    String getUser_id();
+
     @Query("SELECT * FROM lists WHERE user_id LIKE:userId")
     List<Listdb> findListByUserId(String userId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void save(List<Listdb> listsLoad);
 
+    @Insert
+    void add(Listdb listAdd);
+
     @Delete
-    void deleteList(Listdb listdb);
+    int deleteList(Listdb listdb);
+
+    @Query("DELETE FROM lists")
+    int deleteAll();
 
     //TODO:根据需求补全
 

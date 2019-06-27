@@ -1,6 +1,9 @@
 package com.example.td_wang_yang_wei.ui;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,12 +23,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.td_wang_yang_wei.DataProvider;
-import com.example.td_wang_yang_wei.Database.ToDoListdb;
-import com.example.td_wang_yang_wei.Database.model.Listdb;
 import com.example.td_wang_yang_wei.R;
 import com.example.td_wang_yang_wei.api.Lists;
 import com.example.td_wang_yang_wei.api.NouveauListe;
-import com.example.td_wang_yang_wei.api.Users;
 import com.example.td_wang_yang_wei.api.requestService;
 import com.example.td_wang_yang_wei.api.requestServiceFactory;
 
@@ -50,11 +50,27 @@ public class ChoixListeActivity extends AppCompatActivity {
     private String hash;
     private String url;
     private String pseudo;
-    private String userId;
+    private static String userId = null;
     private com.example.td_wang_yang_wei.api.requestService requestService;
     private DataProvider dataProvider;
 
 
+    //detect l'état de network
+    public void verifReseau(){
+        //obtenir l'objet de connectivityManager
+        ConnectivityManager netManager = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo=netManager.getActiveNetworkInfo();
+
+        if(networkInfo!=null){
+            btnListe.setEnabled(networkInfo.isConnected());
+        }
+        else{
+            btnListe.setEnabled(false);
+        }
+
+
+
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,10 +91,7 @@ public class ChoixListeActivity extends AppCompatActivity {
         //creer un instance de requestService
         requestService = requestServiceFactory.createService(url, requestService.class);
 
-        //obtenir la liste de nom de liste dans cet utilisateur
-        sync();
-//        getListedeLabel(hash);
-        getUserIdconneted(hash,pseudo);
+        syncGetAll(hash);
 
         //afficher la liste de noms dans le RecyclerView
         recyclerView = findViewById(R.id.recyclerView);
@@ -86,6 +99,7 @@ public class ChoixListeActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        this.verifReseau();
     }
 
     //alerter pour savoir le processus de la programme et alerter les utilisateurs
@@ -96,15 +110,31 @@ public class ChoixListeActivity extends AppCompatActivity {
 
 
 //    TODO:完善异步
-    private void sync() {
-        findViewById(R.id.progess).setVisibility(View.VISIBLE);
+    private void syncGetAll(String hash) {
 
-        dataProvider.syncLists(hash,new DataProvider.ListsListener() {
+        dataProvider.syncGetUserId(hash, pseudo, new DataProvider.UserListener() {
+            @Override
+            public void onSuccess(String userIdConneted) {
+                userId = userIdConneted;
+                syncGetLists(userId);
+
+            }
+
+            @Override
+            public void onError() {
+                syncGetLists(userId);
+                alerter("pas de connexion");
+            }
+        });
+    }
+
+    private void syncGetLists(String userId){
+        findViewById(R.id.progess).setVisibility(View.VISIBLE);
+        dataProvider.syncGetLists(hash,userId,new DataProvider.ListsListener() {
             @Override public void onSuccess(List<String> labelslist) {
                 for (int i = 0; i< labelslist.size(); i++) {
                     listeAdapter.add(labelslist.get(i));
                 }
-                Log.d("test",labelslist+"");
                 findViewById(R.id.progess).setVisibility(View.GONE);
             }
 
@@ -112,8 +142,8 @@ public class ChoixListeActivity extends AppCompatActivity {
                 for (int i = 0; i< labelslistLocal.size(); i++) {
                     listeAdapter.add(labelslistLocal.get(i));
                 }
-                Log.d("test",labelslistLocal+"");
                 findViewById(R.id.progess).setVisibility(View.GONE);
+                alerter("pas de connexion");
             }
         });
     }
@@ -131,80 +161,24 @@ public class ChoixListeActivity extends AppCompatActivity {
                 alerter("Déjà existe");
             }else {
 
-                //Encapsuler la requête d'après les règles de Interface requestService
-                Call<NouveauListe> call = requestService.addList(hash, userId, liste);
-
-                //Envoyer la requête et collecter les résultats
-                //si succès ajouter une nouvelle liste
-                call.enqueue(new Callback<NouveauListe>() {
+                findViewById(R.id.progess).setVisibility(View.VISIBLE);
+                dataProvider.syncAddListTodb(liste);
+                dataProvider.syncAddList(hash,userId,liste,new DataProvider.ListAddListener(){
                     @Override
-                    public void onResponse(Call<NouveauListe> call, Response<NouveauListe> response) {
-                        if (response.isSuccessful()) {
-                            listeAdapter.add(liste);
-                            edtListe.setText("");
-                        }
+                    public void onSuccess(String liste) {
+                        listeAdapter.add(liste);
+                        edtListe.setText("");
+                        findViewById(R.id.progess).setVisibility(View.GONE);
                     }
-
                     @Override
-                    public void onFailure(Call call, Throwable t) {
-
+                    public void onError(List addFail) {
+                        findViewById(R.id.progess).setVisibility(View.GONE);
+                        alerter("pas de connextion");
                     }
                 });
+
         }}
 
-    }
-
-    /**
-     * obtenir la liste de liste d'utilisateur courant
-     * @param hash
-     */
-    public void getListedeLabel(String hash){
-
-        //Encapsuler la requête d'après les règles de Interface requestService
-        Call<Lists> call = requestService.getLists(hash);
-
-        //Envoyer la requête et collecter les résultats
-        //si succès récupérer des listes de l'utilisateur courant; le hash peut être fourni en chaîne de requête
-        call.enqueue(new Callback<Lists>() {
-            @Override
-            public void onResponse(Call<Lists> call, Response<Lists> response) {
-                if (response.isSuccessful()) {
-                    if(!response.body().getLists().isEmpty()){
-                        for (int i=0;i<response.body().getLists().size();i++) {
-                            listeAdapter.add(response.body().getLists().get(i).getLabel());
-                        }
-                    }
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call call, Throwable t) {
-                alerter("pas de connexion");
-            }
-        });
-
-    }
-    private void getUserIdconneted(String hash, final String pseudo) {
-
-        //Encapsuler la requête d'après les règles de Interface requestService
-        Call<Users> call = requestService.getUsers(hash);
-
-        //Envoyer la requête et collecter les résultats
-        //si succès récupérer le ID d'utilisateur courant
-        call.enqueue(new Callback<Users>() {
-            @Override
-            public void onResponse(Call<Users> call, Response<Users> response) {
-                if (response.isSuccessful()) {
-                    userId = response.body().getUserId(pseudo);
-                }
-            }
-
-            @Override
-            public void onFailure(Call call, Throwable t) {
-                alerter("pas de connexion");
-            }
-        });
     }
 
 
@@ -295,6 +269,7 @@ public class ChoixListeActivity extends AppCompatActivity {
                             });
 
                         }break;
+
                     case R.id.listSupp:
                         //Encapsuler la requête d'après les règles de Interface requestService
                         Call<Lists> callTotal = requestService.getLists(hash);
@@ -329,7 +304,6 @@ public class ChoixListeActivity extends AppCompatActivity {
 
                             }
                         });
-
                         lists.remove(getAdapterPosition());
                         notifyItemRemoved(getAdapterPosition());
                         break;
@@ -352,5 +326,10 @@ public class ChoixListeActivity extends AppCompatActivity {
                 startActivity(i);
             }
         }
+    @Override protected void onStop() {
+        super.onStop();
+        dataProvider.stop();
     }
+
+}
 

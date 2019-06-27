@@ -28,6 +28,10 @@ public class Lists {
         return lists;
     }
 
+    public ListsBean getLast(){
+        return lists.get(lists.size()-1);
+    }
+
     public static class ListsBean {
         /**
          * id : 46
