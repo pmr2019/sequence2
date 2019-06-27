@@ -23,6 +23,7 @@ public class CustomApplication extends Application {
     public static List<Profile> profilesList;
     public static String filename = "profiles.JSON";
     public static final String EXTRA_USERNAME = "fr.syned.sequence1_todolist.USERNAME";
+    public static final String EXTRA_HASH = "fr.syned.sequence1_todolist.HASH";
     public static final String EXTRA_PROFILE = "fr.syned.sequence1_todolist.PROFILE";
     public static final String EXTRA_TODOLIST = "fr.syned.sequence1_todolist.TODOLIST";
     public static final String EXTRA_TASK = "fr.syned.sequence1_todolist.TASK";

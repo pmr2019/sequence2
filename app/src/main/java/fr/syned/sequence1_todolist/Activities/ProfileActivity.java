@@ -30,9 +30,9 @@ public class ProfileActivity extends BaseActivity {
 
         String username = getIntent().getSerializableExtra(EXTRA_USERNAME).toString();
         Log.i("TAG", "onCreate: intent username: " + username);
-        for (Profile p : profilesList) {
-            if (p.getUsername().matches(username)) profile = p;
-        }
+//        for (Profile p : profilesList) {
+//            if (p.getUsername().matches(username)) profile = p;
+//        }
 
         super.toolbar.setSubtitle(username);
 

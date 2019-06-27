@@ -13,12 +13,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import fr.syned.sequence1_todolist.Activities.Network.RequestQueueInstance;
 import fr.syned.sequence1_todolist.Model.Profile;
 import fr.syned.sequence1_todolist.R;
 
+import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_HASH;
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_USERNAME;
 import static fr.syned.sequence1_todolist.CustomApplication.TAG;
 import static fr.syned.sequence1_todolist.CustomApplication.profilesList;
@@ -26,6 +34,8 @@ import static fr.syned.sequence1_todolist.CustomApplication.profilesList;
 public class MainActivity extends BaseActivity {
 
     private ArrayAdapter<String> autoCompleteAdapter;
+    private RequestQueueInstance instance;
+    private String username;
 
     @Override
     public void onResume(){
@@ -51,7 +61,7 @@ public class MainActivity extends BaseActivity {
             }
         }, delay);
 
-        RequestQueueInstance instance = RequestQueueInstance.getInstance(getApplicationContext());
+        instance = RequestQueueInstance.getInstance(getApplicationContext());
     }
 
     @Override
@@ -76,22 +86,56 @@ public class MainActivity extends BaseActivity {
         TextView textView = findViewById(R.id.username_text_view);
         TextView passwordView = findViewById(R.id.text_view_password);
 
-        String username = textView.getText().toString();
+        username = textView.getText().toString();
+        String password = passwordView.getText().toString();
+
+        // SEQUENCE 1
+//        if (textView.getText().toString().matches("")) {
+//            Toast.makeText(this, "Please enter your pseudo", Toast.LENGTH_LONG).show();
+//        } else if (profilesList != null) {
+//            boolean userExists = false;
+//            for (Profile p : profilesList) {
+//                if (p.getUsername().equals(username)) userExists = true;
+//            }
+//            if(!userExists) {
+//                profilesList.add(new Profile(username));
+//                autoCompleteAdapter.add(username);
+//            }
+//            Intent intent = new Intent(this, ProfileActivity.class);
+//            intent.putExtra(EXTRA_USERNAME, username);
+//
+//            startActivity(intent);
+//        }
+        // SEQUENCE 2
         if (textView.getText().toString().matches("")) {
             Toast.makeText(this, "Please enter your pseudo", Toast.LENGTH_LONG).show();
-        } else if (profilesList != null) {
-            boolean userExists = false;
-            for (Profile p : profilesList) {
-                if (p.getUsername().equals(username)) userExists = true;
-            }
-            if(!userExists) {
-                profilesList.add(new Profile(username));
-                autoCompleteAdapter.add(username);
-            }
-            Intent intent = new Intent(this, ProfileActivity.class);
-            intent.putExtra(EXTRA_USERNAME, username);
+        } else {
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "http://tomnab.fr/todo-api/authenticate?user="+username+"&password=" + password,
+                    new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    Log.i("TODO", "onResponse: ");
+                    String hash;
+                        try {
+                            if (response.has("hash")) {
+                                hash = response.get("hash").toString();
+                                startProfileActivity(hash);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+            },
+                    new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.i("TODO", "onErrorResponse: " + error.toString());
+//                    Toast: Failed Connection
+                }
+            });
 
-            startActivity(intent);
+            instance.addToRequestQueue(request);
+            autoCompleteAdapter.add(username);
         }
     }
     private boolean checkNetwork()
@@ -123,6 +167,13 @@ public class MainActivity extends BaseActivity {
             }
         }
         return bStatut;
+    }
+
+    public void startProfileActivity(String hash) {
+        Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
+        intent.putExtra(EXTRA_HASH, hash);
+        intent.putExtra(EXTRA_USERNAME, username);
+        startActivity(intent);
     }
 }
 
