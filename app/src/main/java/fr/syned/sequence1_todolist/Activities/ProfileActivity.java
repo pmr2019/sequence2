@@ -64,7 +64,7 @@ public class ProfileActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        //if(!profilesList.contains(profile)) this.finish();
+        // if(!profilesList.contains(profile)) this.finish();
         // TODO: à faire seulement quand un changement a été fait... (Avec le StartActivityForResult)
         toDoListAdapter.notifyDataSetChanged();
 
