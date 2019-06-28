@@ -25,17 +25,12 @@ import com.example.todo.R;
 import com.example.todo.database.MyDatabase;
 import com.example.todo.models.DataProvider;
 import com.example.todo.models.InternetCheck;
+import com.example.todo.models.ItemToDo;
+import com.example.todo.models.ListeToDo;
 import com.example.todo.models.ProfilListeToDo;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
-import java.util.concurrent.Executor;
+import java.util.ArrayList;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, TextView.OnEditorActionListener, InternetCheck.Consumer {
     private static final String TAG = "MainActivity";
@@ -62,9 +57,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Attach listener
         edtPseudo.setOnEditorActionListener(this);
         btnOk.setOnClickListener(this);
+        btnOk.setEnabled(false); // While not init
 
-        // Init databse and executor
-        dataProvider = new DataProvider(this);
+
+        // Init database and executor in isConnectedTOInternet()
+//        dataProvider = new DataProvider(this);
     }
 
     @Override
@@ -105,23 +102,66 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
                 final String pseudo = edtPseudo.getText().toString();
                 String password = edtPassword.getText().toString();
+                Log.d(TAG, "onClick: isConnectedToInternet : "+settings.getBoolean("isConnectedToInternet", false));
 
-                dataProvider.authenticate(pseudo, password, new DataProvider.PostsListener() {
+                if (dataProvider != null)
+                    Log.d(TAG, "onClick: Authentication.");
+                    dataProvider.authenticate(pseudo, password, new DataProvider.PostsListener() {
                     @Override
                     public void onSuccess(DataProvider.DataResponse dataResponse) {
-                        MainActivity.this.dataProvider.stop();
 
+                        Log.d(TAG, "onSuccess: Authentication succeed.");
                         SharedPreferences.Editor editor = settings.edit();
                         editor.putString("pseudo", pseudo);
                         editor.putString("hash", dataResponse.getHash());
                         editor.commit();
 
-                        //Intent to ChoixListActivity
-                        Intent toSecondAct = new Intent(MainActivity.this, ChoixListActivity.class);
-                        Bundle data = new Bundle();
-                        data.putString("pseudo", pseudo);
-                        toSecondAct.putExtras(data);
-                        startActivity(toSecondAct);
+                        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                        boolean isConnectedToInternet = settings.getBoolean("isConnectedToInternet",false);
+                        //If connected to internet, update API then DB. If not, laucnh intent to ChoixListActivity.
+                        if (!isConnectedToInternet){
+                            Intent toSecondAct = new Intent(MainActivity.this, ChoixListActivity.class);
+                            Bundle data = new Bundle();
+                            data.putString("pseudo", pseudo);
+                            toSecondAct.putExtras(data);
+                            startActivity(toSecondAct);
+                        } else {
+                            DataProvider.PostsListener forIntent =  new DataProvider.PostsListener() {
+
+                                @Override
+                                public void onSuccess(DataProvider.DataResponse dataResponse) {
+                                    Log.d(TAG, "onSuccess: UpdateDB succeed, launch intent.");
+                                    //Intent to ChoixListActivity
+                                    Intent toSecondAct = new Intent(MainActivity.this, ChoixListActivity.class);
+                                    Bundle data = new Bundle();
+                                    data.putString("pseudo", pseudo);
+                                    toSecondAct.putExtras(data);
+                                    startActivity(toSecondAct);
+                                }
+
+                                @Override
+                                public void onError(String error) {
+                                    Log.d(TAG, "onError: Error updateDB.");
+                                    Toast.makeText(MainActivity.this, error, Toast.LENGTH_LONG);
+                                }
+                            };
+
+                            Log.d(TAG, "onSuccess: Update API.");
+                            dataProvider.updateAPIfromDB(MainActivity.this, pseudo, new DataProvider.PostsListener() {
+
+                                @Override
+                                public void onSuccess(DataProvider.DataResponse dataResponse) {
+                                    Log.d(TAG, "onSuccess: UpdateDB with onSuccess.");
+                                    dataProvider.updateDBfromAPI(MainActivity.this, pseudo, forIntent);
+                                }
+
+                                @Override
+                                public void onError(String error) {
+                                    Log.d(TAG, "onSuccess: UpdateDB with onError.");
+                                    dataProvider.updateDBfromAPI(MainActivity.this, pseudo, forIntent);
+                                }
+                            });
+                        }
                     }
 
                     @Override
@@ -150,8 +190,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     @Override
     public void isConnectedToInternet(Boolean internet) {
+        Log.d(TAG, "isConnectedToInternet: "+internet);
         if (!internet){
-            btnOk.setEnabled(false);
             // setup the alert builder
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Aucune connexion internet");
@@ -169,10 +209,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             dialog.show();
         } else {
             btnOk.setEnabled(true);
+
         }
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean("isConnectedToInternet", internet);
         editor.commit();
+        dataProvider = new DataProvider(MainActivity.this);
+
+
+        /// TEST ///
+        ProfilListeToDo p = new ProfilListeToDo();
+        p.setLogin("test");
+        ListeToDo l = new ListeToDo(1,"test","maPremiere",new ArrayList<>());
+        ItemToDo i = new ItemToDo(1,1,"coucou",false);
+        ArrayList<ItemToDo> ai = new ArrayList<>();
+        ai.add(i);
+        l.setLesItems(ai);
+        ArrayList<ListeToDo> al = new ArrayList<>();
+        al.add(l);
+        p.setMesListeToDo(al);
+
+        dataProvider.insertProfilDB(p);
     }
 }

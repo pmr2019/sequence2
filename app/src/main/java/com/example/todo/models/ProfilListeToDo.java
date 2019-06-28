@@ -3,6 +3,7 @@ package com.example.todo.models;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 @Entity
 public class ProfilListeToDo implements Serializable {
 
+    @NonNull
     @PrimaryKey
     private String login;
     @Ignore
@@ -42,14 +44,6 @@ public class ProfilListeToDo implements Serializable {
 
     public void setMesListeToDo(ArrayList<ListeToDo> mesListeToDo) {
         this.mesListeToDo = mesListeToDo;
-    }
-
-    public int getProfilListeToDoId() {
-        return id;
-    }
-
-    public void setProfilListeToDoId(int profilListeToDoId) {
-        this.id = profilListeToDoId;
     }
 
     @Override

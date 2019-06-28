@@ -6,12 +6,16 @@ import android.arch.persistence.room.PrimaryKey;
 
 import java.io.Serializable;
 
-@Entity(foreignKeys = @ForeignKey(entity = ProfilListeToDo.class,
+import static android.arch.persistence.room.ForeignKey.CASCADE;
+
+@Entity(foreignKeys = @ForeignKey(
+        onDelete = CASCADE,
+        entity = ListeToDo.class,
         parentColumns = "id",
         childColumns = "listeToDoId"))
 public class ItemToDo implements Serializable {
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     private int id;
     private int listeToDoId;
 
@@ -26,6 +30,13 @@ public class ItemToDo implements Serializable {
     }
 
     public ItemToDo(String description, boolean fait) {
+        this.description = description;
+        this.fait = fait;
+    }
+
+    public ItemToDo(int id, int listeToDoId, String description, boolean fait) {
+        this.id = id;
+        this.listeToDoId = listeToDoId;
         this.description = description;
         this.fait = fait;
     }

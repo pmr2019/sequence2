@@ -23,7 +23,7 @@ public class RecyclerViewAdapterList extends RecyclerView.Adapter<RecyclerViewAd
     private static final String TAG = "RecyclerViewAdapterList";
 
     private Context mContext;
-    private ArrayList<ListeToDo> mList = new ArrayList<ListeToDo>();
+    private ArrayList<ListeToDo> mList;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -60,9 +60,8 @@ public class RecyclerViewAdapterList extends RecyclerView.Adapter<RecyclerViewAd
             public void onClick(View v) {
                 Intent toAct = new Intent(mContext, ShowListActivity.class);
                 Bundle data = new Bundle();
-                if(mContext instanceof ChoixListActivity){
-                    data.putInt("idList",((ChoixListActivity)mContext).indices.get(i));
-                }
+                data.putInt("idList", mList.get(i).getId());
+                data.putString("pseudo", mList.get(i).getProfilListeToDoId());
                 toAct.putExtras(data);
                 mContext.startActivity(toAct);
             }

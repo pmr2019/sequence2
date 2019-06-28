@@ -31,6 +31,10 @@ public interface TodoInterface {
     Call<RetroMain> addList(@Header("hash") String hash,
                             @Query("label") String title);
 
+    @DELETE("todo-api/lists/{idList}")
+    Call<RetroMain> delList(@Header("hash") String hash,
+                            @Path(value = "idList") String idList);
+
     @GET("todo-api/lists/{idList}/items")
     Call<RetroMain> getItems(@Header("hash") String hash,
                              @Path(value = "idList") Integer idList);
@@ -41,7 +45,7 @@ public interface TodoInterface {
                             @Query("label") String description,
                             @Query("url") String url);
 
-    @DELETE("todo-api.lists/{idList}/items/{idItem}")
+    @DELETE("todo-api/lists/{idList}/items/{idItem}")
     Call<RetroMain> delItem(@Header("hash") String hash,
                             @Path(value = "idList") String idList,
                             @Path(value = "idItem") String idItem);

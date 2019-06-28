@@ -8,7 +8,11 @@ import android.arch.persistence.room.PrimaryKey;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-@Entity(foreignKeys = @ForeignKey(entity = ProfilListeToDo.class,
+import static android.arch.persistence.room.ForeignKey.CASCADE;
+
+@Entity(foreignKeys = @ForeignKey(
+        onDelete = CASCADE,
+        entity = ProfilListeToDo.class,
         parentColumns = "login",
         childColumns = "profilListeToDoId"))
 public class ListeToDo implements Serializable {
@@ -23,7 +27,8 @@ public class ListeToDo implements Serializable {
     public ListeToDo() {
     }
 
-    public ListeToDo(String titreListeToDo) {
+    public ListeToDo(String profilListeToDoId, String titreListeToDo) {
+        this.profilListeToDoId = profilListeToDoId;
         this.titreListeToDo = titreListeToDo;
     }
 
@@ -42,11 +47,11 @@ public class ListeToDo implements Serializable {
         this.id = id;
     }
 
-    public int getProfilListeToDoId() {
+    public String getProfilListeToDoId() {
         return profilListeToDoId;
     }
 
-    public void setProfilListeToDoId(int profilListeToDoId) {
+    public void setProfilListeToDoId(String profilListeToDoId) {
         this.profilListeToDoId = profilListeToDoId;
     }
 

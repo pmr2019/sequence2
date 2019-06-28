@@ -1,9 +1,8 @@
 package com.example.todo.activities;
-
-import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,28 +12,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.todo.API_models.RetroMain;
-import com.example.todo.API_models.TodoInterface;
 import com.example.todo.R;
-import com.example.todo.database.MyDatabase;
 import com.example.todo.models.DataProvider;
 import com.example.todo.models.InternetCheck;
 import com.example.todo.models.ListeToDo;
 import com.example.todo.models.ProfilListeToDo;
 import com.example.todo.ui.RecyclerViewAdapterList;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executor;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ChoixListActivity extends AppCompatActivity implements View.OnClickListener, InternetCheck.Consumer {
     private static final String TAG = "ChoixListActivity";
@@ -45,11 +30,8 @@ public class ChoixListActivity extends AppCompatActivity implements View.OnClick
 
     //Var
     private String pseudo;
-    private String hash;
     private ArrayList<ListeToDo> mList = new ArrayList<ListeToDo>(); //Liste des listes to do
     private ProfilListeToDo profil;
-    private TodoInterface service;
-    public ArrayList<Integer> indices = new ArrayList<>(); //Key : position of the list in the recylcerview, value : id of the list
 
     // DataProvider
     DataProvider dataProvider;
@@ -69,21 +51,6 @@ public class ChoixListActivity extends AppCompatActivity implements View.OnClick
         pseudo = data.getString("pseudo", "inconnu");
         Log.d(TAG, "pseudo : " + pseudo);
 
-        // Initialize hash & service variables
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        String baseUrl = settings.getString("APIurl", "http://tomnab.fr/");
-        hash = settings.getString("hash", "");
-        Gson gson = new GsonBuilder()
-                .serializeNulls()
-                .disableHtmlEscaping()
-                .setPrettyPrinting()
-                .create();
-        service = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build()
-                .create(TodoInterface.class);
-
         //Init widgets
         edtListTitle = findViewById(R.id.edtListTitle);
         btnAddList = findViewById(R.id.btnAddList);
@@ -102,8 +69,9 @@ public class ChoixListActivity extends AppCompatActivity implements View.OnClick
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnAddList:
-                Log.d(TAG, "onClick: clicked on : Ok.");
+                Log.d(TAG, "onClick: clicked on : Ajouter.");
                 String title = edtListTitle.getText().toString();
+                edtListTitle.setText("");
                 if (!title.isEmpty()) {
                     addListeToDo(title);
                 }
@@ -126,38 +94,35 @@ public class ChoixListActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void addListeToDo(String title) {
-        profil.ajouteListe(new ListeToDo(title));
-        addListeToDo_API(new ListeToDo(title));
+        ListeToDo listeToDo = new ListeToDo(profil.getLogin(), title);
+        profil.ajouteListe(listeToDo);
+        Log.d(TAG, "addListeToDo: "+listeToDo.toString());
+        dataProvider.addListeToDo(this, listeToDo);
         Log.d(TAG, "addListeToDo: " + profil.toString());
         refreshRecyclerView();
     }
 
-    /**
-     * Add the liste to the user profile in the api.
-     * @param listeToDo
-     */
-    private void addListeToDo_API(ListeToDo listeToDo){
-        Call<RetroMain> call = service.addList(hash, listeToDo.getTitreListeToDo());
-        call.enqueue(new Callback<RetroMain>() {
+    private void loadProfilToDo(){
+        dataProvider.getProfilToDo(pseudo, new DataProvider.PostsListener() {
             @Override
-            public void onResponse(Call<RetroMain> call, Response<RetroMain> response) {
-                if (response.body() != null) {
-                    RetroMain retroMain = response.body();
-                    if (retroMain.isSuccess()) {
-                        Log.d(TAG, "onResponse: success adding a new listeToDo.");
-                        RetroMain rList = retroMain.getList();
-                        indices.add(rList.getId());
-                    } else {
-                        Log.d(TAG, "onResponse: http code : "+retroMain.getStatus());
-                    }
-                } else {
-                    Log.d(TAG, "onResponse: empty response. HTTP CODE : "+response.code());
-                }
+            public void onSuccess(DataProvider.DataResponse dataResponse) {
+//                    ChoixListActivity.this.dataProvider.stop();
+                profil = dataResponse.getProfilListeToDo();
+                refreshRecyclerView();
             }
 
             @Override
-            public void onFailure(Call<RetroMain> call, Throwable t) {
-                Log.d(TAG, "onFailure: "+t.toString());
+            public void onError(String error) {
+                Log.d(TAG, "onErrorFromDataProvider: "+error);
+                // setup the alert builder
+                AlertDialog.Builder builder = new AlertDialog.Builder(ChoixListActivity.this);
+                builder.setTitle("Error");
+                builder.setMessage("Error unknown.");
+                // add the buttons
+                builder.setNeutralButton("Ok", null);
+                // create and show the alert dialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
     }
@@ -167,24 +132,47 @@ public class ChoixListActivity extends AppCompatActivity implements View.OnClick
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         boolean isConnectedToInternet = settings.getBoolean("isConnectedToInternet",false);
         if (isConnectedToInternet == false && internet == true){
+            Log.d(TAG, "Connexion internet detected.");
             // Modif offline will erase the online, only for the lists concerned.
-        } else if ((isConnectedToInternet == true && internet == true) || (isConnectedToInternet == false && internet == false)) {
-            dataProvider.loadListeToDo(pseudo, hash, new DataProvider.PostsListener() {
-                @Override
-                public void onSuccess(DataProvider.DataResponse dataResponse) {
-                    ChoixListActivity.this.dataProvider.stop();
-                    profil = dataResponse.getProfilListeToDo();
-                    refreshRecyclerView();
-                }
-
-                @Override
-                public void onError(String error) {
-                    Log.d(TAG, "onErrorFromDataProvider: "+error);
-                }
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Connexion internet détectée");
+            builder.setMessage("Voulez-vous vous connecter ?");
+            // add the buttons
+            builder.setPositiveButton("Oui", (dialog, which) -> {
+                SharedPreferences settings1 = PreferenceManager.getDefaultSharedPreferences(ChoixListActivity.this);
+                SharedPreferences.Editor editor = settings1.edit();
+                editor.putBoolean("isConnectedToInternet", internet);
+                editor.commit();
+                Intent toSecondAct = new Intent(ChoixListActivity.this, MainActivity.class);
+                startActivity(toSecondAct);
             });
-        } else if (isConnectedToInternet == true && internet == false) {
-            // Ask if the user wants to modify offline (as in the MainActivity).
+            builder.setNegativeButton("Non", (dialog, which) -> loadProfilToDo());
+            // create and show the alert dialog
+            AlertDialog dialog = builder.create();
+            dialog.show();
 
+        } else if ((isConnectedToInternet == true && internet == true) || (isConnectedToInternet == false && internet == false)) {
+            loadProfilToDo();
+        }
+        else if (isConnectedToInternet == true && internet == false) {
+            Log.d(TAG, "Connexion internet lost.");
+            // Ask if the user wants to modify offline (as in the MainActivity).
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Connexion perdue");
+            builder.setMessage("Voulez-vous manipuler les données en cache ?");
+            // add the buttons
+            builder.setPositiveButton("Oui", (dialog, which) -> loadProfilToDo());
+            builder.setNegativeButton("Non", (dialog, which) -> {
+                SharedPreferences settings12 = PreferenceManager.getDefaultSharedPreferences(ChoixListActivity.this);
+                SharedPreferences.Editor editor = settings12.edit();
+                editor.putBoolean("isConnectedToInternet", internet);
+                editor.commit();
+                Intent toSecondAct = new Intent(ChoixListActivity.this, MainActivity.class);
+                startActivity(toSecondAct);
+            });
+            // create and show the alert dialog
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
     }
 }

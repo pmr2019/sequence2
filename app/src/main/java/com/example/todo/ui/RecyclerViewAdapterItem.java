@@ -82,7 +82,7 @@ public class RecyclerViewAdapterItem extends RecyclerView.Adapter<RecyclerViewAd
         holder.btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((ShowListActivity)mContext).delItem(i);
+                ((ShowListActivity)mContext).delItem(mItem.get(i), i);
             }
         });
     }

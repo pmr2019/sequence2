@@ -1,7 +1,10 @@
 package com.example.todo.activities;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +17,8 @@ import android.widget.EditText;
 import com.example.todo.API_models.RetroMain;
 import com.example.todo.API_models.TodoInterface;
 import com.example.todo.R;
+import com.example.todo.models.DataProvider;
+import com.example.todo.models.InternetCheck;
 import com.example.todo.models.ItemToDo;
 import com.example.todo.models.ListeToDo;
 import com.example.todo.ui.RecyclerViewAdapterItem;
@@ -28,16 +33,17 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ShowListActivity extends AppCompatActivity implements View.OnClickListener {
+public class ShowListActivity extends AppCompatActivity implements View.OnClickListener, InternetCheck.Consumer {
     private static final String TAG = "ShowListActivity";
 
     //Var
     private ArrayList<ItemToDo> mItem = new ArrayList<ItemToDo>();
     private ListeToDo listeToDo = new ListeToDo();
     private int idList;
-    private ArrayList<Integer> indices = new ArrayList<>();
-    private String hash;
-    private TodoInterface service;
+    private String pseudo;
+
+    //Data
+    DataProvider dataProvider;
 
     //Widgets
     private EditText edtItemDesc;
@@ -57,31 +63,22 @@ public class ShowListActivity extends AppCompatActivity implements View.OnClickL
         Bundle data = this.getIntent().getExtras();
         assert data != null;
         idList = data.getInt("idList", 9999);
+        pseudo = data.getString("pseudo", "");
+
         Log.d(TAG, "idList id : " + idList);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        // Init hash & service.
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        String baseUrl = settings.getString("APIurl", "http://tomnab.fr/");
-        hash = settings.getString("hash", "");
-        Gson gson = new GsonBuilder()
-                .serializeNulls()
-                .disableHtmlEscaping()
-                .setPrettyPrinting()
-                .create();
-        service = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build()
-                .create(TodoInterface.class);
 
         //Init variables
-        getListe();
+//        getListe();
+        dataProvider = new DataProvider(this);
+        new InternetCheck(this);
 
-        //Init reclyclerView done in getListe() because of the mutlithread.
+        //Init reclyclerView
+        initRecyclerView();
 
     }
 
@@ -91,6 +88,7 @@ public class ShowListActivity extends AppCompatActivity implements View.OnClickL
             case R.id.btnAddItem:
                 Log.d(TAG, "onClick: clicked on : add item");
                 String desc = edtItemDesc.getText().toString();
+                edtItemDesc.setText("");
                 if (!desc.isEmpty()) {
                     addItem(desc);
                 }
@@ -113,126 +111,26 @@ public class ShowListActivity extends AppCompatActivity implements View.OnClickL
         recyclerView.getAdapter().notifyDataSetChanged();
     }
 
-    private void addItem_API(ItemToDo itemToDo) {
-        Call<RetroMain> call = service.addItem(hash, Integer.toString(idList),itemToDo.getDescription(), "noUrlForNow");
-        call.enqueue(new Callback<RetroMain>() {
+    private void loadListeToDo(){
+        dataProvider.getListeToDo(pseudo, idList, new DataProvider.PostsListener() {
             @Override
-            public void onResponse(Call<RetroMain> call, Response<RetroMain> response) {
-                if (response.body() != null) {
-                    RetroMain retroMain = response.body();
-                    if (retroMain.isSuccess()) {
-                        Log.d(TAG, "onResponse: success adding a new itemToDo.");
-                        RetroMain rItem = retroMain.getItem();
-                        indices.add(rItem.getId());
-                    } else {
-                        Log.d(TAG, "onResponse: http code : "+retroMain.getStatus());
-                    }
-                } else {
-                    Log.d(TAG, "onResponse: empty response. HTTP CODE : "+response.code());
-                }
+            public void onSuccess(DataProvider.DataResponse dataResponse) {
+                listeToDo = dataResponse.getListeToDo();
+                refreshRecyclerView();
             }
 
             @Override
-            public void onFailure(Call<RetroMain> call, Throwable t) {
-                Log.d(TAG, "onFailure: "+t.toString());
-            }
-        });
-    }
-
-    /**
-     * Delete the item at the position i in the recyclerView in the API.
-     * @param i : Integer.
-     */
-    private void delItem_API(final int i) {
-        Call<RetroMain> call = service.delItem(hash, Integer.toString(idList), Integer.toString(indices.get(i)));
-        call.enqueue(new Callback<RetroMain>() {
-            @Override
-            public void onResponse(Call<RetroMain> call, Response<RetroMain> response) {
-                if (response.body() != null) {
-                    RetroMain retroMain = response.body();
-                    if (retroMain.isSuccess()) {
-                        Log.d(TAG, "onResponse: success delete the itemToDo.");
-                        // Refresh indices list.
-                        ArrayList<Integer> tmp = new ArrayList<>();
-                        for (int j : indices) if (j!=i) tmp.add(j);
-                        indices.clear();
-                        indices.addAll(tmp);
-                    } else {
-                        Log.d(TAG, "onResponse: http code : "+retroMain.getStatus());
-                    }
-                } else {
-                    Log.d(TAG, "onResponse: empty response. HTTP CODE : "+response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<RetroMain> call, Throwable t) {
-                Log.d(TAG, "onFailure: "+t.toString());
-            }
-        });
-    }
-
-    /**
-     * i is the position of the item in the recyclerView.
-     * @param i
-     */
-    private void checkItem_API(int i, int isCheck) {
-        Call<RetroMain> call = service.checkItem(hash,
-                Integer.toString(idList),
-                Integer.toString(indices.get(i)),
-                Integer.toString(isCheck));
-        call.enqueue(new Callback<RetroMain>() {
-            @Override
-            public void onResponse(Call<RetroMain> call, Response<RetroMain> response) {
-                if (response.body() != null) {
-                    RetroMain retroMain = response.body();
-                    if (retroMain.isSuccess()) {
-                        Log.d(TAG, "onResponse: success check the itemToDo.");
-                    } else {
-                        Log.d(TAG, "onResponse: http code : "+retroMain.getStatus());
-                    }
-                } else {
-                    Log.d(TAG, "onResponse: empty response. HTTP CODE : "+response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<RetroMain> call, Throwable t) {
-                Log.d(TAG, "onFailure: "+t.toString());
-            }
-        });
-    }
-
-    /**
-     * Get the ListeToDo from the API with the idList of this class and the hash of the session.
-     * @return ListeToDo
-     */
-    private void getListe(){
-        Call<RetroMain> call = service.getItems(hash, idList);
-        call.enqueue(new Callback<RetroMain>() {
-            @Override
-            public void onResponse(Call<RetroMain> call, Response<RetroMain> response) {
-                if (response.body() != null) {
-                    RetroMain retroMain = response.body();
-                    if (retroMain.isSuccess()) {
-                        ArrayList<RetroMain> rItems = retroMain.getItems();
-                        for (RetroMain item : rItems){
-                            listeToDo.ajouteItem(new ItemToDo(item.getLabel(), (item.getChecked()==1)));
-                            indices.add(item.getId());
-                        }
-                        initRecyclerView();
-                        refreshRecyclerView();
-                    } else {
-                        Log.d(TAG, "onResponse: http code : "+retroMain.getStatus());
-                    }
-                } else {
-                    Log.d(TAG, "onResponse: empty response. HTTP CODE : "+response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<RetroMain> call, Throwable t) {
-                Log.d(TAG, "onFailure: "+t.toString());
+            public void onError(String error) {
+                Log.d(TAG, "onErrorFromDataProvider: "+error);
+                // setup the alert builder
+                AlertDialog.Builder builder = new AlertDialog.Builder(ShowListActivity.this);
+                builder.setTitle("Error");
+                builder.setMessage("Error unknown.");
+                // add the buttons
+                builder.setNeutralButton("Ok", null);
+                // create and show the alert dialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
     }
@@ -240,7 +138,7 @@ public class ShowListActivity extends AppCompatActivity implements View.OnClickL
     private void addItem(String desc){
         ItemToDo item = new ItemToDo(desc);
         listeToDo.ajouteItem(item);
-        addItem_API(item);
+        dataProvider.addItemToDo(this, item);
         Log.d(TAG, "addItem: item ajouté : "+item.toString());
         refreshRecyclerView();
     }
@@ -249,11 +147,11 @@ public class ShowListActivity extends AppCompatActivity implements View.OnClickL
      * Delete the ItemToDo at the position i in the recyclerView.
      * @param i : Integer
      */
-    public void delItem(int i){
+    public void delItem(ItemToDo itemToDo, int pos){
         // Delete the item in the API.
-        delItem_API(i);
+        dataProvider.delItemToDo(this, itemToDo);
         // Delete the item in the view.
-        listeToDo.getLesItems().remove(i);
+        listeToDo.getLesItems().remove(pos);
         refreshRecyclerView();
     }
 
@@ -265,8 +163,56 @@ public class ShowListActivity extends AppCompatActivity implements View.OnClickL
     public void checkItem(int i, boolean isCheck){
         ItemToDo item = listeToDo.getLesItems().get(i);
         item.setFait(isCheck);
-        checkItem_API(i, (isCheck ? 1 : 0));
+        dataProvider.updateItemToDo(this, item);
         refreshRecyclerView();
     }
 
+    @Override
+    public void isConnectedToInternet(Boolean internet) {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isConnectedToInternet = settings.getBoolean("isConnectedToInternet",false);
+        if (isConnectedToInternet == false && internet == true){
+            Log.d(TAG, "isConnectedToInternet: connexion internet detected.");
+            // Modif offline will erase the online, only for the lists concerned.
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Connexion internet détectée");
+            builder.setMessage("Voulez-vous vous connecter ?");
+            // add the buttons
+            builder.setPositiveButton("Oui", (dialog, which) -> {
+                SharedPreferences settings1 = PreferenceManager.getDefaultSharedPreferences(ShowListActivity.this);
+                SharedPreferences.Editor editor = settings1.edit();
+                editor.putBoolean("isConnectedToInternet", internet);
+                editor.commit();
+                Intent toSecondAct = new Intent(ShowListActivity.this, MainActivity.class);
+                startActivity(toSecondAct);
+            });
+            builder.setNegativeButton("Non", (dialog, which) -> loadListeToDo());
+            // create and show the alert dialog
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
+        } else if ((isConnectedToInternet == true && internet == true) || (isConnectedToInternet == false && internet == false)) {
+            loadListeToDo();
+        }
+        else if (isConnectedToInternet == true && internet == false) {
+            // Ask if the user wants to modify offline (as in the MainActivity).
+            Log.d(TAG, "isConnectedToInternet: Connexion internet lost.");
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Connexion perdue");
+            builder.setMessage("Voulez-vous manipuler les données en cache ?");
+            // add the buttons
+            builder.setPositiveButton("Oui", (dialog, which) -> loadListeToDo());
+            builder.setNegativeButton("Non", (dialog, which) -> {
+                SharedPreferences settings12 = PreferenceManager.getDefaultSharedPreferences(ShowListActivity.this);
+                SharedPreferences.Editor editor = settings12.edit();
+                editor.putBoolean("isConnectedToInternet", internet);
+                editor.commit();
+                Intent toSecondAct = new Intent(ShowListActivity.this, MainActivity.class);
+                startActivity(toSecondAct);
+            });
+            // create and show the alert dialog
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+    }
 }

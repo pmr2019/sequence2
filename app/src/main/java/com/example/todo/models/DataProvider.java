@@ -1,9 +1,11 @@
 package com.example.todo.models;
 
+import android.content.ClipData;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.renderscript.ScriptGroup;
 import android.support.annotation.UiThread;
 import android.util.Log;
 
@@ -62,6 +64,23 @@ public class DataProvider {
                 .create(TodoInterface.class);
     }
 
+    /// DEBUG ///
+
+    public void insertProfilDB(ProfilListeToDo profilListeToDo){
+        Future future = Utils.BACKGROUND.submit(()-> {
+            myDatabase.profilListeToDoDao().addProfilListeToDo(profilListeToDo);
+            for (ListeToDo listeToDo : profilListeToDo.getMesListeToDo()) {
+                myDatabase.listeToDoDao().addListeToDo(listeToDo);
+                for (ItemToDo itemToDo : listeToDo.getLesItems()) {
+                    myDatabase.itemToDoDao().addItemToDo(itemToDo);
+                }
+            }
+        });
+        futures.add(future);
+    }
+
+    /////////////
+
     /**
      * Return a DataResponse with a profilListeToDo initialized with only its login
      * from the API or the DB, and the hash if the data comes from the API. To choose the database (API or SQL), the function checks
@@ -75,42 +94,37 @@ public class DataProvider {
             if (isConnectedToInternet && internetCheck()) {
                 //Verify pseudo & password with the API
                 Call<RetroMain> call = service.authenticate(pseudo, password);
-                call.enqueue(new Callback<RetroMain>() {
-                    @Override
-                    public void onResponse(Call<RetroMain> call, Response<RetroMain> response) {
-                        if (response.body() != null) {
-                            RetroMain retroMain = response.body();
-                            if (retroMain.isSuccess()) {
-                                DataResponse dR = new DataResponse();
-                                dR.setHash(response.body().getHash());
-                                ProfilListeToDo profil = new ProfilListeToDo();
-                                profil.setLogin(pseudo);
-                                dR.setProfilListeToDo(profil);
-                                uiHandler.post(() -> {
-                                    listener.onSuccess(dR);
-                                });
-                            } else {
-                                Log.d(TAG, "onResponse: http code : "+retroMain.getStatus());
-                                uiHandler.post(()-> {
-                                    listener.onError("onResponse: http code : "+retroMain.getStatus());
-                                });
-                            }
-                        } else {
-                            Log.d(TAG, "onResponse: empty response. HTTP CODE : "+response.code());
+                try {
+                    Response<RetroMain> response = call.execute();
+                    if (response.body() != null) {
+                        RetroMain retroMain = response.body();
+                        if (retroMain.isSuccess()) {
+                            DataResponse dR = new DataResponse();
+                            dR.setHash(retroMain.getHash());
+                            ProfilListeToDo profil = new ProfilListeToDo();
+                            profil.setLogin(pseudo);
+                            dR.setProfilListeToDo(profil);
                             uiHandler.post(() -> {
-                                listener.onError("onResponse: empty response. HTTP CODE : "+response.code());
+                                listener.onSuccess(dR);
+                            });
+                        } else {
+                            Log.d(TAG, "onResponse: http code : "+retroMain.getStatus());
+                            uiHandler.post(()-> {
+                                listener.onError("onResponse: http code : "+retroMain.getStatus());
                             });
                         }
-                    }
-
-                    @Override
-                    public void onFailure(Call<RetroMain> call, Throwable t) {
-                        Log.d(TAG, "onFailure: "+t.toString());
+                    } else {
+                        Log.d(TAG, "onResponse: empty response. HTTP CODE : "+response.code());
                         uiHandler.post(() -> {
-                            listener.onError("onFailure from API call.");
+                            listener.onError("onResponse: empty response. HTTP CODE : "+response.code());
                         });
                     }
-                });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    uiHandler.post(() -> {
+                        listener.onError("onFailure from API call.");
+                    });
+                }
             } else if (!isConnectedToInternet) {
                 ProfilListeToDo profil;
                 profil = myDatabase.profilListeToDoDao().getProfilListeToDo(pseudo);
@@ -125,101 +139,498 @@ public class DataProvider {
                         listener.onError("Pseudo unknown in cache.");
                     });
                 }
+            } else if (isConnectedToInternet && !internetCheck()) {
+                uiHandler.post(() -> {
+                    listener.onError("Internet connection lost.");
+                });
             }
         });
         futures.add(future);
     }
 
     /**
-     * Return a DataResponse with a profilListeToDo initialized with all the listeToDo it contains
-     * from the API or the DB. To choose the database (API or SQL), the function checks
-     * the preference isConnectedToInternet.
+     * Return a DataResponse with a profilListeToDo initialized from the DB.
      * @param pseudo
-     * @param hash
      * @param listener
      */
-    public void loadListeToDo(String pseudo, String hash, final PostsListener listener){
+    public void getProfilToDo(String pseudo, final PostsListener listener){
+        Future future = Utils.BACKGROUND.submit(() -> {
+            DataResponse dR = new DataResponse();
+            dR.setProfilListeToDo(getProfileFromDB(pseudo));
+            uiHandler.post(() -> {
+                listener.onSuccess(dR);
+            });
+        });
+        futures.add(future);
+    }
+
+    public void getListeToDo(String pseudo, int idList, final PostsListener listener){
+        Future future = Utils.BACKGROUND.submit(() -> {
+            DataResponse dR = new DataResponse();
+            dR.setListeToDo(getListeToDoFromDB(pseudo, idList));
+            uiHandler.post(() -> {
+                listener.onSuccess(dR);
+            });
+        });
+        futures.add(future);
+    }
+
+
+
+    /**
+     * Update the profil in the api with the data present in the database (delete and add data).
+     * @param context
+     * @param pseudo
+     * @param listener
+     */
+    public void updateAPIfromDB(Context context, String pseudo, final PostsListener listener) {
         Future future = Utils.BACKGROUND.submit(() -> {
             if (isConnectedToInternet && internetCheck()) {
-                Call<RetroMain> call = service.getLists(hash);
-                call.enqueue(new Callback<RetroMain>() {
-                    @Override
-                    public void onResponse(Call<RetroMain> call, Response<RetroMain> response) {
-                        if (response.body() != null) {
-                            RetroMain retroMain = response.body();
-                            if (retroMain.isSuccess()) {
-                                ProfilListeToDo profil = new ProfilListeToDo();
-                                ArrayList<ListeToDo> listeToDos = new ArrayList<>();
-                                for (RetroMain r : retroMain.getLists()) {
-                                    listeToDos.add(new ListeToDo(r.getId(), profil.getLogin(), r.getLabel(), new ArrayList<ItemToDo>()));
-                                }
-                                profil.setMesListeToDo(listeToDos);
-                                // Updating the database
-                                myDatabase.profilListeToDoDao().addProfilListeToDo(profil);
-                                for (ListeToDo listeToDo : profil.getMesListeToDo()){
-                                    myDatabase.listeToDoDao().addListeToDo(listeToDo);
-                                }
+                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+                String hash = settings.getString("hash","");
 
-                                DataResponse dR = new DataResponse();
-                                dR.setProfilListeToDo(profil);
-                                uiHandler.post(() -> {
-                                    listener.onSuccess(dR);
-                                });
+                ProfilListeToDo profilDB = getProfileFromDB(pseudo);
+                ProfilListeToDo profilAPI = getProfileFromAPI(hash, pseudo);
 
-                            } else {
-                                Log.d(TAG, "onResponse: http code : "+retroMain.getStatus());
-                                uiHandler.post(()-> {
-                                    listener.onError("onResponse: http code : "+retroMain.getStatus());
-                                });
-                            }
-                        } else {
-                            Log.d(TAG, "onResponse: empty response. HTTP CODE : "+response.code());
-                            uiHandler.post(() -> {
-                                listener.onError("onResponse: empty response. HTTP CODE : "+response.code());
-                            });
+                // Adding the data in the API not present
+                if (profilAPI == null) {
+                    uiHandler.post(() -> {
+                        listener.onError("Profil not found in the API.");
+                    });
+                    return;
+                }
+                for (ListeToDo listeDB : profilDB.getMesListeToDo()) {
+
+                    ListeToDo listeAPI = null;
+                    for (ListeToDo tmp : profilAPI.getMesListeToDo()){
+                        if (tmp.getId() == listeDB.getId()){
+                            listeAPI = tmp;
+                            break;
                         }
                     }
-
-                    @Override
-                    public void onFailure(Call<RetroMain> call, Throwable t) {
-                        Log.d(TAG, "onFailure: "+t.toString());
-                        uiHandler.post(() -> {
-                            listener.onError("onFailure from API call.");
-                        });
+                    if (listeAPI == null){
+                        // Add the list in the API
+                        addListeInAPI(hash, listeDB);
+                        continue;
                     }
-                });
-            } else if (!isConnectedToInternet){
-                ProfilListeToDo profil;
-                profil = myDatabase.profilListeToDoDao().getProfilListeToDo(pseudo);
-                if (profil != null) {
-                    List<ListeToDo> listeToDos = myDatabase.listeToDoDao().getAllListeToDo(profil.getLogin());
-                    profil.setMesListeToDo(new ArrayList<>(listeToDos));
-                    DataResponse dR = new DataResponse();
-                    dR.setProfilListeToDo(profil);
-                    uiHandler.post(() -> {
-                        listener.onSuccess(dR);
-                    });
-                } else{
-                    uiHandler.post(() -> {
-                        listener.onError("Pseudo unknown in cache.");
-                    });
+                    for (ItemToDo itemDB : listeDB.getLesItems()) {
+
+                        ItemToDo itemAPI = null;
+                        for (ItemToDo tmp : listeAPI.getLesItems()) {
+                            if (tmp.getId() == listeAPI.getId()) {
+                                itemAPI = tmp;
+                                break;
+                            }
+                        }
+                        if (itemAPI == null) {
+                            // Add the item in the API
+                            addItemInAPI(hash, itemDB);
+                            continue;
+                        }
+                        if ((!itemDB.getDescription().equals(itemAPI.getDescription())) || (itemDB.isFait() != itemAPI.isFait())) {
+                            // if itemAPI and itemDB are differents :
+                            updateItemInAPI(hash, itemDB);
+                        }
+                    }
                 }
+
+                uiHandler.post(() -> {
+                    listener.onSuccess(null);
+                });
+
+                // Deleting the data in the API not present in the DB
+//                for (ListeToDo listeAPI : profilAPI.getMesListeToDo()) {
+//
+//                    ListeToDo listeDB = null;
+//                    for (ListeToDo tmp : profilDB.getMesListeToDo()) {
+//                        if (tmp.getId() == listeAPI.getId()) {
+//                            listeDB = tmp;
+//                            break;
+//                        }
+//                    }
+//                    if (listeDB == null) {
+//                        // If the listeToDo is present in the API but not in the DB, the listeAPI is deleted
+//
+//                    }
+//                    for (ItemToDo itemAPI : listeAPI.getLesItems()) {
+//                        ItemToDo itemDB = null;
+//                        for (ItemToDo tmp : listeDB.getLesItems()) {
+//                            if (tmp.getId() == listeDB.getId()) {
+//                                itemDB = tmp;
+//                                break;
+//                            }
+//                        }
+//                        if (itemDB == null) {
+//                            // If the itemToDo is present in the API but not in the DB, the itemAPI is deleted
+//
+//                        }
+//                    }
+//                }
+                ///////////
+            } else {
+                uiHandler.post(() -> {
+                    listener.onError("No Internet connection.");
+                });
             }
         });
         futures.add(future);
     }
 
-    public void updateAPIfromDB(String pseudo, String hash, final PostsListener listener) {
-        if (isConnectedToInternet && internetCheck()) {
-            ProfilListeToDo profil = myDatabase.profilListeToDoDao().getProfilListeToDo(pseudo);
-            profil.setMesListeToDo(new ArrayList<>(myDatabase.listeToDoDao().getAllListeToDo(profil.getLogin())));
-        } else {
+    /**
+     * update the local profil with the data from the api (delete and add data).
+     * @param context
+     * @param pseudo
+     * @param listener
+     */
+    public void updateDBfromAPI(Context context, String pseudo, final PostsListener listener){
+        Future future = Utils.BACKGROUND.submit(() -> {
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+            String hash = settings.getString("hash","");
+
+            ProfilListeToDo profilAPI = getProfileFromAPI(hash, pseudo);
+            ProfilListeToDo profilDB = getProfileFromDB(profilAPI.getLogin());
+
+            // Adding the data in the DB from the API
+            if (profilDB == null) {
+                profilDB = new ProfilListeToDo(profilAPI.getLogin(), profilAPI.getMesListeToDo());
+                myDatabase.profilListeToDoDao().addProfilListeToDo(profilDB);
+            }
+            for (ListeToDo listeAPI : profilAPI.getMesListeToDo()) {
+
+                ListeToDo listeDB = null;
+                for (ListeToDo tmp : profilDB.getMesListeToDo()) {
+                    if (tmp.getId() == listeAPI.getId()) {
+                        listeDB = tmp;
+                        break;
+                    }
+                }
+                if (listeDB == null) {
+                    listeDB = new ListeToDo(listeAPI.getId(), listeAPI.getProfilListeToDoId(), listeAPI.getTitreListeToDo(), listeAPI.getLesItems());
+                    myDatabase.listeToDoDao().addListeToDo(listeDB);
+                }
+                for (ItemToDo itemAPI : listeAPI.getLesItems()) {
+                    ItemToDo itemDB = null;
+                    for (ItemToDo tmp : listeDB.getLesItems()) {
+                        if (tmp.getId() == listeDB.getId()) {
+                            itemDB = tmp;
+                            break;
+                        }
+                    }
+                    if (itemDB == null) {
+                        itemDB = new ItemToDo(itemAPI.getId(), itemAPI.getListeToDoId(), itemAPI.getDescription(), itemAPI.isFait());
+                        myDatabase.itemToDoDao().addItemToDo(itemDB);
+                        return;
+                    }
+                    if ((!itemDB.getDescription().equals(itemAPI.getDescription())) || (itemDB.isFait() != itemAPI.isFait())) {
+                        // if itemAPI and itemDB are differents :
+                        updateItemInDB(itemAPI);
+                    }
+                }
+            }
+
+            // Deleting the data in the profile not present in the API
+            for (ListeToDo listeDB : profilDB.getMesListeToDo()) {
+
+                ListeToDo listeAPI = null;
+                for (ListeToDo tmp : profilAPI.getMesListeToDo()) {
+                    if (tmp.getId() == listeDB.getId()) {
+                        listeAPI = tmp;
+                        break;
+                    }
+                }
+                if (listeAPI == null) {
+                    // If the listeToDo is present in the DB but not in the API, the listeDB is deleted
+                    delListeInDB(listeDB);
+                    continue;
+                }
+
+                for (ItemToDo itemDB : listeDB.getLesItems()) {
+                    ItemToDo itemAPI = null;
+                    for (ItemToDo tmp : listeAPI.getLesItems()) {
+                        if (tmp.getId() == listeAPI.getId()) {
+                            itemAPI = tmp;
+                            break;
+                        }
+                    }
+                    if (itemAPI == null) {
+                        // If the itemToDo is present in the DB but not in the API, the itemDB is deleted
+                        delItemInDB(itemDB);
+                        continue;
+                    }
+                }
+            }
+
             uiHandler.post(() -> {
-                listener.onError("No Internet connection.");
+                listener.onSuccess(null);
             });
+        });
+        futures.add(future);
+    }
+
+
+
+
+    public void addListeToDo(Context context, ListeToDo listeToDo){
+        Future future = Utils.BACKGROUND.submit(() -> {
+            // Try to add to the API
+            if (isConnectedToInternet && internetCheck()) {
+                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+                String hash = settings.getString("hash","");
+                if (hash != ""){
+                    addListeInAPI(hash, listeToDo);
+                }
+            }
+            // Add in the db
+            addListeInDB(listeToDo);
+        });
+        futures.add(future);
+    }
+
+    public void delListeToDo(Context context, ListeToDo listeToDo){
+        Future future = Utils.BACKGROUND.submit(() -> {
+            // Try to add to the API
+            if (isConnectedToInternet && internetCheck()) {
+                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+                String hash = settings.getString("hash","");
+                if (hash != ""){
+                    delListeInAPI(hash, listeToDo);
+                }
+            }
+            // Add in the db
+            delListeInDB(listeToDo);
+        });
+        futures.add(future);
+    }
+
+    public void addItemToDo(Context context, ItemToDo itemToDo){
+        Future future = Utils.BACKGROUND.submit(() -> {
+            // Try to add to the API
+            if (isConnectedToInternet && internetCheck()) {
+                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+                String hash = settings.getString("hash","");
+                if (hash != ""){
+                    addItemInAPI(hash, itemToDo);
+                }
+            }
+            // Add in the db
+            addItemInDB(itemToDo);
+        });
+        futures.add(future);
+    }
+
+    public void delItemToDo(Context context, ItemToDo itemToDo){
+        Future future = Utils.BACKGROUND.submit(() -> {
+            // Try to add to the API
+            if (isConnectedToInternet && internetCheck()) {
+                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+                String hash = settings.getString("hash","");
+                if (hash != ""){
+                    delItemInAPI(hash, itemToDo);
+                }
+            }
+            // Add in the db
+            delItemInDB(itemToDo);
+        });
+        futures.add(future);
+    }
+
+    public void updateItemToDo(Context context, ItemToDo itemToDo){
+        Future future = Utils.BACKGROUND.submit(() -> {
+            // Try to add to the API
+            if (isConnectedToInternet && internetCheck()) {
+                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+                String hash = settings.getString("hash","");
+                if (hash != ""){
+                    updateItemInAPI(hash, itemToDo);
+                }
+            }
+            // Add in the db
+            updateItemInDB(itemToDo);
+        });
+        futures.add(future);
+    }
+
+    /// PRIVATE METHODS ///
+
+    private ProfilListeToDo getProfileFromAPI(String hash, String pseudo){
+        ProfilListeToDo profil = new ProfilListeToDo();
+        profil.setLogin(pseudo);
+
+        // Get profil and lists
+        Call<RetroMain> call = service.getLists(hash);
+        try {
+            Response<RetroMain> response = call.execute();
+            if (response.body() != null) {
+                RetroMain retroMain = response.body();
+                if (retroMain.isSuccess()) {
+                    ArrayList<ListeToDo> listeToDos = new ArrayList<>();
+                    for (RetroMain r : retroMain.getLists()) {
+                        listeToDos.add(new ListeToDo(r.getId(), profil.getLogin(), r.getLabel(), new ArrayList<ItemToDo>()));
+                    }
+                    profil.setMesListeToDo(listeToDos);
+                } else {
+                    Log.d(TAG, "getProfileFromAPI onResponse: http code : "+retroMain.getStatus());
+                }
+            } else {
+                Log.d(TAG, "getProfileFromAPI onResponse: empty response. HTTP CODE : "+response.code());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Get items
+        for (ListeToDo listeToDo : profil.getMesListeToDo()) {
+            call = service.getItems(hash, listeToDo.getId());
+            try {
+                Response<RetroMain> response = call.execute();
+                if (response.body() != null) {
+                    RetroMain retroMain = response.body();
+                    if (retroMain.isSuccess()) {
+                        ArrayList<ItemToDo> itemToDos = new ArrayList<>();
+                        for (RetroMain r : retroMain.getItems()) {
+                            itemToDos.add(new ItemToDo(r.getId(), listeToDo.getId(), r.getLabel(), (r.getChecked() == 1)));
+                        }
+                        listeToDo.setLesItems(itemToDos);
+                    } else {
+                        Log.d(TAG, "getProfileFromAPI onResponse: http code : " + retroMain.getStatus());
+                    }
+                } else {
+                    Log.d(TAG, "getProfileFromAPI onResponse: empty response. HTTP CODE : " + response.code());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return profil;
+    }
+
+    private ProfilListeToDo getProfileFromDB(String pseudo) {
+        ProfilListeToDo profil = myDatabase.profilListeToDoDao().getProfilListeToDo(pseudo);
+        profil.setMesListeToDo(new ArrayList<>(myDatabase.listeToDoDao().getAllListeToDo(profil.getLogin())));
+        for (ListeToDo listeToDo : profil.getMesListeToDo()) {
+            listeToDo.setLesItems(new ArrayList<>(myDatabase.itemToDoDao().getAllItemToDo(listeToDo.getId())));
+        }
+        return profil;
+    }
+
+    private ListeToDo getListeToDoFromDB(String pseudo, int idList){
+        ListeToDo listeToDo = myDatabase.listeToDoDao().getListeToDo(pseudo, idList);
+        listeToDo.setLesItems(new ArrayList<>(myDatabase.itemToDoDao().getAllItemToDo(listeToDo.getId())));
+        return listeToDo;
+    }
+
+    /**
+     * Add the listeToDo passed in parameter to the API. When finished, the listeToDo's id
+     * is updated in the DB.
+     * @param hash
+     * @param listeToDo
+     */
+    private void addListeInAPI(String hash, ListeToDo listeToDo){
+        Call<RetroMain> call = service.addList(hash, listeToDo.getTitreListeToDo());
+        try {
+            Response<RetroMain> response = call.execute();
+            if (response.body() != null) {
+                RetroMain retroMain = response.body();
+                if (retroMain.isSuccess()) {
+                    listeToDo.setId(retroMain.getList().getId());
+                    myDatabase.listeToDoDao().updateListeToDo(listeToDo);
+                    for (ItemToDo itemToDo : listeToDo.getLesItems()){
+                        addItemInAPI(hash, itemToDo);
+                    }
+                } else {
+                    Log.d(TAG, "addListeAPI onResponse: http code : "+retroMain.getStatus());
+                }
+            } else {
+                Log.d(TAG, "addListeAPI onResponse: empty response. HTTP CODE : "+response.code());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
+    private void delListeInAPI(String hash, ListeToDo listeToDo){
+        Call<RetroMain> call = service.delList(hash, Integer.toString(listeToDo.getId()));
+        try {
+            call.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Add the listeToDo passed in parameter to the API. When finished, the listeToDo's id
+     * is updated in the DB.
+     * @param hash
+     * @param itemToDo
+     */
+    private void addItemInAPI(String hash, ItemToDo itemToDo){
+        Call<RetroMain> call = service.addItem(hash, Integer.toString(itemToDo.getListeToDoId()), itemToDo.getDescription(), "noURL");
+        try {
+            Response<RetroMain> response = call.execute();
+            if (response.body() != null) {
+                RetroMain retroMain = response.body();
+                if (retroMain.isSuccess()) {
+                    itemToDo.setId(retroMain.getItem().getId());
+                    myDatabase.itemToDoDao().updateItemToDo(itemToDo);
+                } else {
+                    Log.d(TAG, "addListeAPI onResponse: http code : "+retroMain.getStatus());
+                }
+            } else {
+                Log.d(TAG, "addListeAPI onResponse: empty response. HTTP CODE : "+response.code());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void delItemInAPI(String hash, ItemToDo itemToDo){
+        Call<RetroMain> call = service.delItem(hash, Integer.toString(itemToDo.getListeToDoId()), Integer.toString(itemToDo.getId()));
+        try {
+            call.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean updateItemInAPI(String hash, ItemToDo item){
+
+        // Get profil and lists
+        Call<RetroMain> call = service.checkItem(hash, Integer.toString(item.getListeToDoId()), Integer.toString(item.getId()), (item.isFait() ? "1" : "0"));
+        try {
+            call.execute();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+    private void addListeInDB(ListeToDo listeToDo){
+        myDatabase.listeToDoDao().addListeToDo(listeToDo);
+        for (ItemToDo itemToDo : listeToDo.getLesItems()){
+            myDatabase.itemToDoDao().addItemToDo(itemToDo);
+        }
+    }
+
+    private void delListeInDB(ListeToDo listeToDo){
+        myDatabase.listeToDoDao().delListeToDo(listeToDo);
+        // CASCADE allow to delete all items child of this list
+    }
+
+    private void addItemInDB(ItemToDo itemToDo){
+        myDatabase.itemToDoDao().addItemToDo(itemToDo);
+    }
+
+    private void delItemInDB(ItemToDo itemToDo){
+        myDatabase.itemToDoDao().delItemToDo(itemToDo);
+    }
+
+    private void updateItemInDB(ItemToDo itemToDo){
+        myDatabase.itemToDoDao().updateItemToDo(itemToDo);
+    }
+
+    ///////////////////
 
     public void stop() {
         for (Future future : futures) {
@@ -249,15 +660,16 @@ public class DataProvider {
 
     public interface PostsListener {
         @UiThread
-        public void onSuccess(DataResponse dataResponse);
+        void onSuccess(DataResponse dataResponse);
         @UiThread
-        public void onError(String error);
+        void onError(String error);
     }
 
     public class DataResponse {
 
         private String hash="";
         private ProfilListeToDo profilListeToDo = new ProfilListeToDo();
+        private ListeToDo listeToDo = new ListeToDo();
 
         public DataResponse() {
         }
@@ -276,6 +688,14 @@ public class DataProvider {
 
         public void setProfilListeToDo(ProfilListeToDo profilListeToDo) {
             this.profilListeToDo = profilListeToDo;
+        }
+
+        public ListeToDo getListeToDo() {
+            return listeToDo;
+        }
+
+        public void setListeToDo(ListeToDo listeToDo) {
+            this.listeToDo = listeToDo;
         }
     }
 }

@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AndroidLayouts">
+    <shared>
+      <config />
+    </shared>
+  </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="MainA" />
+    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="activity" />
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="91310aba-b457-48ea-97ea-89c5d594f1e8" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/todo/Utils.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/DataProvider.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.bin" afterDir="false" />
@@ -16,14 +19,17 @@
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/todo/API_models/TodoInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/todo/API_models/TodoInterface.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ChoixListActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ChoixListActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/MainActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ShowListActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ShowListActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/CommandDatabase.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ListeToDoDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ListeToDoDao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ProfilListeToDoDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ProfilListeToDoDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/DataProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/DataProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/ItemToDo.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/ItemToDo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/ListeToDo.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/ListeToDo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/ProfilListeToDo.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/ProfilListeToDo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterList.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterList.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -43,15 +49,18 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="83">
-              <caret line="111" column="24" selection-start-line="111" selection-start-column="24" selection-end-line="111" selection-end-column="62" />
+            <state relative-caret-position="-85">
+              <caret line="111" selection-start-line="111" selection-end-line="111" />
               <folding>
+                <element signature="imports" expanded="true" />
                 <element signature="method#onCreateOptionsMenu#0;class#MainActivity#0" />
                 <element signature="method#onOptionsItemSelected#0;class#MainActivity#0" />
+                <element signature="class#4615:5639" />
+                <element signature="class#5788:6502" />
                 <element signature="method#onEditorAction#0;class#MainActivity#0" />
                 <element signature="docComment;method#isConnectedToInternet#0;class#MainActivity#0" />
-                <element signature="e#7696#7697#0" expanded="true" />
-                <element signature="e#7758#7759#0" expanded="true" />
+                <element signature="e#8133#8134#0" expanded="true" />
+                <element signature="e#8195#8196#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -60,81 +69,42 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/models/DataProvider.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="217" column="60" selection-start-line="217" selection-start-column="60" selection-end-line="217" selection-end-column="60" />
+            <state relative-caret-position="56">
+              <caret line="284" column="93" selection-start-line="284" selection-start-column="93" selection-end-line="284" selection-end-column="93" />
               <folding>
                 <element signature="method#DataProvider#0;class#DataProvider#0" />
+                <element signature="method#insertProfilDB#0;class#DataProvider#0" />
                 <element signature="docComment;method#authenticate#0;class#DataProvider#0" />
                 <element signature="method#authenticate#0;class#DataProvider#0" />
-                <element signature="docComment;method#loadListeToDo#0;class#DataProvider#0" />
+                <element signature="method#loadListeToDo#0;class#DataProvider#0" />
+                <element signature="method#getListeToDo#0;class#DataProvider#0" />
+                <element signature="method#updateAPIfromDB#0;class#DataProvider#0" />
+                <element signature="method#updateDBfromAPI#0;class#DataProvider#0" />
+                <element signature="method#addListeToDo#0;class#DataProvider#0" />
+                <element signature="method#delListeToDo#0;class#DataProvider#0" />
+                <element signature="method#addItemToDo#0;class#DataProvider#0" />
+                <element signature="method#delItemToDo#0;class#DataProvider#0" />
+                <element signature="method#getProfileFromAPI#0;class#DataProvider#0" />
+                <element signature="method#getProfileFromDB#0;class#DataProvider#0" />
+                <element signature="method#getListeToDoFromDB#0;class#DataProvider#0" />
+                <element signature="docComment;method#addListeInAPI#0;class#DataProvider#0" />
+                <element signature="method#addListeInAPI#0;class#DataProvider#0" />
+                <element signature="method#delListeInAPI#0;class#DataProvider#0" />
+                <element signature="docComment;method#addItemInAPI#0;class#DataProvider#0" />
+                <element signature="method#addItemInAPI#0;class#DataProvider#0" />
+                <element signature="method#delItemInAPI#0;class#DataProvider#0" />
+                <element signature="method#updateItemInAPI#0;class#DataProvider#0" />
+                <element signature="method#addListeInDB#0;class#DataProvider#0" />
+                <element signature="method#delListeInDB#0;class#DataProvider#0" />
+                <element signature="method#updateItemInDB#0;class#DataProvider#0" />
                 <element signature="method#stop#0;class#DataProvider#0" />
                 <element signature="docComment;method#internetCheck#0;class#DataProvider#0" />
                 <element signature="method#internetCheck#0;class#DataProvider#0" />
                 <element signature="class#DataResponse#0;class#DataProvider#0" />
-                <element signature="e#5998#5999#0" expanded="true" />
-                <element signature="e#6033#6034#0" expanded="true" />
-                <element signature="e#6077#6078#0" expanded="true" />
-                <element signature="e#6117#6118#0" expanded="true" />
-                <element signature="e#6172#6173#0" expanded="true" />
-                <element signature="e#6218#6219#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ChoixListActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="236">
-              <caret line="186" selection-start-line="186" selection-end-line="186" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="method#initRecyclerView#0;class#ChoixListActivity#0" />
-                <element signature="method#refreshRecyclerView#0;class#ChoixListActivity#0" />
-                <element signature="method#addListeToDo#0;class#ChoixListActivity#0" />
-                <element signature="method#addListeToDo_API#0;class#ChoixListActivity#0" />
-                <element signature="e#9474#9475#0" expanded="true" />
-                <element signature="e#9537#9538#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/models/ProfilListeToDo.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="697">
-              <caret line="60" column="5" selection-start-line="60" selection-start-column="5" selection-end-line="60" selection-end-column="5" />
-              <folding>
-                <element signature="method#ProfilListeToDo#0;class#ProfilListeToDo#0" />
-                <element signature="e#528#529#0" expanded="true" />
-                <element signature="e#576#577#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ShowListActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-35">
-              <caret line="39" column="34" selection-start-line="39" selection-start-column="34" selection-end-line="39" selection-end-column="34" />
-              <folding>
-                <element signature="method#onClick#0;class#ShowListActivity#0" />
-                <element signature="method#initRecyclerView#0;class#ShowListActivity#0" />
-                <element signature="method#refreshRecyclerView#0;class#ShowListActivity#0" />
-                <element signature="method#addItem_API#0;class#ShowListActivity#0" />
-                <element signature="docComment;method#delItem_API#0;class#ShowListActivity#0" />
-                <element signature="method#delItem_API#0;class#ShowListActivity#0" />
-                <element signature="docComment;method#checkItem_API#0;class#ShowListActivity#0" />
-                <element signature="method#checkItem_API#0;class#ShowListActivity#0" />
-                <element signature="docComment;method#getListe#0;class#ShowListActivity#0" />
-                <element signature="method#getListe#0;class#ShowListActivity#0" />
-                <element signature="method#addItem#0;class#ShowListActivity#0" />
-                <element signature="docComment;method#delItem#0;class#ShowListActivity#0" />
-                <element signature="method#delItem#0;class#ShowListActivity#0" />
-                <element signature="docComment;method#checkItem#0;class#ShowListActivity#0" />
-                <element signature="method#checkItem#0;class#ShowListActivity#0" />
+                <element signature="e#26310#26311#0" expanded="true" />
+                <element signature="e#26350#26351#0" expanded="true" />
+                <element signature="e#26407#26408#0" expanded="true" />
+                <element signature="e#26457#26458#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -143,8 +113,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ListeToDoDao.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="19" column="61" selection-start-line="19" selection-start-column="61" selection-end-line="19" selection-end-column="61" />
+            <state relative-caret-position="164">
+              <caret line="18" selection-start-line="18" selection-end-line="18" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -152,11 +122,93 @@
           </provider>
         </entry>
       </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ChoixListActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="629">
+              <caret line="100" column="57" selection-start-line="100" selection-start-column="57" selection-end-line="100" selection-end-column="57" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="method#initRecyclerView#0;class#ChoixListActivity#0" />
+                <element signature="method#loadProfilToDo#0;class#ChoixListActivity#0" />
+                <element signature="method#onError#0;class#4212:5215" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterList.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="229">
+              <caret line="64" column="38" selection-start-line="64" selection-start-column="38" selection-end-line="64" selection-end-column="38" />
+              <folding>
+                <element signature="class#ViewHolder#0;class#RecyclerViewAdapterList#0" />
+                <element signature="method#RecyclerViewAdapterList#0;class#RecyclerViewAdapterList#0" />
+                <element signature="method#onCreateViewHolder#0;class#RecyclerViewAdapterList#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ShowListActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="356">
+              <caret line="164" column="30" selection-start-line="164" selection-start-column="30" selection-end-line="164" selection-end-column="30" />
+              <folding>
+                <element signature="method#initRecyclerView#0;class#ShowListActivity#0" />
+                <element signature="method#refreshRecyclerView#0;class#ShowListActivity#0" />
+                <element signature="method#loadListeToDo#0;class#ShowListActivity#0" />
+                <element signature="method#onError#0;class#3637:4495" />
+                <element signature="method#addItem#0;class#ShowListActivity#0" />
+                <element signature="docComment;method#delItem#0;class#ShowListActivity#0" />
+                <element signature="method#delItem#0;class#ShowListActivity#0" />
+                <element signature="docComment;method#checkItem#0;class#ShowListActivity#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterItem.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="220">
+              <caret line="82" column="21" selection-start-line="82" selection-start-column="21" selection-end-line="82" selection-end-column="21" />
+              <folding>
+                <element signature="e#3093#3094#0" expanded="true" />
+                <element signature="e#3164#3165#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/models/ProfilListeToDo.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="527">
+              <caret line="46" column="5" selection-start-line="46" selection-start-column="5" selection-end-line="46" selection-end-column="5" />
+              <folding>
+                <element signature="method#ProfilListeToDo#0;class#ProfilListeToDo#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ProfilListeToDoDao.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="196">
-              <caret line="12" selection-start-line="12" selection-end-line="12" />
+            <state relative-caret-position="51">
+              <caret line="3" column="20" selection-start-line="3" selection-start-column="20" selection-end-line="6" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ItemToDoDao.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="340">
+              <caret line="29" column="40" selection-start-line="29" selection-start-column="40" selection-end-line="29" selection-end-column="40" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -175,26 +227,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>profil</find>
-      <find>todoid</find>
-      <find>commit</find>
-      <find>prefere</find>
-      <find>addListe</find>
-      <find>log</find>
-      <find>ervice</find>
-      <find>instance</find>
-      <find>call</find>
-      <find>exe</find>
+      <find>toast</find>
+      <find>body()</find>
+      <find>checkItem</find>
+      <find>prefe</find>
+      <find>internet</find>
+      <find>internetcheck</find>
+      <find>stop</find>
+      <find>cach</find>
+      <find>onsucc</find>
+      <find>hash</find>
+      <find>onSucce</find>
+      <find>datares</find>
+      <find>preferen</find>
       <find>getStr</find>
       <find>indices</find>
-      <find>data</find>
-      <find>getString</find>
-      <find>iscon</find>
-      <find>onEditor</find>
-      <find>pretty</find>
-      <find>toast</find>
+      <find>unkno</find>
+      <find>profil</find>
+      <find>load</find>
+      <find>unkn</find>
       <find>service</find>
-      <find>hash</find>
+      <find>intent</find>
+      <find>updateAPI</find>
+      <find>delItem</find>
+      <find>update</find>
+      <find>authen</find>
+      <find>ICI</find>
+      <find>log</find>
+      <find>isConnec</find>
+      <find>updateI</find>
+      <find>add</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -204,27 +266,29 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/build.gradle" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/InternetCheck.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterList.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/a.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/database.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/Database.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/myDatabase.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ItemToDoDao.java" />
         <option value="$PROJECT_DIR$/app/build.gradle" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/MyDatabase.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/ItemToDo.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/CommandDatabase.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ShowListActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/dataProvider.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/Utils.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/ProfilListeToDo.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/InternetCheck.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ProfilListeToDoDao.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/MyDatabase.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/ItemToDo.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/API_models/TodoInterface.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ItemToDoDao.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/ListeToDo.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ListeToDoDao.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ProfilListeToDoDao.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterList.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterItem.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/DataProvider.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/MainActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ChoixListActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/DataProvider.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ShowListActivity.java" />
       </list>
     </option>
   </component>
@@ -241,6 +305,132 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="AndroidView" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+            </path>
+            <path>
+              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+            </path>
+            <path>
+              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="todo" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="todo" type="462c0819:PsiDirectoryNode" />
+              <item name="activities" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="todo" type="462c0819:PsiDirectoryNode" />
+              <item name="API_models" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="todo" type="462c0819:PsiDirectoryNode" />
+              <item name="database" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="todo" type="462c0819:PsiDirectoryNode" />
+              <item name="database" type="462c0819:PsiDirectoryNode" />
+              <item name="dao" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="todo" type="462c0819:PsiDirectoryNode" />
+              <item name="models" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="todo" type="462c0819:PsiDirectoryNode" />
+              <item name="ui" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="res" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="res" type="462c0819:PsiDirectoryNode" />
+              <item name="layout" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="PackagesPane" />
       <pane id="Scope">
         <subPane subId="Scope 'Project Source Files'; set:Project Source Files; class com.jetbrains.cidr.lang.search.scopes.ProjectSourcesScopeProvider$SourceFilesScope">
           <expand>
@@ -373,101 +563,13 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="AndroidView" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-            </path>
-            <path>
-              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-            </path>
-            <path>
-              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="todo" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="todo" type="462c0819:PsiDirectoryNode" />
-              <item name="database" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="todo" type="462c0819:PsiDirectoryNode" />
-              <item name="database" type="462c0819:PsiDirectoryNode" />
-              <item name="dao" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="todo" type="462c0819:PsiDirectoryNode" />
-              <item name="models" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="sequence2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sequence2" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="todo" type="462c0819:PsiDirectoryNode" />
-              <item name="ui" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="android.sdk.path" value="$USER_HOME$/AppData/Local/Android/Sdk" />
     <property name="device.picker.selection" value="Pixel_2_API_29" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../ToDoList" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../sequence2-livecoding-room-and-executor" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
     <property name="settings.editor.selected.configurable" value="AndroidSdkUpdater" />
   </component>
   <component name="RunDashboard">
@@ -570,7 +672,7 @@
     <frame x="-7" y="-7" width="1295" height="695" extended-state="6" />
     <layout>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.254251" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.254251" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Image Layers" order="3" />
       <window_info id="Designer" order="4" />
@@ -578,14 +680,15 @@
       <window_info id="Capture Tool" order="6" />
       <window_info id="Favorites" order="7" side_tool="true" />
       <window_info id="Build Variants" order="8" side_tool="true" />
+      <window_info anchor="bottom" id="Inspection Results" weight="0.3285968" />
       <window_info anchor="bottom" id="Version Control" order="0" weight="0.3285968" />
       <window_info anchor="bottom" id="TODO" order="1" weight="0.3285968" />
       <window_info anchor="bottom" id="Find" order="2" weight="0.3285968" />
       <window_info anchor="bottom" id="Terminal" order="3" weight="0.24689165" />
       <window_info anchor="bottom" id="Event Log" order="4" side_tool="true" />
-      <window_info anchor="bottom" id="Logcat" order="5" weight="0.28596804" />
-      <window_info anchor="bottom" id="Android Profiler" order="6" show_stripe_button="false" weight="0.3285968" />
-      <window_info anchor="bottom" id="Build" order="7" visible="true" weight="0.20426288" />
+      <window_info active="true" anchor="bottom" id="Logcat" order="5" visible="true" weight="0.30728242" />
+      <window_info anchor="bottom" id="Android Profiler" order="6" weight="0.3285968" />
+      <window_info anchor="bottom" id="Build" order="7" weight="0.3339254" />
       <window_info anchor="bottom" id="Run" order="8" weight="0.3285968" />
       <window_info anchor="bottom" id="Debug" order="9" />
       <window_info anchor="right" id="Capture Analysis" order="0" />
@@ -620,6 +723,18 @@
       <window_info anchor="right" id="Device File Explorer" order="3" side_tool="true" />
       <window_info anchor="right" id="Gradle" order="4" />
     </layout-to-restore>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/MainActivity.java</url>
+          <line>176</line>
+          <properties />
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/build.gradle">
@@ -658,20 +773,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/database/CommandDatabase.java" />
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterItem.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="158">
-          <caret line="74" column="24" lean-forward="true" selection-start-line="74" selection-start-column="24" selection-end-line="74" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterList.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="158">
-          <caret line="60" column="76" lean-forward="true" selection-start-line="60" selection-start-column="76" selection-end-line="60" selection-end-column="76" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/Utils.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
@@ -682,73 +783,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/models/ItemToDo.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="731">
-          <caret line="65" column="18" selection-start-line="65" selection-start-column="18" selection-end-line="65" selection-end-column="18" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#ItemToDo#0;class#ItemToDo#0" />
-            <element signature="method#ItemToDo#2;class#ItemToDo#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ItemToDoDao.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9">
-          <caret line="14" column="30" lean-forward="true" selection-start-line="14" selection-start-column="30" selection-end-line="14" selection-end-column="30" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/database/MyDatabase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="13" column="120" selection-start-line="13" selection-start-column="120" selection-end-line="13" selection-end-column="120" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/API_models/TodoInterface.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="12" column="17" selection-start-line="12" selection-start-column="17" selection-end-line="12" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ShowListActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-35">
-          <caret line="39" column="34" selection-start-line="39" selection-start-column="34" selection-end-line="39" selection-end-column="34" />
-          <folding>
-            <element signature="method#onClick#0;class#ShowListActivity#0" />
-            <element signature="method#initRecyclerView#0;class#ShowListActivity#0" />
-            <element signature="method#refreshRecyclerView#0;class#ShowListActivity#0" />
-            <element signature="method#addItem_API#0;class#ShowListActivity#0" />
-            <element signature="docComment;method#delItem_API#0;class#ShowListActivity#0" />
-            <element signature="method#delItem_API#0;class#ShowListActivity#0" />
-            <element signature="docComment;method#checkItem_API#0;class#ShowListActivity#0" />
-            <element signature="method#checkItem_API#0;class#ShowListActivity#0" />
-            <element signature="docComment;method#getListe#0;class#ShowListActivity#0" />
-            <element signature="method#getListe#0;class#ShowListActivity#0" />
-            <element signature="method#addItem#0;class#ShowListActivity#0" />
-            <element signature="docComment;method#delItem#0;class#ShowListActivity#0" />
-            <element signature="method#delItem#0;class#ShowListActivity#0" />
-            <element signature="docComment;method#checkItem#0;class#ShowListActivity#0" />
-            <element signature="method#checkItem#0;class#ShowListActivity#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/models/InternetCheck.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="33" column="24" lean-forward="true" selection-start-line="33" selection-start-column="24" selection-end-line="33" selection-end-column="24" />
+        <state relative-caret-position="354">
+          <caret line="34" column="33" selection-start-line="34" selection-start-column="33" selection-end-line="34" selection-end-column="33" />
           <folding>
             <element signature="e#981#982#0" expanded="true" />
             <element signature="e#1038#1039#0" expanded="true" />
@@ -756,35 +794,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="83">
-          <caret line="111" column="24" selection-start-line="111" selection-start-column="24" selection-end-line="111" selection-end-column="62" />
-          <folding>
-            <element signature="method#onCreateOptionsMenu#0;class#MainActivity#0" />
-            <element signature="method#onOptionsItemSelected#0;class#MainActivity#0" />
-            <element signature="method#onEditorAction#0;class#MainActivity#0" />
-            <element signature="docComment;method#isConnectedToInternet#0;class#MainActivity#0" />
-            <element signature="e#7696#7697#0" expanded="true" />
-            <element signature="e#7758#7759#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/models/ListeToDo.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="24" lean-forward="true" selection-start-line="24" selection-end-line="24" />
-          <folding>
-            <element signature="method#setProfilListeToDoId#0;class#ListeToDo#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ListeToDoDao.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/models/ItemToDo.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
-          <caret line="19" column="61" selection-start-line="19" selection-start-column="61" selection-end-line="19" selection-end-column="61" />
+          <caret line="13" column="29" lean-forward="true" selection-start-line="13" selection-start-column="29" selection-end-line="13" selection-end-column="29" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#ItemToDo#0;class#ItemToDo#0" />
+            <element signature="method#ItemToDo#2;class#ItemToDo#0" />
+            <element signature="method#ItemToDo#3;class#ItemToDo#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/database/MyDatabase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="493">
+          <caret line="38" selection-start-line="38" selection-end-line="38" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -793,61 +819,172 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/models/ProfilListeToDo.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="697">
-          <caret line="60" column="5" selection-start-line="60" selection-start-column="5" selection-end-line="60" selection-end-column="5" />
+        <state relative-caret-position="527">
+          <caret line="46" column="5" selection-start-line="46" selection-start-column="5" selection-end-line="46" selection-end-column="5" />
           <folding>
             <element signature="method#ProfilListeToDo#0;class#ProfilListeToDo#0" />
-            <element signature="e#528#529#0" expanded="true" />
-            <element signature="e#576#577#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ChoixListActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="236">
-          <caret line="186" selection-start-line="186" selection-end-line="186" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#initRecyclerView#0;class#ChoixListActivity#0" />
-            <element signature="method#refreshRecyclerView#0;class#ChoixListActivity#0" />
-            <element signature="method#addListeToDo#0;class#ChoixListActivity#0" />
-            <element signature="method#addListeToDo_API#0;class#ChoixListActivity#0" />
-            <element signature="e#9474#9475#0" expanded="true" />
-            <element signature="e#9537#9538#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/models/DataProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="217" column="60" selection-start-line="217" selection-start-column="60" selection-end-line="217" selection-end-column="60" />
-          <folding>
-            <element signature="method#DataProvider#0;class#DataProvider#0" />
-            <element signature="docComment;method#authenticate#0;class#DataProvider#0" />
-            <element signature="method#authenticate#0;class#DataProvider#0" />
-            <element signature="docComment;method#loadListeToDo#0;class#DataProvider#0" />
-            <element signature="method#stop#0;class#DataProvider#0" />
-            <element signature="docComment;method#internetCheck#0;class#DataProvider#0" />
-            <element signature="method#internetCheck#0;class#DataProvider#0" />
-            <element signature="class#DataResponse#0;class#DataProvider#0" />
-            <element signature="e#5998#5999#0" expanded="true" />
-            <element signature="e#6033#6034#0" expanded="true" />
-            <element signature="e#6077#6078#0" expanded="true" />
-            <element signature="e#6117#6118#0" expanded="true" />
-            <element signature="e#6172#6173#0" expanded="true" />
-            <element signature="e#6218#6219#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ProfilListeToDoDao.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="196">
-          <caret line="12" selection-start-line="12" selection-end-line="12" />
+        <state relative-caret-position="51">
+          <caret line="3" column="20" selection-start-line="3" selection-start-column="20" selection-end-line="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ItemToDoDao.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="29" column="40" selection-start-line="29" selection-start-column="40" selection-end-line="29" selection-end-column="40" />
           <folding>
             <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_choix_list.xml">
+      <provider editor-type-id="text-editor" />
+      <provider selected="true" editor-type-id="android-designer2" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/API_models/TodoInterface.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="36" selection-start-line="36" selection-end-line="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/models/ListeToDo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="29" column="71" selection-start-line="29" selection-start-column="71" selection-end-line="29" selection-end-column="71" />
+          <folding>
+            <element signature="method#ListeToDo#2;class#ListeToDo#0" />
+            <element signature="method#setProfilListeToDoId#0;class#ListeToDo#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterList.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="229">
+          <caret line="64" column="38" selection-start-line="64" selection-start-column="38" selection-end-line="64" selection-end-column="38" />
+          <folding>
+            <element signature="class#ViewHolder#0;class#RecyclerViewAdapterList#0" />
+            <element signature="method#RecyclerViewAdapterList#0;class#RecyclerViewAdapterList#0" />
+            <element signature="method#onCreateViewHolder#0;class#RecyclerViewAdapterList#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterItem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="82" column="21" selection-start-line="82" selection-start-column="21" selection-end-line="82" selection-end-column="21" />
+          <folding>
+            <element signature="e#3093#3094#0" expanded="true" />
+            <element signature="e#3164#3165#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ListeToDoDao.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="164">
+          <caret line="18" selection-start-line="18" selection-end-line="18" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/models/DataProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="56">
+          <caret line="284" column="93" selection-start-line="284" selection-start-column="93" selection-end-line="284" selection-end-column="93" />
+          <folding>
+            <element signature="method#DataProvider#0;class#DataProvider#0" />
+            <element signature="method#insertProfilDB#0;class#DataProvider#0" />
+            <element signature="docComment;method#authenticate#0;class#DataProvider#0" />
+            <element signature="method#authenticate#0;class#DataProvider#0" />
+            <element signature="method#loadListeToDo#0;class#DataProvider#0" />
+            <element signature="method#getListeToDo#0;class#DataProvider#0" />
+            <element signature="method#updateAPIfromDB#0;class#DataProvider#0" />
+            <element signature="method#updateDBfromAPI#0;class#DataProvider#0" />
+            <element signature="method#addListeToDo#0;class#DataProvider#0" />
+            <element signature="method#delListeToDo#0;class#DataProvider#0" />
+            <element signature="method#addItemToDo#0;class#DataProvider#0" />
+            <element signature="method#delItemToDo#0;class#DataProvider#0" />
+            <element signature="method#getProfileFromAPI#0;class#DataProvider#0" />
+            <element signature="method#getProfileFromDB#0;class#DataProvider#0" />
+            <element signature="method#getListeToDoFromDB#0;class#DataProvider#0" />
+            <element signature="docComment;method#addListeInAPI#0;class#DataProvider#0" />
+            <element signature="method#addListeInAPI#0;class#DataProvider#0" />
+            <element signature="method#delListeInAPI#0;class#DataProvider#0" />
+            <element signature="docComment;method#addItemInAPI#0;class#DataProvider#0" />
+            <element signature="method#addItemInAPI#0;class#DataProvider#0" />
+            <element signature="method#delItemInAPI#0;class#DataProvider#0" />
+            <element signature="method#updateItemInAPI#0;class#DataProvider#0" />
+            <element signature="method#addListeInDB#0;class#DataProvider#0" />
+            <element signature="method#delListeInDB#0;class#DataProvider#0" />
+            <element signature="method#updateItemInDB#0;class#DataProvider#0" />
+            <element signature="method#stop#0;class#DataProvider#0" />
+            <element signature="docComment;method#internetCheck#0;class#DataProvider#0" />
+            <element signature="method#internetCheck#0;class#DataProvider#0" />
+            <element signature="class#DataResponse#0;class#DataProvider#0" />
+            <element signature="e#26310#26311#0" expanded="true" />
+            <element signature="e#26350#26351#0" expanded="true" />
+            <element signature="e#26407#26408#0" expanded="true" />
+            <element signature="e#26457#26458#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-85">
+          <caret line="111" selection-start-line="111" selection-end-line="111" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#onCreateOptionsMenu#0;class#MainActivity#0" />
+            <element signature="method#onOptionsItemSelected#0;class#MainActivity#0" />
+            <element signature="class#4615:5639" />
+            <element signature="class#5788:6502" />
+            <element signature="method#onEditorAction#0;class#MainActivity#0" />
+            <element signature="docComment;method#isConnectedToInternet#0;class#MainActivity#0" />
+            <element signature="e#8133#8134#0" expanded="true" />
+            <element signature="e#8195#8196#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ChoixListActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="629">
+          <caret line="100" column="57" selection-start-line="100" selection-start-column="57" selection-end-line="100" selection-end-column="57" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#initRecyclerView#0;class#ChoixListActivity#0" />
+            <element signature="method#loadProfilToDo#0;class#ChoixListActivity#0" />
+            <element signature="method#onError#0;class#4212:5215" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ShowListActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="356">
+          <caret line="164" column="30" selection-start-line="164" selection-start-column="30" selection-end-line="164" selection-end-column="30" />
+          <folding>
+            <element signature="method#initRecyclerView#0;class#ShowListActivity#0" />
+            <element signature="method#refreshRecyclerView#0;class#ShowListActivity#0" />
+            <element signature="method#loadListeToDo#0;class#ShowListActivity#0" />
+            <element signature="method#onError#0;class#3637:4495" />
+            <element signature="method#addItem#0;class#ShowListActivity#0" />
+            <element signature="docComment;method#delItem#0;class#ShowListActivity#0" />
+            <element signature="method#delItem#0;class#ShowListActivity#0" />
+            <element signature="docComment;method#checkItem#0;class#ShowListActivity#0" />
           </folding>
         </state>
       </provider>
