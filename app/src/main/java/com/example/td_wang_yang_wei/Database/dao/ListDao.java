@@ -16,11 +16,11 @@ public interface ListDao {
     @Query("SELECT * FROM lists")
     List<Listdb> getAllLists();
 
-    @Query("SELECT user_id FROM lists")
-    String getUser_id();
-
     @Query("SELECT * FROM lists WHERE user_id LIKE:userId")
     List<Listdb> findListByUserId(String userId);
+
+    @Query("SELECT * FROM lists WHERE label LIKE:labelClick")
+    Listdb findListByUserLabel(String labelClick);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void save(List<Listdb> listsLoad);

@@ -246,6 +246,8 @@ public class ChoixListeActivity extends AppCompatActivity {
                             //Encapsuler la requête d'après les règles de Interface requestService
                             Call<Lists> call = requestService.getLists(hash);
                             final String listeCliquee = lists.get(getAdapterPosition());
+                            String id = dataProvider.syncGetListId(listeCliquee);
+                            Log.d("test555","hhhhhhh");
 
                             //Envoyer la requête et collecter les résultats
                             //si succès entrer dans la liste des Items de Liste courante
@@ -265,15 +267,19 @@ public class ChoixListeActivity extends AppCompatActivity {
                                 @Override
                                 public void onFailure(Call call, Throwable t) {
                                     alerter("pas de connexion");
+//                                    convertToItems(hash,url,id);
                                 }
                             });
 
                         }break;
 
                     case R.id.listSupp:
+
+                        final String listCliquee = lists.get(getAdapterPosition());
+
+                        dataProvider.syncRemoveListAtdb(listCliquee);
                         //Encapsuler la requête d'après les règles de Interface requestService
                         Call<Lists> callTotal = requestService.getLists(hash);
-                        final String listCliquee = lists.get(getAdapterPosition());
 
                         //Envoyer la requête et collecter les résultats
                         //si succès obtenir les listes de cet utilisateur courant

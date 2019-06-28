@@ -26,19 +26,20 @@ public class Converter {
         return listsSave;
     }
 
-    public Itemdb itemfrom(Items.ItemsBean itemsBean) {
+    public Itemdb itemfrom(Items.ItemsBean itemsBean, String listId) {
         Itemdb item = new Itemdb();
         item.setId(itemsBean.getId());
         item.setLabel(itemsBean.getLabel());
+        item.setListId(listId);
         item.setChecked(itemsBean.getChecked());
 
         return item;
     }
 
-    public List<Itemdb> itemsfrom(Items items) {
+    public List<Itemdb> itemsfrom(Items items, String listId) {
         List<Itemdb> itemsSave = new ArrayList<>(items.getItems().size());
         for (Items.ItemsBean itemsBean : items.getItems()) {
-            itemsSave.add(itemfrom(itemsBean));
+            itemsSave.add(itemfrom(itemsBean,listId));
         }
         return itemsSave;
     }

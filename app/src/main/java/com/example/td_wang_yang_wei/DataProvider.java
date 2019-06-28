@@ -1,5 +1,6 @@
 package com.example.td_wang_yang_wei;
 
+import android.app.LauncherActivity;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
@@ -7,9 +8,12 @@ import android.util.Log;
 import androidx.annotation.UiThread;
 
 import com.example.td_wang_yang_wei.Database.ToDoListdb;
+import com.example.td_wang_yang_wei.Database.dao.ItemDao;
 import com.example.td_wang_yang_wei.Database.dao.ListDao;
 import com.example.td_wang_yang_wei.Database.dao.UserDao;
+import com.example.td_wang_yang_wei.Database.model.Itemdb;
 import com.example.td_wang_yang_wei.Database.model.Listdb;
+import com.example.td_wang_yang_wei.api.Items;
 import com.example.td_wang_yang_wei.api.Lists;
 import com.example.td_wang_yang_wei.api.NouveauListe;
 import com.example.td_wang_yang_wei.api.Users;
@@ -30,6 +34,7 @@ public class DataProvider {
     private final Handler uiHandler;
     private final UserDao userDao;
     private final ListDao listDao;
+    private final ItemDao itemDao;
 
     //TODO:bug测试 之后改成动态url
     private String url="http://tomnab.fr/todo-api/";
@@ -38,12 +43,17 @@ public class DataProvider {
     private final Converter converter = new Converter();
 
     private List<String> labelslist = new ArrayList<>();
+    private List<String> labelsitem = new ArrayList<>();
+    private List<String> fitem = new ArrayList<>();
+
+    private static String id = null;
 
 
     public DataProvider(Context context){
         uiHandler = new Handler(context.getMainLooper());
         userDao = ToDoListdb.getDatabase(context).userDao();
         listDao = ToDoListdb.getDatabase(context).listDao();
+        itemDao = ToDoListdb.getDatabase(context).itemDao();
     }
 
     public void syncGetLists(final String hash, final String userIdConneted,final ListsListener listener) {
@@ -187,17 +197,83 @@ public class DataProvider {
 
     }
 
-    public void syncRemoveListAtdb(final String listLabel) {
+    public void syncRemoveListAtdb(final String list) {
 
         Future future = Utils.BACKGROUND.submit(new Runnable() {
             @Override public void run() {
-                Listdb listAddTodb = null;
+                Listdb listRemoveAtdb = null;
 
-                listDao.add(listAddTodb);
+                listDao.deleteList(listRemoveAtdb);
             }
         });
         futures.add(future);
 
+    }
+
+    public void syncGetItems(final String hash, final String listIdConneted,final ItemsListener listener) {
+
+        Future future = Utils.BACKGROUND.submit(new Runnable() {
+            @Override public void run() {
+                try {
+                    Response<Items> response = service.getItems(hash,listIdConneted).execute();
+                    if( response.isSuccessful()) {
+                        final List<Itemdb> itemsSave = converter.itemsfrom(response.body(),listIdConneted);
+                        int delete = itemDao.deleteAll();
+                        Log.d("testDelete",delete+"");
+                        itemDao.save(itemsSave);
+                        getListItems(listIdConneted);
+
+                        uiHandler.post(new Runnable() {
+                            @Override public void run() {
+                                listener.onSuccess(labelsitem,fitem);
+                            }
+                        });
+
+                    }else {
+                        getListItems(listIdConneted);
+                        uiHandler.post(new Runnable() {
+                            @Override public void run() {
+                                listener.onError(labelsitem,fitem);
+                            }
+                        });
+
+                    }
+
+                } catch (IOException e) {
+                    getListItems(listIdConneted);
+                    uiHandler.post(new Runnable() {
+                        @Override public void run() {
+                            listener.onError(labelsitem,fitem);
+                        }
+                    });
+                }
+            }
+        });
+        futures.add(future);
+
+    }
+
+
+    public String syncGetListId(final String liste) {
+
+        Log.d("test777",id);
+        Future future = Utils.BACKGROUND.submit(new Runnable() {
+            @Override public void run() {
+                id = listDao.findListByUserLabel(liste).getId();
+            }
+        });
+        futures.add(future);
+        return id;
+
+    }
+
+    public void getListItems(String listId){
+        labelsitem.clear();fitem.clear();
+        for (int i = 0; i< itemDao.getAllItems().size(); i++) {
+            ItemsState state = null;
+            fitem.add(itemDao.findItemBylistId(listId).get(i).getChecked());
+            labelsitem.add(itemDao.findItemBylistId(listId).get(i).getLabel());
+        }
     }
 
     public void stop() {
@@ -230,4 +306,22 @@ public class DataProvider {
         @UiThread
         public void onError();
     }
+
+    public interface ItemsListener {
+        @UiThread
+        public void onSuccess(List<String> label,List<String> f);
+        @UiThread
+        public void onError(List<String> label,List<String> f);
+    }
+
+    private class ItemsState {
+        private String label;
+        private String f;
+
+        private String getLabel(){return label;}
+        private String getF(){return f;}
+        private void setLabel(String label){this.label = label;}
+        private void setF(String f){this.f = f;}
+    }
+
 }

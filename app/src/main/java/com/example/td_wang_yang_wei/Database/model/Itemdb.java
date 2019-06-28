@@ -63,7 +63,7 @@ public class Itemdb {
         return listId;
     }
 
-    public void setListId() {
+    public void setListId(String listId) {
         this.listId = listId;
     }
 }

@@ -1,10 +1,14 @@
 package com.example.td_wang_yang_wei.ui;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -17,7 +21,9 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.td_wang_yang_wei.DataProvider;
 import com.example.td_wang_yang_wei.api.Items;
+import com.example.td_wang_yang_wei.api.Lists;
 import com.example.td_wang_yang_wei.api.NouveauItem;
 import com.example.td_wang_yang_wei.R;
 import com.example.td_wang_yang_wei.api.requestService;
@@ -38,12 +44,14 @@ public class ShowListeActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
 
     private EditText edtItem;
+    private Button btnItem;
     private String Cat="ShowListe";
     private ItemAdapter itemAdapter;
     private String hash;
     private String url;
     private String listId;
     private com.example.td_wang_yang_wei.api.requestService requestService;
+    private DataProvider dataProvider;
 
 
     //alerter pour savoir le processus de la programme et alerter les utilisateurs
@@ -52,6 +60,22 @@ public class ShowListeActivity extends AppCompatActivity {
         Toast myToast = Toast.makeText(this,s,Toast.LENGTH_SHORT);
         myToast.show();
     }
+    //detect l'état de network
+    public void verifReseau(){
+        //obtenir l'objet de connectivityManager
+        ConnectivityManager netManager = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo=netManager.getActiveNetworkInfo();
+
+        if(networkInfo!=null){
+            btnItem.setEnabled(networkInfo.isConnected());
+        }
+        else{
+            btnItem.setEnabled(false);
+        }
+
+
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +83,7 @@ public class ShowListeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_show_liste);
 
         edtItem = findViewById(R.id.edit_item);
+        btnItem =findViewById(R.id.button_item);
 
         //obtenir les donnees de ChoixListeActivity
         hash = getIntent().getStringExtra("hash");
@@ -74,11 +99,14 @@ public class ShowListeActivity extends AppCompatActivity {
 
         //obtenir les items de ce Liste
         getListedeItem(hash,listId);
+//        syncGetAll(hash,listId);
         //afficher la liste de noms dans le RecyclerView
         recyclerView = findViewById(R.id.list_show);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(itemAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
+
+        verifReseau();
     }
 
     //creer le nouveau class pour afficher
@@ -164,6 +192,25 @@ public class ShowListeActivity extends AppCompatActivity {
         });
 
     }
+    private void syncGetAll(String hash, String listId) {
+        findViewById(R.id.progess).setVisibility(View.VISIBLE);
+        dataProvider.syncGetItems(hash, listId, new DataProvider.ItemsListener() {
+            @Override
+            public void onSuccess(List<String> label,List<String> f) {
+                for (int i = 0; i< label.size(); i++) {
+                    itemAdapter.add(label.get(i),f.get(i));
+                }
+                findViewById(R.id.progess).setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onError(List<String> label,List<String> f) {
+                findViewById(R.id.progess).setVisibility(View.GONE);
+                alerter("pas de connexion!");
+            }
+        } );
+    }
+
 
 
     //construire ItemAdapter
