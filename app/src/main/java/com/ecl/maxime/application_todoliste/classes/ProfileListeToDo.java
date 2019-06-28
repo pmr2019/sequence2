@@ -1,14 +1,21 @@
 package com.ecl.maxime.application_todoliste.classes;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by Max on 2019-05-19.
  */
+
+@Entity
 public class ProfileListeToDo implements Serializable {
 
+    @PrimaryKey
     private String login;
+    @PrimaryKey
     private String mdp;
     protected ArrayList<ListeToDo> mMesListeToDo;
 
@@ -17,7 +24,11 @@ public class ProfileListeToDo implements Serializable {
         this.mdp = mdp;
         mMesListeToDo = mesListeToDo;
     }
+    public ProfileListeToDo(String login, String mdp) {
+        this.login = login;
+        this.mdp = mdp;
 
+    }
     public ProfileListeToDo(ArrayList<ListeToDo> mesListeToDo) {
         mMesListeToDo = mesListeToDo;
     }

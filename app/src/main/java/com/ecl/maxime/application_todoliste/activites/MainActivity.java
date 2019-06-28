@@ -1,5 +1,6 @@
 package com.ecl.maxime.application_todoliste.activites;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -10,7 +11,9 @@ import com.ecl.maxime.application_todoliste.R;
 import com.ecl.maxime.application_todoliste.api_request.Hashcode;
 import com.ecl.maxime.application_todoliste.api_request.ServiceFactory;
 import com.ecl.maxime.application_todoliste.api_request.Services;
+import com.ecl.maxime.application_todoliste.classes.ProfileListeToDo;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -35,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     private Call<Hashcode> call;
     public static final String HASH = "hash";
     public static String BASE_URL;
+    private MainActivity activity;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
         edt_pseudo=findViewById(R.id.pseudo_edittext);
         edt_password=findViewById(R.id.password_edt);
         btn_ok=findViewById(R.id.btn_ok);
+
+        this.activity = this;
     }
 
     @Override
@@ -59,6 +66,27 @@ public class MainActivity extends AppCompatActivity {
 
         if (verifReseau())
             btn_ok.setEnabled(true);
+
+        if (!verifReseau()){
+            AlertDialog.Builder myPopup = new AlertDialog.Builder(activity);
+            myPopup.setTitle("Pas d'internet");
+            myPopup.setMessage("Voulez-vous manipuler les donnéees en cache ?");
+            myPopup.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Intent dao = new Intent(MainActivity.this, DaoActivity.class);
+                    startActivity(dao);
+                }
+            });
+            myPopup.setNegativeButton("Non", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                }
+            });
+
+
+        }
 
 
         // Mise en place de l'écouteur
@@ -135,15 +163,17 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void seConnecter(String login, String mdp){
+    private void seConnecter(final String login, final String mdp){
         Services service = ServiceFactory.createService(Services.class);
         call = service.connexion(login, mdp);
         call.enqueue(new Callback<Hashcode>() {
             @Override
             public void onResponse(Call<Hashcode> call, Response<Hashcode> response) {
                 if (response.body() != null) {
+                    ProfileListeToDo user = new ProfileListeToDo(login, mdp);
                     Intent i = new Intent(MainActivity.this, ChoixListActivity.class);
                     i.putExtra(HASH, response.body().hash);
+                    i.putExtra(USER_SERVICE, user);
                     startActivity(i);
                 }
                 else {

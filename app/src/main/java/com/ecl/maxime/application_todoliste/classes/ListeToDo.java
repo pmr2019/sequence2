@@ -1,13 +1,21 @@
 package com.ecl.maxime.application_todoliste.classes;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by Max on 2019-05-19.
  */
+
+@Entity
 public class ListeToDo implements Serializable {
 
+    @NonNull
+    @PrimaryKey
     private String mTitreListe;
     private ArrayList<ItemToDo> mLesItems;
 
