@@ -3,15 +3,27 @@ package PMR.ToDoList.Model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.UUID;
 
-
+@Entity(foreignKeys = @ForeignKey(entity = ToDoList.class,
+                                  parentColumns = "idToDoList",
+                                  childColumns = "idTask"))
 public class Task implements Parcelable {
+
+    @PrimaryKey(autoGenerate = false)
     private int id;
     private String label;
     private int checked;
+
+    private int keyToDoList;
+
 
     //CONSTRUCTEURS
 

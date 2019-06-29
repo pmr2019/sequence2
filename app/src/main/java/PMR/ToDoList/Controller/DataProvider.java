@@ -92,6 +92,9 @@ public class DataProvider {
         String response = requete(qs, methode);
 
         JSONObject json = new JSONObject(response);
+
+        Log.i("debug3","reponse requete API : " + json);
+
         String hash = json.getString("hash");
 
         return hash;

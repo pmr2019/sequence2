@@ -101,13 +101,13 @@ Initialisation de la toolbar et du recyclerview lié à cette activité
 
         final GsonBuilder builder = new GsonBuilder(); //assure la qualité des données Json
         final Gson gson = builder.setPrettyPrinting().create();
-        String fileName = "pseudos"; //nom du fichier Json
+        String fileName = "pseudos&Hashs"; //nom du fichier Json
         FileOutputStream outputStream; //permet de sérialiser correctement user
 
         String fileContents = gson.toJson(myList);
 
         try {
-            outputStream = openFileOutput("pseudos", Context.MODE_PRIVATE);
+            outputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
             outputStream.write(fileContents.getBytes());
             outputStream.close();
             Log.i("TODO_Romain", "Sauvegarde du fichier Json");

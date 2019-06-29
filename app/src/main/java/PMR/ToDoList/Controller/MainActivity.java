@@ -30,6 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         setContentView(R.layout.activity_main);
 
         myUsersList = getUsersFromFile();
+
 
         try {
             urlApi= getUrlApiFromJson();
@@ -215,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
                     break;
                 }
                 else {
-                    alerter("Veuillez d'abord vous connecter");
+                    alerter("Aucun user dans la base de donnée");
                     break;
                 }
 
@@ -236,13 +238,13 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
 
         final GsonBuilder builder = new GsonBuilder(); //assure la qualité des données Json
         final Gson gson = builder.setPrettyPrinting().create();
-        String fileName = "pseudos"; //nom du fichier Json
+        String fileName = "pseudos&Hashs"; //nom du fichier Json
         FileOutputStream outputStream; //permet de sérialiser correctement user
 
         String fileContents = gson.toJson(myList);
 
         try {
-            outputStream = openFileOutput("pseudos", Context.MODE_PRIVATE);
+            outputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
             outputStream.write(fileContents.getBytes());
             outputStream.close();
         } catch (Exception e) {
@@ -256,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         String json = "";
         ArrayList<User> usersList = null;
         try {
-            FileInputStream inputStream = openFileInput("pseudos");
+            FileInputStream inputStream = openFileInput("pseudos&Hashs");
             BufferedReader br = new BufferedReader(new InputStreamReader(
                                 new BufferedInputStream(inputStream), StandardCharsets.UTF_8));
             usersList = gson.fromJson(br, new TypeToken<List<User>>() {}.getType());
@@ -350,7 +352,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
                 return (new DataProvider()).getHash(pseudo, password, "POST");
             } catch (JSONException e) {
                 e.printStackTrace();
-                return "Veuillez rentrer un pseudo et un mot de passe valides";
+                return "";
             }
         }
 
@@ -358,7 +360,11 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         protected void onPostExecute(String hash){
             super.onPostExecute(hash);
 
-            if (hash!=null) {
+            if (hash.equals("")){
+                alerter("Veuillez entrer un pseudo et un mot de passe valides");
+            }
+
+            else {
                 myUser = new User (pseudo, password,hash);
 
                 boolean estDansSettings=false;
