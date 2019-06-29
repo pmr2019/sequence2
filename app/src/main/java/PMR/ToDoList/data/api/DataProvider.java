@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import PMR.ToDoList.data.Model.Task;
 import PMR.ToDoList.data.Model.ToDoList;
+import PMR.ToDoList.data.Model.User;
 
 public class DataProvider {
 
@@ -84,11 +85,36 @@ public class DataProvider {
 
         JSONObject json = new JSONObject(response);
 
-        Log.i("debug3","reponse requete API : " + json);
-
         String hash = json.getString("hash");
 
         return hash;
+    }
+
+    //Fonction permettant de récupérer l'id d'un utilisateur à partir du hash
+
+    public String getId (String pseudo, String hash,String methode) throws JSONException {
+
+
+        String qs = "users?hash="+hash;
+
+        String response = requete(qs, methode);
+
+        JSONObject json = new JSONObject(response);
+
+        JSONArray users = json.getJSONArray("users");
+
+        for (int i=0; i<users.length(); i++){
+            JSONObject user = users.getJSONObject(i);
+
+            int id = user.getInt("id");
+            String pseudoUser = user.getString("pseudo");
+
+            if (pseudoUser.equals(pseudo)){
+                return (""+id);
+            }
+        }
+
+        return ""+-1;
     }
 
     //Fonction permettant de générer la portion d'URL (String) necessaire à la récupération d'une

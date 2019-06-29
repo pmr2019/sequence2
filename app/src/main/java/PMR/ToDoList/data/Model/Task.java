@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(foreignKeys = @ForeignKey(entity = ToDoList.class,
@@ -14,7 +15,7 @@ import androidx.room.PrimaryKey;
 public class Task implements Parcelable {
 
     @PrimaryKey(autoGenerate = false)
-    private int idTask;
+    private int idTask; //////////////////////////////////////////////
     private String label;
     private int checked;
     private int keyToDoList;
@@ -22,6 +23,7 @@ public class Task implements Parcelable {
 
     //CONSTRUCTEURS
 
+    @Ignore
     public Task(int idTask, String label) {
         this.idTask = idTask;
         this.label = label;
@@ -33,6 +35,7 @@ public class Task implements Parcelable {
         this.checked = checked;
     }
 
+    @Ignore
     protected Task(Parcel in) {
         label = in.readString();
         checked = in.readInt();

@@ -15,7 +15,7 @@ public class User implements Parcelable {
 
 
     @PrimaryKey(autoGenerate = false)
-    private int idUser;
+    private int idUser; //////////////////////////////////////////////
     private String pseudo;
     private String password;
     private String hash;
@@ -24,21 +24,26 @@ public class User implements Parcelable {
 
     // CONSTRUCTEURS
 
-    public User(String pseudo, String password, String hash) {
+    public User(int idUser, String pseudo, String password, String hash) {
+        this.idUser=idUser;
         this.pseudo = pseudo;
         this.password = password;
         this.hash=hash;
         this.toDoLists=new ArrayList<>();
     }
 
+    @Ignore
     public User(User user) {
+        this.idUser= user.idUser;
         this.pseudo = user.pseudo;
         this.password = user.password;
         this.hash=user.hash;
         this.toDoLists=new ArrayList<>();
     }
 
+    @Ignore
     protected User(Parcel in) {
+        idUser = in.readInt();
         pseudo = in.readString();
         password = in.readString();
         hash = in.readString();
@@ -102,6 +107,7 @@ public class User implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.idUser);
         dest.writeString(this.pseudo);
         dest.writeString(this.password);
         dest.writeString(this.hash);
@@ -124,13 +130,14 @@ public class User implements Parcelable {
     }
 
 
-
     @Override
     public String toString() {
         return "User{" +
-                "pseudo='" + pseudo + '\'' +
+                "idUser=" + idUser +
+                ", pseudo='" + pseudo + '\'' +
                 ", password='" + password + '\'' +
                 ", hash='" + hash + '\'' +
+                ", toDoLists=" + toDoLists +
                 '}';
     }
 

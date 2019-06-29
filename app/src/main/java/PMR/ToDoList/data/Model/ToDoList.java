@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class ToDoList implements Parcelable {
 
     @PrimaryKey(autoGenerate = false)
-    private int idToDoList;
+    private int idToDoList;//////////////////////////////////////////////
     private String label;
     private int keyUser;
     @Ignore
@@ -32,12 +32,14 @@ public class ToDoList implements Parcelable {
         this.tasksList = new ArrayList<>();
     }
 
+    @Ignore
     public ToDoList(int idToDoList, String label, ArrayList<Task> tasksList) {
         this.idToDoList = idToDoList;
         this.label = label;
         this.tasksList = tasksList;
     }
 
+    @Ignore
     protected ToDoList(Parcel in) {
         idToDoList = in.readInt();
         label = in.readString();

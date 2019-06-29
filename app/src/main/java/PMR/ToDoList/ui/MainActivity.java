@@ -29,6 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -145,7 +146,8 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
                         // Si on a pas de connexion, on regarde si l'utilisateur
                         //correspondant à ce pseudo/password est enregistré
                         String hashTemporaire="";
-                        myUser=new User(pseudo,password,hashTemporaire);
+                        int idTemporaire=-1;
+                        myUser=new User(idTemporaire,pseudo,password,hashTemporaire);
 
                         Boolean estDansSettings=false;
                         Boolean pseudoOk=false;
@@ -156,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
                                 pseudoOk=true;
                                 if (myUsersList.get(i).getPassword().equals(password)){
                                     passwordOk=true;
+                                    myUser.setIdUser(myUsersList.get(i).getIdUser());
                                     myUser.setHash(myUsersList.get(i).getHash());
                                 }
                             }
@@ -339,33 +342,33 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
 
     //Asynctask qui permet d'établir la connexion à l'API, et récupérer le hash de l'utilisateur
 
-    public class PostAsyncTask extends AsyncTask<Object, Void, String>{
+    public class PostAsyncTask extends AsyncTask<Object, Void, ArrayList<String>>{
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(Object... objects) {
-            try {
-                return (new DataProvider()).getHash(pseudo, password, "POST");
+        protected ArrayList<String> doInBackground(Object... objects) {
+            ArrayList<String> donneesUser=new ArrayList<>();
+            DataProvider dataProvider=new DataProvider();
+            try {donneesUser.add(dataProvider.getHash(pseudo, password, "POST"));
+                 donneesUser.add(dataProvider.getId(pseudo,donneesUser.get(0),"GET"));
+                 return (donneesUser);
             } catch (JSONException e) {
                 e.printStackTrace();
-                return "";
+                return null;
             }
         }
 
         @Override
-        protected void onPostExecute(String hash){
-            super.onPostExecute(hash);
+        protected void onPostExecute(ArrayList<String> donneesUser){
+            super.onPostExecute(donneesUser);
 
-            if (hash.equals("")){
+            if (donneesUser==null){
                 alerter("Veuillez entrer un pseudo et un mot de passe valides");
             }
 
             else {
-                myUser = new User (pseudo, password,hash);
+                myUser = new User (Integer.parseInt(donneesUser.get(1)),pseudo, password,donneesUser.get(0));
+
+                alerter(myUser.toString());
 
                 boolean estDansSettings=false;
 

@@ -202,7 +202,7 @@ public class TasksActivity extends AppCompatActivity {
         @Override
         protected ArrayList<Task> doInBackground(Object... objects) {
             try {
-                return (new DataProvider()).getTasks(hash, todolist.getId(), "GET");
+                return (new DataProvider()).getTasks(hash, todolist.getIdToDoList(), "GET");
             } catch (JSONException e) {
                 e.printStackTrace();
                 return new ArrayList<>();
@@ -231,7 +231,7 @@ public class TasksActivity extends AppCompatActivity {
 
         @Override
         protected Integer doInBackground(Object... objects) {
-            (new DataProvider()).postItem(todolist.getId(), nameTask, hash, "POST");
+            (new DataProvider()).postItem(todolist.getIdToDoList(), nameTask, hash, "POST");
             return 1;
         }
 
@@ -254,7 +254,7 @@ public class TasksActivity extends AppCompatActivity {
 
         @Override
         protected Integer doInBackground(Object... objects) {
-            (new DataProvider()).itemChecked(todolist.getId(), taskChecked.getId(),taskChecked.getChecked(), hash, "PUT");
+            (new DataProvider()).itemChecked(todolist.getIdToDoList(), taskChecked.getIdTask(),taskChecked.getChecked(), hash, "PUT");
             return 1;
         }
 
