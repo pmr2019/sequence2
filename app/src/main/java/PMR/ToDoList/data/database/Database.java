@@ -1,15 +1,16 @@
-package PMR.ToDoList.DataBase;
+package PMR.ToDoList.data.database;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import PMR.ToDoList.Model.Task;
-import PMR.ToDoList.Model.ToDoList;
-import PMR.ToDoList.Model.User;
+import PMR.ToDoList.data.Model.Task;
+import PMR.ToDoList.data.Model.ToDoList;
+import PMR.ToDoList.data.Model.User;
+import PMR.ToDoList.data.database.dao.TaskDao;
+import PMR.ToDoList.data.database.dao.ToDoListDao;
+import PMR.ToDoList.data.database.dao.UserDao;
 
 @androidx.room.Database(entities = {User.class, ToDoList.class, Task.class}, version = 1)
 public abstract class Database extends RoomDatabase {
@@ -25,8 +26,7 @@ public abstract class Database extends RoomDatabase {
             synchronized (Database.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            Database.class, "roomDatabase")
-                            .build();
+                            Database.class, "roomDatabase").allowMainThreadQueries().build();
                 }
             }
         }

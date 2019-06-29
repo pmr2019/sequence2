@@ -1,47 +1,28 @@
-package PMR.ToDoList.Controller;
+package PMR.ToDoList.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-
 import org.json.JSONException;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Array;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
-import PMR.ToDoList.Model.ToDoList;
-import PMR.ToDoList.Model.User;
+import PMR.ToDoList.data.Model.ToDoList;
+import PMR.ToDoList.data.Model.User;
 import PMR.ToDoList.R;
+import PMR.ToDoList.data.api.DataProvider;
 
-import static PMR.ToDoList.Controller.MainActivity.EXTRA_CONNEXIONOK;
-import static PMR.ToDoList.Controller.MainActivity.EXTRA_LOGIN;
-import static PMR.ToDoList.Controller.MainActivity.myUsersList;
-import static android.content.Intent.EXTRA_USER;
+import static PMR.ToDoList.ui.MainActivity.EXTRA_CONNEXIONOK;
+import static PMR.ToDoList.ui.MainActivity.EXTRA_LOGIN;
 
 /*
 Classe lié à l'activité qui affiche l'ensemble des to do lists de l'utilisateur.

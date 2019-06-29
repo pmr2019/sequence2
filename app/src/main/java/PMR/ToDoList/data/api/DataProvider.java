@@ -1,10 +1,6 @@
-package PMR.ToDoList.Controller;
+package PMR.ToDoList.data.api;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
-
-import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,18 +11,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
-import PMR.ToDoList.Model.Task;
-import PMR.ToDoList.Model.ToDoList;
-import PMR.ToDoList.Model.User;
-
-import static PMR.ToDoList.Controller.MainActivity.urlApi;
+import PMR.ToDoList.data.Model.Task;
+import PMR.ToDoList.data.Model.ToDoList;
 
 public class DataProvider {
 

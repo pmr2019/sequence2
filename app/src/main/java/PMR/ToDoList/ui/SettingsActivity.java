@@ -1,41 +1,23 @@
-package PMR.ToDoList.Controller;
+package PMR.ToDoList.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
 
-import PMR.ToDoList.Model.ToDoList;
-import PMR.ToDoList.Model.User;
+import PMR.ToDoList.data.Model.User;
 import PMR.ToDoList.R;
 
-import static PMR.ToDoList.Controller.MainActivity.myUsersList;
-import static android.content.Intent.EXTRA_USER;
+import static PMR.ToDoList.ui.MainActivity.myUsersList;
 
 /*
 Activité comportant un recyclerview qui affiche tous les utilisateurs déjà rentrés dans

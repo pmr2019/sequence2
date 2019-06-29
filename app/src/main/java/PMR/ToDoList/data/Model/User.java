@@ -1,4 +1,4 @@
-package PMR.ToDoList.Model;
+package PMR.ToDoList.data.Model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 @Entity(tableName = "user_table")
 public class User implements Parcelable {
+
 
     @PrimaryKey(autoGenerate = false)
     private int idUser;
@@ -47,6 +48,9 @@ public class User implements Parcelable {
 
 
     // GETTERS & SETTERS
+    public int getIdUser() { return idUser;}
+
+    public void setIdUser(int idUser) { this.idUser = idUser; }
 
     public String getPseudo() {
         return pseudo;

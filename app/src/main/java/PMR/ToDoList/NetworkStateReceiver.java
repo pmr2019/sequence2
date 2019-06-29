@@ -1,4 +1,4 @@
-package PMR.ToDoList.Controller;
+package PMR.ToDoList;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

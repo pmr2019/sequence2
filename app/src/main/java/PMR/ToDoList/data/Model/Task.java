@@ -1,4 +1,4 @@
-package PMR.ToDoList.Model;
+package PMR.ToDoList.data.Model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey;
 
 @Entity(foreignKeys = @ForeignKey(entity = ToDoList.class,
         parentColumns = "idToDoList",
-        childColumns = "idTask"),
+        childColumns = "keyToDoList"),
         tableName = "task_table")
 public class Task implements Parcelable {
 
@@ -17,7 +17,6 @@ public class Task implements Parcelable {
     private int idTask;
     private String label;
     private int checked;
-
     private int keyToDoList;
 
 
@@ -43,29 +42,21 @@ public class Task implements Parcelable {
     //GETTERS & SETTERS
 
 
-    public int getIdTask() {
-        return idTask;
-    }
+    public int getIdTask() { return idTask; }
 
-    public void setIdTask(int idTask) {
-        this.idTask = idTask;
-    }
+    public void setIdTask(int idTask) { this.idTask = idTask; }
 
-    public String getLabel() {
-        return label;
-    }
+    public String getLabel() { return label; }
 
-    public void setLabel(String label) {
-        this.label = label;
-    }
+    public void setLabel(String label) { this.label = label; }
 
-    public int getChecked() {
-        return checked;
-    }
+    public int getChecked() { return checked; }
 
-    public void setChecked(int checked) {
-        this.checked = checked;
-    }
+    public void setChecked(int checked) { this.checked = checked; }
+
+    public int getKeyToDoList() { return keyToDoList; }
+
+    public void setKeyToDoList(int keyToDoList) { this.keyToDoList = keyToDoList; }
 
     // PARCELABLE IMPLEMENTATION
     public static final Creator<Task> CREATOR = new Creator<Task>() {

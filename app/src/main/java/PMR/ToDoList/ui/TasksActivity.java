@@ -1,41 +1,30 @@
-package PMR.ToDoList.Controller;
+package PMR.ToDoList.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import org.json.JSONException;
 
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 
-import PMR.ToDoList.Model.Task;
-import PMR.ToDoList.Model.ToDoList;
-import PMR.ToDoList.Model.User;
+import PMR.ToDoList.data.Model.Task;
+import PMR.ToDoList.data.Model.ToDoList;
 import PMR.ToDoList.R;
+import PMR.ToDoList.data.api.DataProvider;
 
-import static PMR.ToDoList.Controller.MainActivity.EXTRA_CONNEXIONOK;
-import static PMR.ToDoList.Controller.MainActivity.EXTRA_LOGIN;
-import static PMR.ToDoList.Controller.MainActivity.myUsersList;
-import static PMR.ToDoList.Controller.ToDoListActivity.EXTRA_HASH;
-import static PMR.ToDoList.Controller.ToDoListActivity.EXTRA_TODOLIST;
-import static PMR.ToDoList.Controller.ToDoListActivity.toDoLists;
+import static PMR.ToDoList.ui.MainActivity.EXTRA_CONNEXIONOK;
+import static PMR.ToDoList.ui.ToDoListActivity.EXTRA_HASH;
+import static PMR.ToDoList.ui.ToDoListActivity.EXTRA_TODOLIST;
 
 public class TasksActivity extends AppCompatActivity {
 

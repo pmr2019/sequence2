@@ -1,4 +1,4 @@
-package PMR.ToDoList.Model;
+package PMR.ToDoList.data.Model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -47,17 +47,15 @@ public class ToDoList implements Parcelable {
 
     //GETTERS
 
-    public int getIdToDoList() {
-        return idToDoList;
-    }
+    public int getIdToDoList() { return idToDoList; }
 
-    public String getLabel() {
-        return label;
-    }
+    public String getLabel() { return label; }
 
-    public ArrayList<Task> getTasksList() {
-        return tasksList;
-    }
+    public int getKeyUser() { return keyUser; }
+
+    public void setKeyUser(int keyUser) { this.keyUser = keyUser; }
+
+    public ArrayList<Task> getTasksList() { return tasksList; }
 
     // SETTERS
     public void setIdToDoList(int idToDoList) {

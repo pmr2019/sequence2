@@ -1,4 +1,4 @@
-package PMR.ToDoList.DataBase;
+package PMR.ToDoList.data.database.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -7,7 +7,7 @@ import androidx.room.Query;
 
 import java.util.List;
 
-import PMR.ToDoList.Model.Task;
+import PMR.ToDoList.data.Model.Task;
 
 @Dao
 public interface TaskDao {

@@ -1,4 +1,4 @@
-package PMR.ToDoList.Controller;
+package PMR.ToDoList.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import PMR.ToDoList.R;
-import static PMR.ToDoList.Controller.MainActivity.urlApi;
+import static PMR.ToDoList.ui.MainActivity.urlApi;
 
 
 /*

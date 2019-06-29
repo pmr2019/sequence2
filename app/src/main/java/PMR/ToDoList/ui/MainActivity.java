@@ -1,4 +1,4 @@
-package PMR.ToDoList.Controller;
+package PMR.ToDoList.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,13 +29,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import PMR.ToDoList.Model.User;
+import PMR.ToDoList.NetworkStateReceiver;
+import PMR.ToDoList.data.Model.User;
 import PMR.ToDoList.R;
+import PMR.ToDoList.data.api.DataProvider;
 
 public class MainActivity extends AppCompatActivity implements NetworkStateReceiver.NetworkStateReceiverListener {
 
