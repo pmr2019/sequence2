@@ -38,6 +38,8 @@ import PMR.ToDoList.NetworkStateReceiver;
 import PMR.ToDoList.data.Model.User;
 import PMR.ToDoList.R;
 import PMR.ToDoList.data.api.DataProvider;
+import PMR.ToDoList.data.database.Database;
+import PMR.ToDoList.data.database.dao.UserDao;
 
 public class MainActivity extends AppCompatActivity implements NetworkStateReceiver.NetworkStateReceiverListener {
 
@@ -73,6 +75,8 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
     public static final String EXTRA_LOGIN = "LOGIN";
     public static final String EXTRA_CONNEXIONOK = "CONNEXIONOK";
 
+    // BASE DE DONNEES
+    UserDao userDao;
 
     // METHODE POUR LES TOASTS
     public void alerter(String s) {
@@ -88,7 +92,9 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        myUsersList = getUsersFromFile();
+
+        userDao= Database.getDatabase(this).userDao();
+        myUsersList = (ArrayList<User>)userDao.getAllUsers();
 
 
         try {
@@ -234,48 +240,6 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
         return super.onOptionsItemSelected(item);
     }
 
-    //Partie GSON
-    //Ecrire des données dans la mémoire interne du téléphone
-
-    public void sauvegarderUserToJsonFile(ArrayList myList) {
-
-        final GsonBuilder builder = new GsonBuilder(); //assure la qualité des données Json
-        final Gson gson = builder.setPrettyPrinting().create();
-        String fileName = "pseudos&Hashs"; //nom du fichier Json
-        FileOutputStream outputStream; //permet de sérialiser correctement user
-
-        String fileContents = gson.toJson(myList);
-
-        try {
-            outputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
-            outputStream.write(fileContents.getBytes());
-            outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    //Fonction recréant à chaque ouverture de l'appli une liste de users
-    public ArrayList<User> getUsersFromFile() {
-        Gson gson = new Gson();
-        String json = "";
-        ArrayList<User> usersList = null;
-        try {
-            FileInputStream inputStream = openFileInput("pseudos&Hashs");
-            BufferedReader br = new BufferedReader(new InputStreamReader(
-                                new BufferedInputStream(inputStream), StandardCharsets.UTF_8));
-            usersList = gson.fromJson(br, new TypeToken<List<User>>() {}.getType());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // SI ON A PAS REUSSI A RECUPERER DES ELEMENTS DANS LE FICHIER JSON, ON RETOURNE
-        // UNE ARRAYLIST VIDE
-        if (usersList==null) return new ArrayList<>();
-        // SINON ON RETOURNE LA LISTE DES UTILISATEURS RECUPEREE
-        else return usersList;
-    }
-
 
     //Partie GSON
     //Ecrire des données dans la mémoire interne du téléphone
@@ -383,7 +347,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
 
                 if (!estDansSettings){
                     myUsersList.add(myUser);
-                    sauvegarderUserToJsonFile(myUsersList);
+                    userDao.insert(myUser);
                 }
 
                 Intent toToDoListActivity = new Intent(MainActivity.this, ToDoListActivity.class);

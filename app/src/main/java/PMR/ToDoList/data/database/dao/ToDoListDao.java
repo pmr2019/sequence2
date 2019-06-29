@@ -19,5 +19,5 @@ public interface ToDoListDao {
     void deleteAllToDoLists();
 
     @Query("SELECT * from toDoList_table ORDER BY idToDoList ASC")
-    LiveData<List<ToDoList>> getAllToDoLists();
+    List<ToDoList> getAllToDoLists();
 }

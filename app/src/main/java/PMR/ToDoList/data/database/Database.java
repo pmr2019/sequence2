@@ -21,7 +21,7 @@ public abstract class Database extends RoomDatabase {
 
     private static volatile Database INSTANCE;
 
-    static Database getDatabase(final Context context) {
+    public static Database getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (Database.class) {
                 if (INSTANCE == null) {

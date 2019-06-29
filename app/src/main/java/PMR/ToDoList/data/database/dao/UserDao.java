@@ -5,13 +5,13 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import PMR.ToDoList.data.Model.User;
 
 @Dao
 public interface UserDao {
-
 
     @Insert
     void insert(User user);
@@ -20,5 +20,5 @@ public interface UserDao {
     void deleteAllUsers();
 
     @Query("SELECT * from user_table ORDER BY idUser ASC")
-    LiveData<List<User>> getAllUsers();
+    List<User> getAllUsers();
 }
