@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.todo.activities.ChoixListActivity;
@@ -28,11 +29,13 @@ public class RecyclerViewAdapterList extends RecyclerView.Adapter<RecyclerViewAd
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView list_name;
+        Button btnDelete;
         ConstraintLayout parentLayout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             list_name = itemView.findViewById(R.id.list_name);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
             parentLayout = itemView.findViewById(R.id.parent_layout);
         }
     }
@@ -55,17 +58,15 @@ public class RecyclerViewAdapterList extends RecyclerView.Adapter<RecyclerViewAd
         Log.d(TAG, "onBindViewHolder: called.");
 
         holder.list_name.setText(mList.get(i).getTitreListeToDo());
-        holder.list_name.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent toAct = new Intent(mContext, ShowListActivity.class);
-                Bundle data = new Bundle();
-                data.putInt("idList", mList.get(i).getId());
-                data.putString("pseudo", mList.get(i).getProfilListeToDoId());
-                toAct.putExtras(data);
-                mContext.startActivity(toAct);
-            }
+        holder.list_name.setOnClickListener(v -> {
+            Intent toAct = new Intent(mContext, ShowListActivity.class);
+            Bundle data = new Bundle();
+            data.putInt("idList", mList.get(i).getId());
+            data.putString("pseudo", mList.get(i).getProfilListeToDoId());
+            toAct.putExtras(data);
+            mContext.startActivity(toAct);
         });
+        holder.btnDelete.setOnClickListener(v -> ((ChoixListActivity)mContext).delListeToDo(mList.get(i), i));
     }
 
     @Override

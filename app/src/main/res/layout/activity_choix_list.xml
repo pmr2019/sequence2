@@ -10,9 +10,14 @@
         android:id="@+id/reclycler_view_list"
         android:layout_width="387dp"
         android:layout_height="643dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="32dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="12dp">
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
     </android.support.v7.widget.RecyclerView>
 
@@ -20,9 +25,12 @@
         android:id="@+id/linearLayout"
         android:layout_width="408dp"
         android:layout_height="51dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:background="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="3dp"
-        android:background="#FFFFFF">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <EditText
             android:id="@+id/edtListTitle"
@@ -31,8 +39,8 @@
             android:layout_marginEnd="10dp"
             android:layout_marginRight="10dp"
             android:ems="10"
-            android:inputType="textPersonName"
             android:hint="@string/new_list"
+            android:inputType="textPersonName"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 

@@ -6,7 +6,7 @@
     </shared>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="main" />
+    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="data" />
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
@@ -18,15 +18,13 @@
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/classAnalysis.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/app/app.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ChoixListActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ChoixListActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ShowListActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ShowListActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ListeToDoDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ListeToDoDao.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/DataProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/DataProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterList.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_choix_list.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_choix_list.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/layout_listlist.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/layout_listlist.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -43,17 +41,19 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="241">
-              <caret line="126" column="33" lean-forward="true" selection-start-line="126" selection-start-column="33" selection-end-line="126" selection-end-column="33" />
+            <state relative-caret-position="-497">
+              <caret line="20" selection-start-line="20" selection-end-line="20" />
               <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="method#onCreate#0;class#MainActivity#0" />
+                <element signature="method#onStart#0;class#MainActivity#0" />
                 <element signature="method#startLoading#0;class#MainActivity#0" />
                 <element signature="method#finishLoading#0;class#MainActivity#0" />
                 <element signature="method#onCreateOptionsMenu#0;class#MainActivity#0" />
                 <element signature="method#onOptionsItemSelected#0;class#MainActivity#0" />
+                <element signature="method#onClick#0;class#MainActivity#0" />
                 <element signature="method#onEditorAction#0;class#MainActivity#0" />
                 <element signature="docComment;method#isConnectedToInternet#0;class#MainActivity#0" />
               </folding>
@@ -61,12 +61,86 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/models/DataProvider.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1208" />
+            <state relative-caret-position="704">
+              <caret line="374" column="66" selection-start-line="374" selection-start-column="66" selection-end-line="374" selection-end-column="66" />
+              <folding>
+                <element signature="method#DataProvider#0;class#DataProvider#0" />
+                <element signature="method#insertProfilDB#0;class#DataProvider#0" />
+                <element signature="docComment;method#authenticate#0;class#DataProvider#0" />
+                <element signature="method#authenticate#0;class#DataProvider#0" />
+                <element signature="method#getListeToDo#0;class#DataProvider#0" />
+                <element signature="method#updateAPIfromDB#0;class#DataProvider#0" />
+                <element signature="e#10985#11177#1" />
+                <element signature="e#11245#12762#1" />
+                <element signature="method#addListeToDo#0;class#DataProvider#0" />
+                <element signature="method#delListeToDo#0;class#DataProvider#0" />
+                <element signature="method#addItemToDo#0;class#DataProvider#0" />
+                <element signature="method#delItemToDo#0;class#DataProvider#0" />
+                <element signature="method#updateItemToDo#0;class#DataProvider#0" />
+                <element signature="method#getProfileFromAPI#0;class#DataProvider#0" />
+                <element signature="method#getProfileFromDB#0;class#DataProvider#0" />
+                <element signature="method#getListeToDoFromDB#0;class#DataProvider#0" />
+                <element signature="docComment;method#addListeInAPI#0;class#DataProvider#0" />
+                <element signature="method#addListeInAPI#0;class#DataProvider#0" />
+                <element signature="method#delListeInAPI#0;class#DataProvider#0" />
+                <element signature="docComment;method#addItemInAPI#0;class#DataProvider#0" />
+                <element signature="method#addItemInAPI#0;class#DataProvider#0" />
+                <element signature="method#delItemInAPI#0;class#DataProvider#0" />
+                <element signature="method#updateItemInAPI#0;class#DataProvider#0" />
+                <element signature="method#addProfilInDB#0;class#DataProvider#0" />
+                <element signature="method#addListeInDB#0;class#DataProvider#0" />
+                <element signature="method#updateItemInDB#0;class#DataProvider#0" />
+                <element signature="method#stop#0;class#DataProvider#0" />
+                <element signature="docComment;method#internetCheck#0;class#DataProvider#0" />
+                <element signature="method#internetCheck#0;class#DataProvider#0" />
+                <element signature="class#DataResponse#0;class#DataProvider#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/layout_listlist.xml">
+          <provider editor-type-id="text-editor">
+            <state relative-caret-position="391">
+              <caret line="23" column="40" selection-start-line="23" selection-start-column="40" selection-end-line="23" selection-end-column="40" />
+            </state>
+          </provider>
+          <provider selected="true" editor-type-id="android-designer2" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_choix_list.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="221">
+              <caret line="34" column="17" selection-start-line="34" selection-start-column="17" selection-end-line="34" selection-end-column="17" />
+            </state>
           </provider>
           <provider editor-type-id="android-designer2" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ChoixListActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-318">
+              <caret line="29" selection-start-line="29" selection-end-line="29" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="method#onCreate#0;class#ChoixListActivity#0" />
+                <element signature="method#onStart#0;class#ChoixListActivity#0" />
+                <element signature="method#onClick#0;class#ChoixListActivity#0" />
+                <element signature="method#initRecyclerView#0;class#ChoixListActivity#0" />
+                <element signature="method#refreshRecyclerView#0;class#ChoixListActivity#0" />
+                <element signature="method#addListeToDo#0;class#ChoixListActivity#0" />
+                <element signature="method#delListeToDo#0;class#ChoixListActivity#0" />
+                <element signature="method#loadProfilToDo#0;class#ChoixListActivity#0" />
+                <element signature="method#isConnectedToInternet#0;class#ChoixListActivity#0" />
+              </folding>
+            </state>
+          </provider>
         </entry>
       </file>
     </leaf>
@@ -80,8 +154,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>hash</find>
-      <find>onSucce</find>
       <find>datares</find>
       <find>preferen</find>
       <find>getStr</find>
@@ -110,6 +182,8 @@
       <find>log</find>
       <find>updateIteminapi</find>
       <find>tmp.getId</find>
+      <find>onBind</find>
+      <find>mList</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -134,15 +208,17 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/ItemToDo.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/API_models/TodoInterface.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ItemToDoDao.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterList.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterItem.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/ListeToDo.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ListeToDoDao.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ShowListActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/DataProvider.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ChoixListActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/MainActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ChoixListActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterList.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/layout_listlist.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_choix_list.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/example/todo/models/DataProvider.java" />
       </list>
     </option>
   </component>
@@ -527,7 +603,7 @@
     <editor active="true" />
     <layout>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.254251" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.254251" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Image Layers" order="3" />
       <window_info id="Designer" order="4" />
@@ -540,7 +616,7 @@
       <window_info anchor="bottom" id="Find" order="2" weight="0.3285968" />
       <window_info anchor="bottom" id="Terminal" order="3" weight="0.24689165" />
       <window_info anchor="bottom" id="Event Log" order="4" side_tool="true" />
-      <window_info anchor="bottom" id="Logcat" order="5" visible="true" weight="0.11722913" />
+      <window_info active="true" anchor="bottom" id="Logcat" order="5" visible="true" weight="0.38721138" />
       <window_info anchor="bottom" id="Android Profiler" order="6" weight="0.3285968" />
       <window_info anchor="bottom" id="Build" order="7" weight="0.3339254" />
       <window_info anchor="bottom" id="Run" order="8" weight="0.3285968" />
@@ -585,7 +661,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/MainActivity.java</url>
-          <line>194</line>
+          <line>185</line>
           <properties />
           <option name="timeStamp" value="1" />
         </line-breakpoint>
@@ -650,33 +726,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_choix_list.xml">
-      <provider editor-type-id="text-editor" />
-      <provider selected="true" editor-type-id="android-designer2" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterList.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="64" column="38" selection-start-line="64" selection-start-column="38" selection-end-line="64" selection-end-column="38" />
-          <folding>
-            <element signature="class#ViewHolder#0;class#RecyclerViewAdapterList#0" />
-            <element signature="method#RecyclerViewAdapterList#0;class#RecyclerViewAdapterList#0" />
-            <element signature="method#onCreateViewHolder#0;class#RecyclerViewAdapterList#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterItem.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1122">
-          <caret line="82" column="21" selection-start-line="82" selection-start-column="21" selection-end-line="82" selection-end-column="21" />
-          <folding>
-            <element signature="e#3093#3094#0" expanded="true" />
-            <element signature="e#3178#3179#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/database/dao/ItemToDoDao.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="493">
@@ -732,75 +781,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/models/DataProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="246" column="19" selection-start-line="246" selection-start-column="19" selection-end-line="246" selection-end-column="19" />
-          <folding>
-            <element signature="method#DataProvider#0;class#DataProvider#0" />
-            <element signature="method#insertProfilDB#0;class#DataProvider#0" />
-            <element signature="docComment;method#authenticate#0;class#DataProvider#0" />
-            <element signature="method#authenticate#0;class#DataProvider#0" />
-            <element signature="method#getListeToDo#0;class#DataProvider#0" />
-            <element signature="method#addListeToDo#0;class#DataProvider#0" />
-            <element signature="method#delListeToDo#0;class#DataProvider#0" />
-            <element signature="method#addItemToDo#0;class#DataProvider#0" />
-            <element signature="method#delItemToDo#0;class#DataProvider#0" />
-            <element signature="method#updateItemToDo#0;class#DataProvider#0" />
-            <element signature="method#getProfileFromAPI#0;class#DataProvider#0" />
-            <element signature="method#getProfileFromDB#0;class#DataProvider#0" />
-            <element signature="method#getListeToDoFromDB#0;class#DataProvider#0" />
-            <element signature="docComment;method#addListeInAPI#0;class#DataProvider#0" />
-            <element signature="method#addListeInAPI#0;class#DataProvider#0" />
-            <element signature="method#delListeInAPI#0;class#DataProvider#0" />
-            <element signature="docComment;method#addItemInAPI#0;class#DataProvider#0" />
-            <element signature="method#addItemInAPI#0;class#DataProvider#0" />
-            <element signature="method#delItemInAPI#0;class#DataProvider#0" />
-            <element signature="method#updateItemInAPI#0;class#DataProvider#0" />
-            <element signature="method#addProfilInDB#0;class#DataProvider#0" />
-            <element signature="method#addListeInDB#0;class#DataProvider#0" />
-            <element signature="method#delListeInDB#0;class#DataProvider#0" />
-            <element signature="method#updateItemInDB#0;class#DataProvider#0" />
-            <element signature="method#stop#0;class#DataProvider#0" />
-            <element signature="docComment;method#internetCheck#0;class#DataProvider#0" />
-            <element signature="method#internetCheck#0;class#DataProvider#0" />
-            <element signature="class#DataResponse#0;class#DataProvider#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ShowListActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="415">
-          <caret line="140" column="35" selection-start-line="140" selection-start-column="35" selection-end-line="140" selection-end-column="35" />
-          <folding>
-            <element signature="method#onCreate#0;class#ShowListActivity#0" />
-            <element signature="method#onStart#0;class#ShowListActivity#0" />
-            <element signature="method#initRecyclerView#0;class#ShowListActivity#0" />
-            <element signature="method#refreshRecyclerView#0;class#ShowListActivity#0" />
-            <element signature="method#loadListeToDo#0;class#ShowListActivity#0" />
-            <element signature="docComment;method#delItem#0;class#ShowListActivity#0" />
-            <element signature="method#delItem#0;class#ShowListActivity#0" />
-            <element signature="docComment;method#checkItem#0;class#ShowListActivity#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ChoixListActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1190">
-          <caret line="70" column="5" lean-forward="true" selection-start-line="70" selection-start-column="5" selection-end-line="70" selection-end-column="5" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#initRecyclerView#0;class#ChoixListActivity#0" />
-            <element signature="method#refreshRecyclerView#0;class#ChoixListActivity#0" />
-            <element signature="method#addListeToDo#0;class#ChoixListActivity#0" />
-            <element signature="method#loadProfilToDo#0;class#ChoixListActivity#0" />
-            <element signature="method#isConnectedToInternet#0;class#ChoixListActivity#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/models/ItemToDo.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
@@ -824,24 +804,151 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1208" />
-      </provider>
-      <provider editor-type-id="android-designer2" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="241">
-          <caret line="126" column="33" lean-forward="true" selection-start-line="126" selection-start-column="33" selection-end-line="126" selection-end-column="33" />
+        <state relative-caret-position="-497">
+          <caret line="20" selection-start-line="20" selection-end-line="20" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="method#onCreate#0;class#MainActivity#0" />
+            <element signature="method#onStart#0;class#MainActivity#0" />
             <element signature="method#startLoading#0;class#MainActivity#0" />
             <element signature="method#finishLoading#0;class#MainActivity#0" />
             <element signature="method#onCreateOptionsMenu#0;class#MainActivity#0" />
             <element signature="method#onOptionsItemSelected#0;class#MainActivity#0" />
+            <element signature="method#onClick#0;class#MainActivity#0" />
             <element signature="method#onEditorAction#0;class#MainActivity#0" />
             <element signature="docComment;method#isConnectedToInternet#0;class#MainActivity#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ShowListActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="261">
+          <caret line="155" column="30" selection-start-line="151" selection-start-column="8" selection-end-line="155" selection-end-column="30" />
+          <folding>
+            <element signature="method#onCreate#0;class#ShowListActivity#0" />
+            <element signature="method#onStart#0;class#ShowListActivity#0" />
+            <element signature="method#onClick#0;class#ShowListActivity#0" />
+            <element signature="method#initRecyclerView#0;class#ShowListActivity#0" />
+            <element signature="method#refreshRecyclerView#0;class#ShowListActivity#0" />
+            <element signature="method#loadListeToDo#0;class#ShowListActivity#0" />
+            <element signature="method#addItem#0;class#ShowListActivity#0" />
+            <element signature="docComment;method#delItem#0;class#ShowListActivity#0" />
+            <element signature="docComment;method#checkItem#0;class#ShowListActivity#0" />
+            <element signature="method#checkItem#0;class#ShowListActivity#0" />
+            <element signature="method#isConnectedToInternet#0;class#ShowListActivity#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterItem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="277">
+          <caret line="88" lean-forward="true" selection-start-line="88" selection-end-line="88" />
+          <folding>
+            <element signature="method#onClick#0;class#2460:2954" />
+            <element signature="class#3006:3189" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="13" column="40" selection-start-line="13" selection-start-column="40" selection-end-line="13" selection-end-column="40" />
+          <folding>
+            <element signature="e#1128#1144#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+      <provider selected="true" editor-type-id="android-designer2" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/layout_listitem.xml">
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="130">
+          <caret line="27" column="35" selection-start-line="27" selection-start-column="35" selection-end-line="27" selection-end-column="35" />
+        </state>
+      </provider>
+      <provider selected="true" editor-type-id="android-designer2" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/activities/ChoixListActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-318">
+          <caret line="29" selection-start-line="29" selection-end-line="29" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#onCreate#0;class#ChoixListActivity#0" />
+            <element signature="method#onStart#0;class#ChoixListActivity#0" />
+            <element signature="method#onClick#0;class#ChoixListActivity#0" />
+            <element signature="method#initRecyclerView#0;class#ChoixListActivity#0" />
+            <element signature="method#refreshRecyclerView#0;class#ChoixListActivity#0" />
+            <element signature="method#addListeToDo#0;class#ChoixListActivity#0" />
+            <element signature="method#delListeToDo#0;class#ChoixListActivity#0" />
+            <element signature="method#loadProfilToDo#0;class#ChoixListActivity#0" />
+            <element signature="method#isConnectedToInternet#0;class#ChoixListActivity#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/ui/RecyclerViewAdapterList.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="53" column="5" lean-forward="true" selection-start-line="53" selection-start-column="5" selection-end-line="53" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/layout_listlist.xml">
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="23" column="40" selection-start-line="23" selection-start-column="40" selection-end-line="23" selection-end-column="40" />
+        </state>
+      </provider>
+      <provider selected="true" editor-type-id="android-designer2" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_choix_list.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="34" column="17" selection-start-line="34" selection-start-column="17" selection-end-line="34" selection-end-column="17" />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer2" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/todo/models/DataProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="704">
+          <caret line="374" column="66" selection-start-line="374" selection-start-column="66" selection-end-line="374" selection-end-column="66" />
+          <folding>
+            <element signature="method#DataProvider#0;class#DataProvider#0" />
+            <element signature="method#insertProfilDB#0;class#DataProvider#0" />
+            <element signature="docComment;method#authenticate#0;class#DataProvider#0" />
+            <element signature="method#authenticate#0;class#DataProvider#0" />
+            <element signature="method#getListeToDo#0;class#DataProvider#0" />
+            <element signature="method#updateAPIfromDB#0;class#DataProvider#0" />
+            <element signature="e#10985#11177#1" />
+            <element signature="e#11245#12762#1" />
+            <element signature="method#addListeToDo#0;class#DataProvider#0" />
+            <element signature="method#delListeToDo#0;class#DataProvider#0" />
+            <element signature="method#addItemToDo#0;class#DataProvider#0" />
+            <element signature="method#delItemToDo#0;class#DataProvider#0" />
+            <element signature="method#updateItemToDo#0;class#DataProvider#0" />
+            <element signature="method#getProfileFromAPI#0;class#DataProvider#0" />
+            <element signature="method#getProfileFromDB#0;class#DataProvider#0" />
+            <element signature="method#getListeToDoFromDB#0;class#DataProvider#0" />
+            <element signature="docComment;method#addListeInAPI#0;class#DataProvider#0" />
+            <element signature="method#addListeInAPI#0;class#DataProvider#0" />
+            <element signature="method#delListeInAPI#0;class#DataProvider#0" />
+            <element signature="docComment;method#addItemInAPI#0;class#DataProvider#0" />
+            <element signature="method#addItemInAPI#0;class#DataProvider#0" />
+            <element signature="method#delItemInAPI#0;class#DataProvider#0" />
+            <element signature="method#updateItemInAPI#0;class#DataProvider#0" />
+            <element signature="method#addProfilInDB#0;class#DataProvider#0" />
+            <element signature="method#addListeInDB#0;class#DataProvider#0" />
+            <element signature="method#updateItemInDB#0;class#DataProvider#0" />
+            <element signature="method#stop#0;class#DataProvider#0" />
+            <element signature="docComment;method#internetCheck#0;class#DataProvider#0" />
+            <element signature="method#internetCheck#0;class#DataProvider#0" />
+            <element signature="class#DataResponse#0;class#DataProvider#0" />
           </folding>
         </state>
       </provider>

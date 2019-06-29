@@ -107,6 +107,14 @@ public class ChoixListActivity extends AppCompatActivity implements View.OnClick
         refreshRecyclerView();
     }
 
+    public void delListeToDo(ListeToDo listeToDo, int pos){
+        // Delete the list in the API.
+        dataProvider.delListeToDo(this, listeToDo);
+        // Delete the list in the view.
+        profil.getMesListeToDo().remove(pos);
+        refreshRecyclerView();
+    }
+
     private void loadProfilToDo(){
         dataProvider.getProfilToDo(pseudo, new DataProvider.PostsListener() {
             @Override
