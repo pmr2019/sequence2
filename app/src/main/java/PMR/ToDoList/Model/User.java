@@ -4,14 +4,21 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.Nullable;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
 import java.util.ArrayList;
 
+@Entity(tableName = "user_table")
 public class User implements Parcelable {
 
+    @PrimaryKey(autoGenerate = false)
+    private int idUser;
     private String pseudo;
     private String password;
     private String hash;
+    @Ignore
     private ArrayList<ToDoList> toDoLists;
 
     // CONSTRUCTEURS
@@ -125,10 +132,10 @@ public class User implements Parcelable {
 
     @Override
     public boolean equals(@Nullable Object user) {
-            User otherUser= (User)user;
-            if (this.pseudo.equals(otherUser.getPseudo()))
-                if (this.password.equals(otherUser.getPassword()))
-                    return true;
+        User otherUser= (User)user;
+        if (this.pseudo.equals(otherUser.getPseudo()))
+            if (this.password.equals(otherUser.getPassword()))
+                return true;
         return false;
     }
 }

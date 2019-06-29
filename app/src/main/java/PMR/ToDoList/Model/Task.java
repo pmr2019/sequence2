@@ -5,20 +5,16 @@ import android.os.Parcelable;
 
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
-import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.UUID;
-
 @Entity(foreignKeys = @ForeignKey(entity = ToDoList.class,
-                                  parentColumns = "idToDoList",
-                                  childColumns = "idTask"))
+        parentColumns = "idToDoList",
+        childColumns = "idTask"),
+        tableName = "task_table")
 public class Task implements Parcelable {
 
     @PrimaryKey(autoGenerate = false)
-    private int id;
+    private int idTask;
     private String label;
     private int checked;
 
@@ -27,13 +23,13 @@ public class Task implements Parcelable {
 
     //CONSTRUCTEURS
 
-    public Task(int id, String label) {
-        this.id = id;
+    public Task(int idTask, String label) {
+        this.idTask = idTask;
         this.label = label;
     }
 
-    public Task(int id, String label, int checked) {
-        this.id = id;
+    public Task(int idTask, String label, int checked) {
+        this.idTask = idTask;
         this.label = label;
         this.checked = checked;
     }
@@ -41,18 +37,18 @@ public class Task implements Parcelable {
     protected Task(Parcel in) {
         label = in.readString();
         checked = in.readInt();
-        id = in.readInt();
+        idTask = in.readInt();
     }
 
     //GETTERS & SETTERS
 
 
-    public int getId() {
-        return id;
+    public int getIdTask() {
+        return idTask;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setIdTask(int idTask) {
+        this.idTask = idTask;
     }
 
     public String getLabel() {
@@ -93,7 +89,7 @@ public class Task implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.label);
         dest.writeInt(this.checked);
-        dest.writeInt(this.id);
+        dest.writeInt(this.idTask);
     }
 
     //Methodes utiles
@@ -101,7 +97,7 @@ public class Task implements Parcelable {
     @Override
     public String toString() {
         return "Task{" +
-                "id=" + id +
+                "idTask=" + idTask +
                 ", label='" + label + '\'' +
                 ", checked=" + checked +
                 '}';

@@ -11,12 +11,13 @@ import androidx.room.PrimaryKey;
 import java.util.ArrayList;
 
 @Entity(foreignKeys = @ForeignKey(entity = User.class,
-                parentColumns = "idUser",
-                childColumns = "keyToDoList"))
+        parentColumns = "idUser",
+        childColumns = "keyUser"),
+        tableName = "toDoList_table")
 public class ToDoList implements Parcelable {
 
     @PrimaryKey(autoGenerate = false)
-    private int id;
+    private int idToDoList;
     private String label;
     private int keyUser;
     @Ignore
@@ -25,20 +26,20 @@ public class ToDoList implements Parcelable {
 
     // CONSTRUCTEURS
 
-    public ToDoList(int id, String label) {
-        this.id = id;
+    public ToDoList(int idToDoList, String label) {
+        this.idToDoList = idToDoList;
         this.label = label;
         this.tasksList = new ArrayList<>();
     }
 
-    public ToDoList(int id, String label, ArrayList<Task> tasksList) {
-        this.id = id;
+    public ToDoList(int idToDoList, String label, ArrayList<Task> tasksList) {
+        this.idToDoList = idToDoList;
         this.label = label;
         this.tasksList = tasksList;
     }
 
     protected ToDoList(Parcel in) {
-        id = in.readInt();
+        idToDoList = in.readInt();
         label = in.readString();
         tasksList= new ArrayList<>();
         in.readTypedList(this.tasksList, Task.CREATOR);
@@ -46,8 +47,8 @@ public class ToDoList implements Parcelable {
 
     //GETTERS
 
-    public int getId() {
-        return id;
+    public int getIdToDoList() {
+        return idToDoList;
     }
 
     public String getLabel() {
@@ -59,8 +60,8 @@ public class ToDoList implements Parcelable {
     }
 
     // SETTERS
-    public void setId(int id) {
-        this.id = id;
+    public void setIdToDoList(int idToDoList) {
+        this.idToDoList = idToDoList;
     }
 
     public void setLabel(String label) {
@@ -96,7 +97,7 @@ public class ToDoList implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.id);
+        dest.writeInt(this.idToDoList);
         dest.writeString(this.label);
         dest.writeTypedList(this.tasksList);
     }
@@ -135,7 +136,7 @@ public class ToDoList implements Parcelable {
     @Override
     public String toString() {
         return "ToDoList{" +
-                "id=" + id +
+                "idToDoList=" + idToDoList +
                 ", label='" + label + '\'' +
                 ", tasksList=" + tasksList +
                 '}';
