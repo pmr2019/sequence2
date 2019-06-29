@@ -137,6 +137,7 @@ public class ShowListActivity extends AppCompatActivity implements View.OnClickL
 
     private void addItem(String desc){
         ItemToDo item = new ItemToDo(desc);
+        item.setListeToDoId(listeToDo.getId());
         listeToDo.ajouteItem(item);
         dataProvider.addItemToDo(this, item);
         Log.d(TAG, "addItem: item ajouté : "+item.toString());

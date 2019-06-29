@@ -20,6 +20,9 @@ public interface ListeToDoDao {
     @Query("SELECT * FROM ListeToDo WHERE ListeToDo.profilListeToDoId = :profileListeToDoId")
     List<ListeToDo> getAllListeToDo(String profileListeToDoId);
 
+    @Query("SELECT COUNT(profilListeToDoId) FROM ListeToDo WHERE profilListeToDoId = :login")
+    int countAllListeToDo(String login);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void addListeToDo(ListeToDo listeToDo);
 

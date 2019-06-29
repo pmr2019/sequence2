@@ -58,11 +58,16 @@ public class ChoixListActivity extends AppCompatActivity implements View.OnClick
         //Add listener
         btnAddList.setOnClickListener(this);
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
         initRecyclerView();
         new InternetCheck(this); // To load the data, cf. isConnectedToInternet()
         // Get todo lists from the pseudo = load profile from the API & update BDD : done in isConnectedToInternet
         //Init reclyclerView (done in loadProfile_API if it is with the API because of the thread)
-
     }
 
     @Override

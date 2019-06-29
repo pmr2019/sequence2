@@ -190,6 +190,13 @@ public class DataProvider {
                 String hash = settings.getString("hash","");
 
                 ProfilListeToDo profilDB = getProfileFromDB(pseudo);
+                if(profilDB == null){
+                    // If authenticate succeed but no data in DB.
+                    uiHandler.post(() -> {
+                        listener.onSuccess(new DataResponse());
+                    });
+                    return;
+                }
                 ProfilListeToDo profilAPI = getProfileFromAPI(hash, pseudo);
 
                 // Adding the data in the API not present
@@ -217,13 +224,14 @@ public class DataProvider {
 
                         ItemToDo itemAPI = null;
                         for (ItemToDo tmp : listeAPI.getLesItems()) {
-                            if (tmp.getId() == listeAPI.getId()) {
+                            if (tmp.getId() == itemDB.getId()) {
                                 itemAPI = tmp;
                                 break;
                             }
                         }
                         if (itemAPI == null) {
                             // Add the item in the API
+                            Log.d(TAG, "updateAPIfromDB: addItem="+itemDB.toString());
                             addItemInAPI(hash, itemDB);
                             continue;
                         }
@@ -237,36 +245,6 @@ public class DataProvider {
                 uiHandler.post(() -> {
                     listener.onSuccess(null);
                 });
-
-                // Deleting the data in the API not present in the DB
-//                for (ListeToDo listeAPI : profilAPI.getMesListeToDo()) {
-//
-//                    ListeToDo listeDB = null;
-//                    for (ListeToDo tmp : profilDB.getMesListeToDo()) {
-//                        if (tmp.getId() == listeAPI.getId()) {
-//                            listeDB = tmp;
-//                            break;
-//                        }
-//                    }
-//                    if (listeDB == null) {
-//                        // If the listeToDo is present in the API but not in the DB, the listeAPI is deleted
-//
-//                    }
-//                    for (ItemToDo itemAPI : listeAPI.getLesItems()) {
-//                        ItemToDo itemDB = null;
-//                        for (ItemToDo tmp : listeDB.getLesItems()) {
-//                            if (tmp.getId() == listeDB.getId()) {
-//                                itemDB = tmp;
-//                                break;
-//                            }
-//                        }
-//                        if (itemDB == null) {
-//                            // If the itemToDo is present in the API but not in the DB, the itemAPI is deleted
-//
-//                        }
-//                    }
-//                }
-                ///////////
             } else {
                 uiHandler.post(() -> {
                     listener.onError("No Internet connection.");
@@ -289,6 +267,13 @@ public class DataProvider {
 
             ProfilListeToDo profilAPI = getProfileFromAPI(hash, pseudo);
             ProfilListeToDo profilDB = getProfileFromDB(profilAPI.getLogin());
+            if (profilDB == null) {
+                addProfilInDB(profilAPI);
+                uiHandler.post(() -> {
+                    listener.onSuccess(new DataResponse());
+                });
+                return;
+            }
 
             // Adding the data in the DB from the API
             if (profilDB == null) {
@@ -311,7 +296,7 @@ public class DataProvider {
                 for (ItemToDo itemAPI : listeAPI.getLesItems()) {
                     ItemToDo itemDB = null;
                     for (ItemToDo tmp : listeDB.getLesItems()) {
-                        if (tmp.getId() == listeDB.getId()) {
+                        if (tmp.getId() == itemAPI.getId()) {
                             itemDB = tmp;
                             break;
                         }
@@ -319,7 +304,7 @@ public class DataProvider {
                     if (itemDB == null) {
                         itemDB = new ItemToDo(itemAPI.getId(), itemAPI.getListeToDoId(), itemAPI.getDescription(), itemAPI.isFait());
                         myDatabase.itemToDoDao().addItemToDo(itemDB);
-                        return;
+                        continue;
                     }
                     if ((!itemDB.getDescription().equals(itemAPI.getDescription())) || (itemDB.isFait() != itemAPI.isFait())) {
                         // if itemAPI and itemDB are differents :
@@ -347,7 +332,7 @@ public class DataProvider {
                 for (ItemToDo itemDB : listeDB.getLesItems()) {
                     ItemToDo itemAPI = null;
                     for (ItemToDo tmp : listeAPI.getLesItems()) {
-                        if (tmp.getId() == listeAPI.getId()) {
+                        if (tmp.getId() == itemDB.getId()) {
                             itemAPI = tmp;
                             break;
                         }
@@ -506,9 +491,18 @@ public class DataProvider {
 
     private ProfilListeToDo getProfileFromDB(String pseudo) {
         ProfilListeToDo profil = myDatabase.profilListeToDoDao().getProfilListeToDo(pseudo);
-        profil.setMesListeToDo(new ArrayList<>(myDatabase.listeToDoDao().getAllListeToDo(profil.getLogin())));
+        if (profil == null){
+            return null;
+        }
+        List<ListeToDo> listeToDos = myDatabase.listeToDoDao().getAllListeToDo(profil.getLogin());
+        if (listeToDos == null)
+            return profil;
+        profil.setMesListeToDo(new ArrayList<>(listeToDos));
         for (ListeToDo listeToDo : profil.getMesListeToDo()) {
-            listeToDo.setLesItems(new ArrayList<>(myDatabase.itemToDoDao().getAllItemToDo(listeToDo.getId())));
+            List<ItemToDo> itemToDos = myDatabase.itemToDoDao().getAllItemToDo(listeToDo.getId());
+            if (itemToDos == null)
+                continue;
+            listeToDo.setLesItems(new ArrayList<>(itemToDos));
         }
         return profil;
     }
@@ -564,6 +558,7 @@ public class DataProvider {
      * @param itemToDo
      */
     private void addItemInAPI(String hash, ItemToDo itemToDo){
+        Log.d(TAG, "addItemInAPI: params="+hash+Integer.toString(itemToDo.getListeToDoId())+itemToDo.getDescription()+"noURL");
         Call<RetroMain> call = service.addItem(hash, Integer.toString(itemToDo.getListeToDoId()), itemToDo.getDescription(), "noURL");
         try {
             Response<RetroMain> response = call.execute();
@@ -573,10 +568,10 @@ public class DataProvider {
                     itemToDo.setId(retroMain.getItem().getId());
                     myDatabase.itemToDoDao().updateItemToDo(itemToDo);
                 } else {
-                    Log.d(TAG, "addListeAPI onResponse: http code : "+retroMain.getStatus());
+                    Log.d(TAG, "addItemAPI onResponse: http code : "+retroMain.getStatus());
                 }
             } else {
-                Log.d(TAG, "addListeAPI onResponse: empty response. HTTP CODE : "+response.code());
+                Log.d(TAG, "addItemAPI onResponse: empty response. HTTP CODE : "+response.code());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -604,6 +599,16 @@ public class DataProvider {
             return false;
         }
 
+    }
+
+    private void addProfilInDB(ProfilListeToDo profilListeToDo) {
+        myDatabase.profilListeToDoDao().addProfilListeToDo(profilListeToDo);
+        for (ListeToDo listeToDo : profilListeToDo.getMesListeToDo()){
+            myDatabase.listeToDoDao().addListeToDo(listeToDo);
+            for (ItemToDo itemToDo : listeToDo.getLesItems()){
+                myDatabase.itemToDoDao().addItemToDo(itemToDo);
+            }
+        }
     }
 
     private void addListeInDB(ListeToDo listeToDo){
