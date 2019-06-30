@@ -99,6 +99,7 @@ public class ShowListeActivity extends AppCompatActivity {
 
         //obtenir les items de ce Liste
         getListedeItem(hash,listId);
+        syncGetAll(hash,listId);
 //        syncGetAll(hash,listId);
         //afficher la liste de noms dans le RecyclerView
         recyclerView = findViewById(R.id.list_show);

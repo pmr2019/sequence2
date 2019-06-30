@@ -219,19 +219,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                                     alerter("pas de connxions -2");
                                                 }
                                             });
-                                            dataProvider.syncGetUserId(response.body().hash,pseudo, new DataProvider.UserListener() {
+                                            dataProvider.syncGetListeId(response.body().hash, new DataProvider.ListIdListener() {
                                                 @Override
-                                                public void onSuccess(String userId) {
-                                                    alerter("id save");
+                                                public void onSuccess(List<String> listId) {
+                                                    if(listId!=null){
+                                                        for(int i=0;i<listId.size();i++){
+                                                            dataProvider.syncGetItems(response.body().hash, listId.get(i), new DataProvider.ItemsListener() {
+                                                                @Override
+                                                                public void onSuccess(List<String> label, List<String> f) {
+
+                                                                }
+                                                                @Override
+                                                                public void onError(List<String> label, List<String> f) {
+
+                                                                }
+                                                            });
+                                                        }
+                                                    }
                                                 }
 
                                                 @Override
-                                                public void onError() {
+                                                public void onError(List<String> listId) {
 
                                                 }
                                             });
 
                                         }
+
+
 
                                         @Override
                                         public void onError() {

@@ -13,6 +13,7 @@ import com.example.td_wang_yang_wei.Database.dao.ListDao;
 import com.example.td_wang_yang_wei.Database.dao.UserDao;
 import com.example.td_wang_yang_wei.Database.model.Itemdb;
 import com.example.td_wang_yang_wei.Database.model.Listdb;
+import com.example.td_wang_yang_wei.Database.model.Userdb;
 import com.example.td_wang_yang_wei.api.Items;
 import com.example.td_wang_yang_wei.api.Lists;
 import com.example.td_wang_yang_wei.api.NouveauListe;
@@ -35,12 +36,12 @@ public class DataProvider {
     private final UserDao userDao;
     private final ListDao listDao;
     private final ItemDao itemDao;
-    private String userId="";
+    private String userId = "";
 
     //TODO:bug测试 之后改成动态url
-    private String url="http://tomnab.fr/todo-api/";
+    private String url = "http://tomnab.fr/todo-api/";
     //TODO:实现url替换（现在用的默认）
-    private final requestService service = requestServiceFactory.createService(url,requestService.class);
+    private final requestService service = requestServiceFactory.createService(url, requestService.class);
     private final Converter converter = new Converter();
 
     private List<String> labelslist = new ArrayList<>();
@@ -50,23 +51,24 @@ public class DataProvider {
     private static String id = null;
 
 
-    public DataProvider(Context context){
+    public DataProvider(Context context) {
         uiHandler = new Handler(context.getMainLooper());
         userDao = ToDoListdb.getDatabase(context).userDao();
         listDao = ToDoListdb.getDatabase(context).listDao();
         itemDao = ToDoListdb.getDatabase(context).itemDao();
     }
 
-    public void syncGetLists(final String hash, final String userIdConneted,final ListsListener listener) {
+    public void syncGetLists(final String hash, final String userIdConneted, final ListsListener listener) {
 
         Future future = Utils.BACKGROUND.submit(new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 try {
                     Response<Lists> response = service.getLists(hash).execute();
-                    if( response.isSuccessful()) {
-                        final List<Listdb> listsSave = converter.listsfrom(response.body(),userIdConneted);
+                    if (response.isSuccessful()) {
+                        final List<Listdb> listsSave = converter.listsfrom(response.body(), userIdConneted);
                         int delete = listDao.deleteAll();
-                        Log.d("test",delete+"");
+                        Log.d("test", delete + "");
                         listDao.save(listsSave);
                         getLabelslist(userIdConneted, new GetListListener() {
                             @Override
@@ -81,12 +83,13 @@ public class DataProvider {
                         });
 
                         uiHandler.post(new Runnable() {
-                            @Override public void run() {
+                            @Override
+                            public void run() {
                                 listener.onSuccess(labelslist);
                             }
                         });
 
-                    }else {
+                    } else {
                         getLabelslist(userIdConneted, new GetListListener() {
                             @Override
                             public void onSuccess(List<String> label) {
@@ -99,7 +102,8 @@ public class DataProvider {
                             }
                         });
                         uiHandler.post(new Runnable() {
-                            @Override public void run() {
+                            @Override
+                            public void run() {
                                 listener.onError(labelslist);
                             }
                         });
@@ -119,7 +123,8 @@ public class DataProvider {
                         }
                     });
                     uiHandler.post(new Runnable() {
-                        @Override public void run() {
+                        @Override
+                        public void run() {
                             listener.onError(labelslist);
                         }
                     });
@@ -133,23 +138,26 @@ public class DataProvider {
     public void syncGetUserId(final String hash, final String pseudo, final UserListener listener) {
 
         Future future = Utils.BACKGROUND.submit(new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 try {
                     Response<Users> response = service.getUsers(hash).execute();
-                    if( response.isSuccessful()) {
-                        final String  userIdConneted = response.body().getUserId(pseudo);
-                        Log.d("test111",userIdConneted);
+                    if (response.isSuccessful()) {
+                        final String userIdConneted = response.body().getUserId(pseudo);
+                        Log.d("test111", userIdConneted);
 
                         uiHandler.post(new Runnable() {
-                            @Override public void run() {
-                                userId=userIdConneted;
+                            @Override
+                            public void run() {
+                                userId = userIdConneted;
                                 listener.onSuccess(userIdConneted);
                             }
                         });
 
-                    }else {
+                    } else {
                         uiHandler.post(new Runnable() {
-                            @Override public void run() {
+                            @Override
+                            public void run() {
                                 listener.onError();
                             }
                         });
@@ -158,7 +166,8 @@ public class DataProvider {
 
                 } catch (IOException e) {
                     uiHandler.post(new Runnable() {
-                        @Override public void run() {
+                        @Override
+                        public void run() {
                             listener.onError();
                         }
                     });
@@ -170,11 +179,56 @@ public class DataProvider {
     }
 
 
-    public void getLabelslist(final String userId, final GetListListener listListener){
-        Future future=Utils.BACKGROUND.submit(new Runnable() {
-            @Override public void run() {
+    public void syncGetListeId(final String hash,final ListIdListener listener){
+        Future future = Utils.BACKGROUND.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Response<Lists> response = service.getLists(hash).execute();
+                    if (response.isSuccessful()) {
+
+                        final List <String> listIdConneted = null;
+                        for(int i=0;i<response.body().getLists().size();i++){
+                            listIdConneted.add(response.body().getLists().get(i).getId());
+                        }
+
+                        uiHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onSuccess(listIdConneted);
+                            }
+                        });
+
+                    } else {
+                        uiHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onError(null);
+                            }
+                        });
+
+                    }
+
+                } catch (IOException e) {
+                    uiHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onError(null);
+                        }
+                    });
+                }
+            }
+        });
+        futures.add(future);
+    }
+
+
+    public void getLabelslist(final String userId, final GetListListener listListener) {
+        Future future = Utils.BACKGROUND.submit(new Runnable() {
+            @Override
+            public void run() {
                 labelslist.clear();
-                for (int i = 0; i< listDao.findListByUserId(userId).size(); i++) {
+                for (int i = 0; i < listDao.findListByUserId(userId).size(); i++) {
                     labelslist.add(listDao.findListByUserId(userId).get(i).getLabel());
                 }
                 listListener.onSuccess(labelslist);
@@ -186,15 +240,55 @@ public class DataProvider {
 
     }
 
-    public void getUserId(final GetUserIdListener getUserIdListener){
-        Future future=Utils.BACKGROUND.submit(new Runnable() {
-            @Override public void run() {
+    public void getUserId(final GetUserIdListener getUserIdListener) {
+        Future future = Utils.BACKGROUND.submit(new Runnable() {
+            @Override
+            public void run() {
                 getUserIdListener.onSuccess(userId);
 
             }
         });
         futures.add(future);
     }
+
+
+//    public void syncAddUser(String hash,final SaveUserListener listener){
+//        Future future = Utils.BACKGROUND.submit(new Runnable() {
+//            @Override public void run() {
+//                try {
+//                    Response<NouveauListe> response = service.addList(hash,userId,liste).execute();
+//                    if( response.isSuccessful()) {
+//
+//                        uiHandler.post(new Runnable() {
+//                            @Override public void run() {
+//                                listener.onSuccess(liste);
+//                            }
+//                        });
+//
+//                    }else {
+//                        addFail.add(liste);
+//                        uiHandler.post(new Runnable() {
+//                            @Override public void run() {
+//                                listener.onError(addFail);
+//                            }
+//                        });
+//
+//                    }
+//
+//                } catch (IOException e) {
+//                    //TODO:补全 有网时在判断网络处调用for循环和syncAdd 用sharepreference？
+//                    addFail.add(liste);
+//                    uiHandler.post(new Runnable() {
+//                        @Override public void run() {
+//                            listener.onError(addFail);
+//                        }
+//                    });
+//                }
+//            }
+//        });
+//        futures.add(future);
+//
+//    }
 
 
 
@@ -391,4 +485,11 @@ public class DataProvider {
         private void setF(String f){this.f = f;}
     }
 
+
+    public interface ListIdListener{
+        @UiThread
+        public void onSuccess(List<String> listId);
+        @UiThread
+        public void onError(List<String> listId);
+    }
 }
