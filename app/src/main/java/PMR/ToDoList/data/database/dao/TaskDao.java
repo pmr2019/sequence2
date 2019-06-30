@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,5 +23,8 @@ public interface TaskDao {
 
     @Query("SELECT * from task_table INNER JOIN toDoList_table ON (keyToDoList=idToDoList)WHERE keyToDoList=:toDoListId ORDER BY idTask ASC")
     List<Task> getAllToDoListTasks(int toDoListId);
+
+    @Update
+    void updateCheckboxTask(Task task);
 
 }

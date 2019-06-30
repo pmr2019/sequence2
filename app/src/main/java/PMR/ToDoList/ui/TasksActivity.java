@@ -107,9 +107,6 @@ public class TasksActivity extends AppCompatActivity {
             btnInsertTask.setEnabled(false);
 
             ArrayList<Task> myTasks = getTasksFromSQL(todolist);
-            alerter(myTasks.get(0).toString());
-            alerter(myTasks.get(1).toString());
-            alerter(myTasks.get(2).toString());
 
             todolist.setTasksList(myTasks);
             buildRecyclerView(myTasks);
@@ -143,8 +140,7 @@ public class TasksActivity extends AppCompatActivity {
     }
 
     private ArrayList<Task> getTasksFromSQL(ToDoList todolist) {
-        ArrayList<Task> test = (ArrayList<Task>)taskDao.getAllToDoListTasks(todolist.getIdToDoList());
-        return (test);
+        return (ArrayList<Task>)taskDao.getAllToDoListTasks(todolist.getIdToDoList());
 
     }
 
@@ -153,11 +149,6 @@ public class TasksActivity extends AppCompatActivity {
         for (int i = 0; i < myTasks.size(); i++) {
             taskDao.insert(myTasks.get(i));
         }
-
-        ArrayList<Task> test=getTasksFromSQL(todolist);
-        alerter(test.get(0).toString());
-        alerter(test.get(1).toString());
-        alerter(test.get(2).toString());
     }
 
     public void buildRecyclerView(ArrayList<Task> list){
@@ -190,13 +181,12 @@ public class TasksActivity extends AppCompatActivity {
 
                 // On traite des cas différents suivant la disponibilité de la connexion
 
+                taskDao.updateCheckboxTask(taskChecked);
+
                 if (connexionOk){
                     AsyncTask task4 = new PostAsyncTaskChecked();
                     task4.execute();
                 }
-
-
-
             }
         });
     }
@@ -232,9 +222,24 @@ public class TasksActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(ArrayList<Task> myTasks){
             super.onPostExecute(myTasks);
+            ArrayList<Task> tasksFromSQL = getTasksFromSQL(todolist);
+
+            // Si jamais les checkbox du SQL et de l'API sont différentes, on
+            // met à jour celles de l'API
+
+            for (int i = 0; i < myTasks.size(); i++) {
+                for (int j = 0; j < tasksFromSQL.size(); j++) {
+                    if(myTasks.get(i).getIdTask()==tasksFromSQL.get(j).getIdTask()){
+                        if(myTasks.get(i).getChecked()!=tasksFromSQL.get(j).getChecked()){
+                            myTasks.get(i).setChecked(tasksFromSQL.get(j).getChecked());
+                        }
+                    }
+                }
+            }
             saveTasksToSQL(myTasks);
             todolist.setTasksList(myTasks);
             buildRecyclerView(myTasks);
+
         }
     }
 
@@ -281,7 +286,6 @@ public class TasksActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Integer id) {
             super.onPostExecute(id);
-            Log.i("TAG", "Item correctement coché");
         }
 
     }
