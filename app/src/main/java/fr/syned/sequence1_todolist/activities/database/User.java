@@ -4,14 +4,54 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import fr.syned.sequence1_todolist.model.Profile;
+
 @Entity
 public class User {
-    @PrimaryKey
-    public int uid;
+    @PrimaryKey(autoGenerate = true)
+    private int uid;
 
     @ColumnInfo(name = "username")
-    public String username;
+    private String username;
 
     @ColumnInfo(name = "todolists")
-    public String toDoLists;
+    private String toDoLists;
+
+    public User(String username) {
+        this.username = username;
+    }
+
+    public User(Profile profile) {
+        this.username = profile.getUsername();
+//        this.uid = profile.getId();
+        Gson gson = new GsonBuilder().create();
+        this.toDoLists = gson.toJson(getToDoLists());
+    }
+
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getToDoLists() {
+        return toDoLists;
+    }
+
+    public void setToDoLists(String toDoLists) {
+        this.toDoLists = toDoLists;
+    }
 }

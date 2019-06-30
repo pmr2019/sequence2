@@ -1,7 +1,11 @@
 package fr.syned.sequence1_todolist;
 
+import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.room.Room;
 
@@ -16,8 +20,11 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import fr.syned.sequence1_todolist.activities.database.AppDatabase;
+import fr.syned.sequence1_todolist.activities.database.User;
 import fr.syned.sequence1_todolist.model.Profile;
 
 public class CustomApplication extends Application {
@@ -36,6 +43,7 @@ public class CustomApplication extends Application {
     public static final String TAG = "ToDoList Application";
 
     public static AppDatabase database;
+    public static Executor executor = Executors.newSingleThreadExecutor();
 
     public void onCreate() {
         super.onCreate();
@@ -52,8 +60,17 @@ public class CustomApplication extends Application {
 //            }
 //        }
 
-        database = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "user").build();
+        // get or build database.
 
+        final Context context = getApplicationContext();
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                database = Room.databaseBuilder(context, AppDatabase.class, "users").build();
+            }
+        });
+
+        //new DatabaseAsyncTask(getApplicationContext()).execute();
     }
 
     private List<Profile> getProfilesFromFile() {
@@ -69,5 +86,22 @@ public class CustomApplication extends Application {
         return profilesList;
     }
 
-
+//    private static class DatabaseAsyncTask extends AsyncTask<String, Void, String> {
+//        private Context context;
+//
+//        public DatabaseAsyncTask(Context context) {
+//            this.context = context;
+//        }
+//
+//        @Override
+//        protected String doInBackground(String... params) {
+//            database = Room.databaseBuilder(context, AppDatabase.class, "users").build();
+//            return "";
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String str) {
+//
+//        }
+//    }
 }

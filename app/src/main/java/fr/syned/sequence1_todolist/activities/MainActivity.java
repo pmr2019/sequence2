@@ -25,6 +25,7 @@ import fr.syned.sequence1_todolist.model.Profile;
 import fr.syned.sequence1_todolist.R;
 
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_HASH;
+import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_ID;
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_USERNAME;
 import static fr.syned.sequence1_todolist.CustomApplication.TAG;
 import static fr.syned.sequence1_todolist.CustomApplication.profilesList;
@@ -114,10 +115,14 @@ public class MainActivity extends BaseActivity {
                 public void onResponse(JSONObject response) {
                     Log.i("TODO", "onResponse: ");
                     String hash;
+                    String id;
                         try {
                             if (response.has("hash")) {
                                 hash = response.get("hash").toString();
+//                                id = response.get("id").toString();
+//                                id = hash;
                                 startProfileActivity(hash);
+//                                startProfileActivity(hash, id);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

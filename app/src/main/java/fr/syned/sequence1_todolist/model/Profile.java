@@ -7,6 +7,8 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.*;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,13 +19,17 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import fr.syned.sequence1_todolist.activities.database.User;
 import fr.syned.sequence1_todolist.activities.network.RequestQueueInstance;
 import fr.syned.sequence1_todolist.activities.ProfileActivity;
 
 public class Profile implements Serializable {
+
+    private int id;
     private String username;
     private ArrayList<ToDoList> toDoLists;
 
@@ -34,7 +40,7 @@ public class Profile implements Serializable {
         this.toDoLists = new ArrayList<>();
         onDeserialization();
     }
-    public Profile(String username, String hash, Context c){
+    public Profile(String username, String hash,  Context c){
         final String fhash = hash;
         final Context co = c;
         this.username = username;
@@ -71,6 +77,15 @@ public class Profile implements Serializable {
         };
         RequestQueueInstance instance = RequestQueueInstance.getInstance(c);
         instance.addToRequestQueue(jsonObjectRequest);
+        onDeserialization();
+    }
+
+    public Profile(User user) {
+        this.id = user.getUid();
+        this.username = user.getUsername();
+        Gson gson = new Gson();
+        this.toDoLists = new ArrayList<>();
+        toDoLists = gson.fromJson(user.getToDoLists(), new TypeToken<List<ToDoList>>() {}.getType());
         onDeserialization();
     }
 
@@ -125,5 +140,9 @@ public class Profile implements Serializable {
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         onDeserialization();
+    }
+
+    public int getId() {
+        return id;
     }
 }

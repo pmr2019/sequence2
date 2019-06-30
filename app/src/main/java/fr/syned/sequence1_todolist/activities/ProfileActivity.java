@@ -1,6 +1,7 @@
 package fr.syned.sequence1_todolist.activities;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -8,18 +9,28 @@ import android.widget.EditText;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import androidx.room.Room;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import fr.syned.sequence1_todolist.activities.database.AppDatabase;
+import fr.syned.sequence1_todolist.activities.database.User;
 import fr.syned.sequence1_todolist.activities.recyclerview.SwipeItemTouchHelper;
 import fr.syned.sequence1_todolist.activities.recyclerview.adapters.ToDoListAdapter;
 import fr.syned.sequence1_todolist.model.Profile;
 import fr.syned.sequence1_todolist.R;
 
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_HASH;
+import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_ID;
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_USERNAME;
+import static fr.syned.sequence1_todolist.CustomApplication.database;
+import static fr.syned.sequence1_todolist.CustomApplication.executor;
+import static fr.syned.sequence1_todolist.CustomApplication.profilesList;
 
 public class ProfileActivity extends BaseActivity {
 
@@ -27,6 +38,7 @@ public class ProfileActivity extends BaseActivity {
     private RecyclerView recyclerView;
     public static ToDoListAdapter toDoListAdapter;
     public static Profile profile;
+    private User user;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,6 +46,7 @@ public class ProfileActivity extends BaseActivity {
 
         String username = getIntent().getSerializableExtra(EXTRA_USERNAME).toString();
         String hash = getIntent().getSerializableExtra(EXTRA_HASH).toString();
+//        String id = getIntent().getStringExtra(EXTRA_ID);
 
 //  SEQUENCE 1
 //        Log.i("TAG", "onCreate: intent username: " + username);
@@ -42,6 +55,15 @@ public class ProfileActivity extends BaseActivity {
 //        }
 //
         profile = new Profile(username, hash, getApplicationContext());
+        user = new User(profile);
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                database.userDao().replaceAll(user);
+            }
+        });
+
         super.toolbar.setSubtitle(username);
 
         textViewToDoListName = findViewById(R.id.text_view_todolist_name);
@@ -94,4 +116,5 @@ public class ProfileActivity extends BaseActivity {
 //
 //        }
 //    }
+
 }
