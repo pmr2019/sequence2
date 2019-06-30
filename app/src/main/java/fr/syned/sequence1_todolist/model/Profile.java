@@ -105,11 +105,8 @@ public class Profile implements Serializable {
     }
 
     public void addToDoList(JSONObject obj, String hash, Context c) {
-        Log.i("TODO", "addToDoList: ");
         ToDoList toDoList = null;
         try {
-            Log.i("TODO", "addToDoList id: " + obj.get("id").toString());
-            Log.i("TODO", "addToDoList label: " + obj.get("label").toString());
             toDoList = new ToDoList(obj.get("id").toString(),obj.get("label").toString(), hash, c);
         } catch (JSONException e) {
             e.printStackTrace();
