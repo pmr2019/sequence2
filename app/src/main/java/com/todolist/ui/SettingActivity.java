@@ -1,4 +1,4 @@
-package com.todolist;
+package com.todolist.ui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,10 +19,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.todolist.DataClass.Setting;
-import com.todolist.DataClass.User;
-import com.todolist.MyTouchHelper.ItemTouchHelperAdapter;
-import com.todolist.MyTouchHelper.ItemTouchHelperCallback;
+import com.todolist.R;
+import com.todolist.data.Setting;
+import com.todolist.data.User;
+import com.todolist.helper.ItemTouchHelperAdapter;
+import com.todolist.helper.ItemTouchHelperCallback;
 import java.util.List;
 
 public class SettingActivity extends AppCompatActivity {

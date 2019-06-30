@@ -1,4 +1,4 @@
-package com.todolist;
+package com.todolist.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,11 +13,12 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.todolist.DataClass.Setting;
-import com.todolist.DataClass.User;
-import com.todolist.MyRetrofit.TodoListServiceFactory;
-import com.todolist.MyRetrofit.Hash;
-import com.todolist.MyRetrofit.TodoListService;
+import com.todolist.R;
+import com.todolist.data.Setting;
+import com.todolist.data.User;
+import com.todolist.retrofit.TodoListServiceFactory;
+import com.todolist.retrofit.data.Hash;
+import com.todolist.retrofit.TodoListService;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;

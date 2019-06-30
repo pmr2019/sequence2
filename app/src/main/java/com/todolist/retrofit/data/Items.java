@@ -1,18 +1,20 @@
-package com.todolist.MyRetrofit;
+package com.todolist.retrofit.data;
 
-public class ChangeItemInfo {
+import java.util.List;
+
+public class Items {
 
     /**
      * version : 1
      * success : true
      * status : 200
-     * item : {"id":"43","label":"test3","checked":"1","url":null}
+     * items : [{"id":"37","label":"test1","url":null,"checked":"0"},{"id":"38","label":"test2","url":null,"checked":"0"}]
      */
 
     private int version;
     private boolean success;
     private int status;
-    private ItemBean item;
+    private List<ItemsBean> items;
 
     public int getVersion() {
         return version;
@@ -38,26 +40,26 @@ public class ChangeItemInfo {
         this.status = status;
     }
 
-    public ItemBean getItem() {
-        return item;
+    public List<ItemsBean> getItems() {
+        return items;
     }
 
-    public void setItem(ItemBean item) {
-        this.item = item;
+    public void setItems(List<ItemsBean> items) {
+        this.items = items;
     }
 
-    public static class ItemBean {
+    public static class ItemsBean {
         /**
-         * id : 43
-         * label : test3
-         * checked : 1
+         * id : 37
+         * label : test1
          * url : null
+         * checked : 0
          */
 
         private String id;
         private String label;
-        private String checked;
         private Object url;
+        private String checked;
 
         public String getId() {
             return id;
@@ -75,20 +77,20 @@ public class ChangeItemInfo {
             this.label = label;
         }
 
-        public String getChecked() {
-            return checked;
-        }
-
-        public void setChecked(String checked) {
-            this.checked = checked;
-        }
-
         public Object getUrl() {
             return url;
         }
 
         public void setUrl(Object url) {
             this.url = url;
+        }
+
+        public String getChecked() {
+            return checked;
+        }
+
+        public void setChecked(String checked) {
+            this.checked = checked;
         }
     }
 }

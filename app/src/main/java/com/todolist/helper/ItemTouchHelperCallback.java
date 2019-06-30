@@ -1,4 +1,4 @@
-package com.todolist.MyTouchHelper;
+package com.todolist.helper;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;

@@ -1,4 +1,4 @@
-package com.todolist.MyRetrofit;
+package com.todolist.retrofit.data;
 
 import com.google.gson.annotations.SerializedName;
 

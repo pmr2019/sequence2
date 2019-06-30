@@ -1,20 +1,18 @@
-package com.todolist.MyRetrofit;
+package com.todolist.retrofit.data;
 
-import java.util.List;
-
-public class Items {
+public class ChangeItemInfo {
 
     /**
      * version : 1
      * success : true
      * status : 200
-     * items : [{"id":"37","label":"test1","url":null,"checked":"0"},{"id":"38","label":"test2","url":null,"checked":"0"}]
+     * item : {"id":"43","label":"test3","checked":"1","url":null}
      */
 
     private int version;
     private boolean success;
     private int status;
-    private List<ItemsBean> items;
+    private ItemBean item;
 
     public int getVersion() {
         return version;
@@ -40,26 +38,26 @@ public class Items {
         this.status = status;
     }
 
-    public List<ItemsBean> getItems() {
-        return items;
+    public ItemBean getItem() {
+        return item;
     }
 
-    public void setItems(List<ItemsBean> items) {
-        this.items = items;
+    public void setItem(ItemBean item) {
+        this.item = item;
     }
 
-    public static class ItemsBean {
+    public static class ItemBean {
         /**
-         * id : 37
-         * label : test1
+         * id : 43
+         * label : test3
+         * checked : 1
          * url : null
-         * checked : 0
          */
 
         private String id;
         private String label;
-        private Object url;
         private String checked;
+        private Object url;
 
         public String getId() {
             return id;
@@ -77,20 +75,20 @@ public class Items {
             this.label = label;
         }
 
-        public Object getUrl() {
-            return url;
-        }
-
-        public void setUrl(Object url) {
-            this.url = url;
-        }
-
         public String getChecked() {
             return checked;
         }
 
         public void setChecked(String checked) {
             this.checked = checked;
+        }
+
+        public Object getUrl() {
+            return url;
+        }
+
+        public void setUrl(Object url) {
+            this.url = url;
         }
     }
 }

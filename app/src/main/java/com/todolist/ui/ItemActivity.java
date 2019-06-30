@@ -1,4 +1,4 @@
-package com.todolist;
+package com.todolist.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,12 +17,13 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.todolist.MyRetrofit.Items;
-import com.todolist.MyRetrofit.NewItemInfo;
-import com.todolist.MyRetrofit.TodoListService;
-import com.todolist.MyRetrofit.TodoListServiceFactory;
-import com.todolist.MyTouchHelper.ItemTouchHelperAdapter;
-import com.todolist.MyTouchHelper.ItemTouchHelperCallback;
+import com.todolist.R;
+import com.todolist.retrofit.data.Items;
+import com.todolist.retrofit.data.NewItemInfo;
+import com.todolist.retrofit.TodoListService;
+import com.todolist.retrofit.TodoListServiceFactory;
+import com.todolist.helper.ItemTouchHelperAdapter;
+import com.todolist.helper.ItemTouchHelperCallback;
 
 import java.util.ArrayList;
 import java.util.List;

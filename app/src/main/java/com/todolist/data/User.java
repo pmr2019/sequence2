@@ -1,4 +1,4 @@
-package com.todolist.DataClass;
+package com.todolist.data;
 
 import java.io.Serializable;
 

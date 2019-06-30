@@ -1,4 +1,4 @@
-package com.todolist.MyRetrofit;
+package com.todolist.retrofit;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

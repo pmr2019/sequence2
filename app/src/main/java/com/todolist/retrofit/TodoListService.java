@@ -1,4 +1,12 @@
-package com.todolist.MyRetrofit;
+package com.todolist.retrofit;
+
+import com.todolist.retrofit.data.ChangeItemInfo;
+import com.todolist.retrofit.data.Hash;
+import com.todolist.retrofit.data.Items;
+import com.todolist.retrofit.data.Lists;
+import com.todolist.retrofit.data.NewItemInfo;
+import com.todolist.retrofit.data.NewListInfo;
+import com.todolist.retrofit.data.Users;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;

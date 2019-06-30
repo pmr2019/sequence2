@@ -1,19 +1,18 @@
-package com.todolist.MyRetrofit;
+package com.todolist.retrofit.data;
 
-public class NewItemInfo {
-
+public class NewListInfo {
 
     /**
      * version : 1
      * success : true
      * status : 201
-     * item : {"id":"43","label":"test3","checked":"0","url":null}
+     * list : {"id":"37","label":"test3"}
      */
 
     private int version;
     private boolean success;
     private int status;
-    private ItemBean item;
+    private ListBean list;
 
     public int getVersion() {
         return version;
@@ -39,26 +38,22 @@ public class NewItemInfo {
         this.status = status;
     }
 
-    public ItemBean getItem() {
-        return item;
+    public ListBean getList() {
+        return list;
     }
 
-    public void setItem(ItemBean item) {
-        this.item = item;
+    public void setList(ListBean list) {
+        this.list = list;
     }
 
-    public static class ItemBean {
+    public static class ListBean {
         /**
-         * id : 43
+         * id : 37
          * label : test3
-         * checked : 0
-         * url : null
          */
 
         private String id;
         private String label;
-        private String checked;
-        private Object url;
 
         public String getId() {
             return id;
@@ -74,22 +69,6 @@ public class NewItemInfo {
 
         public void setLabel(String label) {
             this.label = label;
-        }
-
-        public String getChecked() {
-            return checked;
-        }
-
-        public void setChecked(String checked) {
-            this.checked = checked;
-        }
-
-        public Object getUrl() {
-            return url;
-        }
-
-        public void setUrl(Object url) {
-            this.url = url;
         }
     }
 }
