@@ -55,7 +55,7 @@ public class ToDoListActivity extends BaseActivity {
 
     public void onClickAddBtn(View view) {
         if (!textViewTaskName.getText().toString().matches("")) {
-            toDoList.addTask(textViewTaskName.getText().toString());
+            toDoList.addTask(textViewTaskName.getText().toString(), getApplicationContext());
             taskAdapter.notifyDataSetChanged();
             textViewTaskName.setText(null);
         }

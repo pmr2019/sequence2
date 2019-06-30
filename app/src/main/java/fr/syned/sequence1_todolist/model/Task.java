@@ -104,6 +104,7 @@ public class Task implements Serializable {
 
             RequestQueueInstance instance = RequestQueueInstance.getInstance(context);
             instance.addToRequestQueue(request);
+            Log.i(TAG, "toggleCheckbox: API + DB");
 
             executor.execute(new Runnable() {
                 @Override
@@ -120,6 +121,7 @@ public class Task implements Serializable {
                 }
             });
             CustomApplication.changedCheckboxes.put(this.JsonId,new Pair<>(this.toDoListJsonId,this.isDone));
+            Log.i(TAG, "toggleCheckbox: DB only");
         }
 
 
@@ -163,5 +165,13 @@ public class Task implements Serializable {
             }
         }
         return bStatut;
+    }
+
+    public void setToDoListJsonId(String id) {
+        this.toDoListJsonId = Integer.valueOf(id);
+    }
+
+    public void setJsonId(int id) {
+        this.JsonId = id;
     }
 }

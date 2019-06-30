@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -55,6 +57,8 @@ public class CustomApplication extends Application {
     public static Executor executor = Executors.newSingleThreadExecutor();
     public static HashMap<Integer, Pair<Integer, Boolean>> changedCheckboxes = new HashMap<>();
     public static String hash;
+    public static HashMap<UUID, Pair<Integer, String>> addedTasks = new HashMap<>();
+
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "onCreate: Custom App");
@@ -89,8 +93,28 @@ public class CustomApplication extends Application {
             public void run(){
                 if(hash!=null){
                     if (checkNetwork(getApplicationContext())) {
-                        for (Map.Entry iterator: changedCheckboxes.entrySet()) {
-                            String url = "http://tomnab.fr/todo-api/lists/" + ((Pair)iterator.getValue()).first + "/items/" + iterator.getKey() + "?check=" + ((Boolean)((Pair)iterator.getValue()).second ? 1 : 0);
+
+                        for (Map.Entry entry : addedTasks.entrySet()) {
+                            String url = "http://tomnab.fr/todo-api/lists/" + ((Pair) entry.getValue()).first + "/items?label=" + ((Pair) entry.getValue()).second;
+
+                            StringRequest request = new StringRequest(Request.Method.POST, url, null, null) {
+                                @Override
+                                public Map<String, String> getHeaders() {
+                                    Map<String, String> params = new HashMap<String, String>();
+                                    params.put("hash", hash);
+
+                                    return params;
+                                }
+                            };
+                            RequestQueueInstance instance = RequestQueueInstance.getInstance(getApplicationContext());
+                            instance.addToRequestQueue(request);
+                            Log.i(TAG, "run: Added Task!");
+                        }
+
+                        addedTasks = new HashMap<>();
+
+                        for (Map.Entry entry : changedCheckboxes.entrySet()) {
+                            String url = "http://tomnab.fr/todo-api/lists/" + ((Pair) entry.getValue()).first + "/items/" + entry.getKey() + "?check=" + ((Boolean) ((Pair) entry.getValue()).second ? 1 : 0);
 
                             StringRequest request = new StringRequest(Request.Method.PUT, url, null, null) {
                                 @Override
@@ -103,15 +127,11 @@ public class CustomApplication extends Application {
                             };
                             RequestQueueInstance instance = RequestQueueInstance.getInstance(getApplicationContext());
                             instance.addToRequestQueue(request);
-
+                            Log.i(TAG, "run: Changed Checkbox!");
                         }
 
                         changedCheckboxes = new HashMap<>();
                     }
-
-
-                    
-                    
                 }
                 //do something
                 handler.postDelayed(this, delay);
