@@ -1,5 +1,7 @@
 package com.example.myhello.data.database;
 
+import android.util.Log;
+
 import com.example.myhello.data.models.ItemToDo;
 import com.example.myhello.data.models.ListeToDo;
 
@@ -7,16 +9,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Converter {
+    private static final String TAG = "Converter";
 
-    public ListeToDoDb from(ListeToDo listeToDo) {
+    public ListeToDoDb from(ListeToDo listeToDo,String hash) {
         ListeToDoDb listeToDoDb = new ListeToDoDb();
-        listeToDoDb.setmId(listeToDo.getTitreListeToDo());
-        listeToDoDb.setTitreListeToDo(listeToDo.getmId());
+        listeToDoDb.setmId(listeToDo.getmId());
+        listeToDoDb.setTitreListeToDo(listeToDo.getTitreListeToDo());
+        listeToDoDb.setHash(hash);
         return listeToDoDb;
     }
 
     public ListeToDo fromDb(ListeToDoDb listeToDoDb){
-        return new ListeToDo(listeToDoDb.getmId(), listeToDoDb.getTitreListeToDo());
+        return new ListeToDo(listeToDoDb.getTitreListeToDo(), listeToDoDb.getmId());
     }
 
     public List<ListeToDo> fromDb(List<ListeToDoDb> listesDb){
@@ -27,10 +31,10 @@ public class Converter {
         return listes;
     }
 
-    public List<ListeToDoDb> from(List<ListeToDo> listes){
+    public List<ListeToDoDb> from(List<ListeToDo> listes, String hash){
         List<ListeToDoDb> listesDb = new ArrayList<>(listes.size());
         for (ListeToDo listeToDo: listes){
-            listesDb.add(from(listeToDo));
+            listesDb.add(from(listeToDo, hash));
         }
         return listesDb;
     }
@@ -40,11 +44,13 @@ public class Converter {
         itemToDoDb.setId(itemToDo.getId());
         itemToDoDb.setDescription(itemToDo.getDescription());
         itemToDoDb.setIdListe(idListe);
+        itemToDoDb.setFait(itemToDo.getFait()?1:0);
         return itemToDoDb;
     }
 
     public ItemToDo fromItemDb(ItemToDoDb itemToDoDb){
-        return new ItemToDo(itemToDoDb.getDescription(), itemToDoDb.getId());
+        ItemToDo newItemToDo =new ItemToDo(itemToDoDb.getId(),itemToDoDb.getDescription(), itemToDoDb.getFait(), itemToDoDb.getIdListe());
+        return newItemToDo;
     }
 
     public List<ItemToDo> fromItemDb(List<ItemToDoDb> itemsDb){

@@ -11,10 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -24,21 +21,19 @@ import android.widget.Toast;
 
 import com.example.myhello.data.API.ApiInterface;
 import com.example.myhello.data.Network.ServiceManager;
-import com.example.myhello.data.Utils;
 import com.example.myhello.data.database.Converter;
 import com.example.myhello.data.database.ListeToDoDb;
 import com.example.myhello.data.database.RoomListeToDoDb;
+import com.example.myhello.data.database.Synchron;
 import com.example.myhello.data.models.ListeToDo;
 import com.example.myhello.data.API.ListeToDoServiceFactory;
 import com.example.myhello.data.models.ProfilListeToDo;
 import com.example.myhello.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -52,12 +47,13 @@ public class ChoixListActivity extends AppCompatActivity implements RecyclerView
     private Call<ProfilListeToDo> call;
     private BroadcastReceiver networkChangeReceiver;
     private FloatingActionButton floatingActionButton;
+    private boolean modification;
     public RoomListeToDoDb database;
+    public Synchron synchroniseur;
     public Converter converter;
-    NetworkInfo networkInfo;
+    public SharedPreferences settings;
     String hash;
     ApiInterface Interface;
-    ConnectivityManager connectivityManager;
     ExecutorService executor = Executors.newSingleThreadExecutor();
 
 
@@ -67,6 +63,7 @@ public class ChoixListActivity extends AppCompatActivity implements RecyclerView
         setContentView(R.layout.activity_liste_to_dos);
 
         converter = new Converter();
+        synchroniseur = new Synchron(getApplicationContext());
 
         // Construction d'une liste de listeToDo vide à envoyer au RecyclerViewAdapter1
         ProfilListeToDo profilVide = new ProfilListeToDo("random");
@@ -94,7 +91,7 @@ public class ChoixListActivity extends AppCompatActivity implements RecyclerView
         });
 
         // On récupère le hash à utiliser.
-        final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         hash = settings.getString("hash","44692ee5175c131da83acad6f80edb12");
         Interface = ListeToDoServiceFactory.createService(ApiInterface.class);
     }
@@ -105,7 +102,12 @@ public class ChoixListActivity extends AppCompatActivity implements RecyclerView
         super.onStart();
         networkChangeReceiver = new NetworkChangeReceiver();
         registerReceiver(networkChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        modification = settings.getBoolean("modifié", false);
     }
 
     @Override
@@ -114,8 +116,10 @@ public class ChoixListActivity extends AppCompatActivity implements RecyclerView
         unregisterReceiver(networkChangeReceiver);
     }
 
-    // La méthode CreerAlertDialog crée une fenêtre où l'utisateur peut
-    // rentrer le nom de la nouvelle liste.
+    /**
+     *  La méthode CreerAlertDialog crée une fenêtre où l'utisateur peut
+     *      rentrer le nom de la nouvelle liste.
+     */
     private void CreerAlertDialog() {
 
         final EditText editText = new EditText(this);
@@ -153,6 +157,8 @@ public class ChoixListActivity extends AppCompatActivity implements RecyclerView
      * @param nomNewListe le titre de la nouvelle liste
      */
     private void add(String nomNewListe) {
+        findViewById(R.id.progess).setVisibility(View.VISIBLE);
+
         // On récupère le hash à utiliser.
         final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String hash = settings.getString("hash","44692ee5175c131da83acad6f80edb12");
@@ -162,10 +168,12 @@ public class ChoixListActivity extends AppCompatActivity implements RecyclerView
             @Override
             public void onResponse(Call<ProfilListeToDo> call, Response<ProfilListeToDo> response) {
                 Log.d(TAG, "onResponse: "+response.code());
+                findViewById(R.id.progess).setVisibility(View.GONE);
             }
 
             @Override public void onFailure(Call<ProfilListeToDo> call, Throwable t) {
                 Log.d(TAG, "onFailure() called with: call = [" + call + "], t = [" + t + "]");
+                findViewById(R.id.progess).setVisibility(View.GONE);
             }
         });
     }
@@ -175,6 +183,7 @@ public class ChoixListActivity extends AppCompatActivity implements RecyclerView
      * Récupère les données depuis l'API.
      */
     private void syncFromAPI() {
+        findViewById(R.id.progess).setVisibility(View.VISIBLE);
 
         // On fait la requête permettant de récupérer
         // la liste des listes de l'utilisateur connecté.
@@ -204,6 +213,7 @@ public class ChoixListActivity extends AppCompatActivity implements RecyclerView
                     Log.d(TAG, "onResponse: "+response.code());
                     Toast.makeText(ChoixListActivity.this,"Error code : "+response.code(),Toast.LENGTH_SHORT).show();
                 }
+                findViewById(R.id.progess).setVisibility(View.GONE);
             }
 
             // Si l'on ne réussit pas à envoyer la requête
@@ -211,13 +221,17 @@ public class ChoixListActivity extends AppCompatActivity implements RecyclerView
                 // On affiche un Toast.
                 Toast.makeText(ChoixListActivity.this,"Error code : ",Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onFailure() called with: call = [" + call + "], t = [" + t + "]");
+                findViewById(R.id.progess).setVisibility(View.GONE);
             }
         });
 
     }
 
-    // Instanciation de la méthode de l'interface onListListener.
-    // Elle est appelée lors d'un clique sur un élément du RecyclerView.
+    /**
+     *  Instanciation de la méthode de l'interface onListListener.
+     *      Elle est appelée lors d'un clique sur un élément du RecyclerView.
+     * @param position l'entier indiquant sur quel item a eu lieu le clique.
+     */
     public void onListClick(int position) {
         // Lors du clique, on lance ShowListActivity.
         Intent intent = new Intent(this,ShowListActivity.class);
@@ -239,12 +253,18 @@ public class ChoixListActivity extends AppCompatActivity implements RecyclerView
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                List<ListeToDoDb> listesDb = database.getListes().getAll();
-                ListeDesToDo = converter.fromDb(listesDb);
+                List<ListeToDoDb> listesDb = database.getListes().getAll(hash);
+                final List<ListeToDo> listeAAfficher = converter.fromDb(listesDb);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ListeDesToDo = listeAAfficher;
+                        adapter.show(ListeDesToDo);
+                    }
+                });
             }
         });
         // on actualise les données de l'adapter
-        adapter.show(ListeDesToDo);
     }
 
     /**
@@ -255,14 +275,21 @@ public class ChoixListActivity extends AppCompatActivity implements RecyclerView
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                List<ListeToDoDb> listeForDb = converter.from(ListeDesToDo);
+                List<ListeToDoDb> listeForDb = converter.from(ListeDesToDo, hash);
+                Log.d(TAG, "run: "+listeForDb.get(0).getTitreListeToDo());
                 database.getListes().save(listeForDb);
             }
         });
     }
 
-    public class NetworkChangeReceiver extends BroadcastReceiver {
 
+    /**
+     *  La classe NetWorkChangeReceiver détecte en continue
+     *      si l'on a accès au réseau.
+     *      On l'implément au sein de chaque activité pour pouvoir y écrire
+     *      les instructions à effectuer lors d'un changement de réseau.
+     */
+    public class NetworkChangeReceiver extends BroadcastReceiver {
 
         private static final String TAG = "NetworkChangeReceiver";
         public boolean isConnected;
@@ -274,7 +301,19 @@ public class ChoixListActivity extends AppCompatActivity implements RecyclerView
             // On a récupéré l'accès à Internet
             if(isConnected){
                 findViewById(R.id.fab).setVisibility(View.VISIBLE);
-                syncFromAPI();
+                Log.d(TAG, "onReceive: "+modification);
+                if(modification){
+                    if(synchroniseur.syncItemsToApi(hash)==200) {
+                        Toast.makeText(getApplicationContext(), "Synchronisation réussie", Toast.LENGTH_SHORT).show();
+                        modification = false;
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.remove("modifié");
+                        editor.apply();
+                    }else{
+                        Toast.makeText(getApplicationContext(),"Synchronisation échouée", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else{syncFromAPI();}
             }
             // On a perdu l'accès à Internet
             else{

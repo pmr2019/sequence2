@@ -8,8 +8,10 @@ import androidx.room.RoomDatabase;
 
 
 
-@Database(entities = { ListeToDoDb.class, ItemToDoDb.class }, version = 3)
+@Database(entities = { ProfilToDoDb.class, ListeToDoDb.class, ItemToDoDb.class }, version = 5)
 public abstract class RoomListeToDoDb extends RoomDatabase {
+
+    public abstract ProfilToDoDAO getProfil();
 
     public abstract ListeToDoDAO getListes();
 

@@ -23,6 +23,11 @@ public interface ItemToDoDAO {
     @Query("SELECT * FROM items WHERE idListe LIKE :listeId")
     List<ItemToDoDb> getAll(int listeId);
 
+    /**
+     * @return tous les items de la BdD
+     */
+    @Query("SELECT * FROM items")
+    List<ItemToDoDb> getAllItems();
 
     /**
      * Permet de sauvegarder les Items dans la BdD
@@ -30,6 +35,13 @@ public interface ItemToDoDAO {
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void save(List<ItemToDoDb> items);
+
+    /**
+     * Permet de sauvegarder un Item dans la BdD.
+     * @param item l'item à sauvegarder
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void save(ItemToDoDb item);
 
 
     /**
