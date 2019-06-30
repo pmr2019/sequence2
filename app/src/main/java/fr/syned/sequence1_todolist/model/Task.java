@@ -3,6 +3,8 @@ package fr.syned.sequence1_todolist.model;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
+import android.util.Pair;
 
 import androidx.room.Room;
 
@@ -24,6 +26,7 @@ import fr.syned.sequence1_todolist.activities.database.AppDatabase;
 import fr.syned.sequence1_todolist.activities.database.User;
 import fr.syned.sequence1_todolist.activities.network.RequestQueueInstance;
 
+import static fr.syned.sequence1_todolist.CustomApplication.TAG;
 import static fr.syned.sequence1_todolist.CustomApplication.executor;
 import static fr.syned.sequence1_todolist.CustomApplication.profilesList;
 import static fr.syned.sequence1_todolist.activities.ProfileActivity.profile;
@@ -116,7 +119,9 @@ public class Task implements Serializable {
                     CustomApplication.database.userDao().replaceAll(new User(profile));
                 }
             });
+            CustomApplication.changedCheckboxes.put(this.JsonId,new Pair<>(this.toDoListJsonId,this.isDone));
         }
+
 
         return isDone;
     }

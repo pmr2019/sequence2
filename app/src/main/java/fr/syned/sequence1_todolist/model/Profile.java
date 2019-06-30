@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import fr.syned.sequence1_todolist.CustomApplication;
 import fr.syned.sequence1_todolist.activities.database.User;
 import fr.syned.sequence1_todolist.activities.network.RequestQueueInstance;
 import fr.syned.sequence1_todolist.activities.ProfileActivity;
@@ -42,6 +43,7 @@ public class Profile implements Serializable {
     }
     public Profile(String username, String hash,  Context c){
         final String fhash = hash;
+        CustomApplication.hash=fhash;
         final Context co = c;
         this.username = username;
         this.toDoLists = new ArrayList<>();
