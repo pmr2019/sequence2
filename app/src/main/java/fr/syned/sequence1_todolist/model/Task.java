@@ -1,9 +1,15 @@
 package fr.syned.sequence1_todolist.model;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
+import androidx.room.Room;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.StringRequest;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -12,7 +18,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import fr.syned.sequence1_todolist.CustomApplication;
+import fr.syned.sequence1_todolist.activities.MainActivity;
+import fr.syned.sequence1_todolist.activities.database.AppDatabase;
+import fr.syned.sequence1_todolist.activities.database.User;
 import fr.syned.sequence1_todolist.activities.network.RequestQueueInstance;
+
+import static fr.syned.sequence1_todolist.CustomApplication.executor;
+import static fr.syned.sequence1_todolist.CustomApplication.profilesList;
+import static fr.syned.sequence1_todolist.activities.ProfileActivity.profile;
 
 public class Task implements Serializable {
 
@@ -67,25 +81,42 @@ public class Task implements Serializable {
         return isDone;
     }
 
-    public boolean toggleCheckbox(Context context) {
+    public boolean toggleCheckbox(final Context context) {
         this.isDone = !isDone;
         if (isDone) doneDate = Calendar.getInstance().getTime();
         else doneDate = null;
 
-        String url = "http://tomnab.fr/todo-api/lists/" + this.toDoListJsonId + "/items/" + this.JsonId + "?check=" + (this.isDone ? 1 : 0);
+        if (checkNetwork(context)) {
+            String url = "http://tomnab.fr/todo-api/lists/" + this.toDoListJsonId + "/items/" + this.JsonId + "?check=" + (this.isDone ? 1 : 0);
 
-        StringRequest request = new StringRequest(Request.Method.PUT, url, null, null) {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("hash", hash);
+            StringRequest request = new StringRequest(Request.Method.PUT, url, null, null) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("hash", hash);
 
-                return params;
-            }
-        };
+                    return params;
+                }
+            };
 
-        RequestQueueInstance instance = RequestQueueInstance.getInstance(context);
-        instance.addToRequestQueue(request);
+            RequestQueueInstance instance = RequestQueueInstance.getInstance(context);
+            instance.addToRequestQueue(request);
+
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    CustomApplication.database.userDao().replaceAll(new User(profile));
+                }
+            });
+
+        } else {
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    CustomApplication.database.userDao().replaceAll(new User(profile));
+                }
+            });
+        }
 
         return isDone;
     }
@@ -96,5 +127,36 @@ public class Task implements Serializable {
 
     public int getJSONId() {
         return JsonId;
+    }
+
+    public boolean checkNetwork(Context context)
+    {
+        // On vérifie si le réseau est disponible,
+        // si oui on change le statut du bouton de connexion
+        ConnectivityManager cnMngr = (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cnMngr.getActiveNetworkInfo();
+
+        String sType = "Aucun réseau détecté";
+        Boolean bStatut = false;
+        if (netInfo != null)
+        {
+
+            NetworkInfo.State netState = netInfo.getState();
+
+            if (netState.compareTo(NetworkInfo.State.CONNECTED) == 0)
+            {
+                bStatut = true;
+                int netType= netInfo.getType();
+                switch (netType)
+                {
+                    case ConnectivityManager.TYPE_MOBILE :
+                        sType = "Réseau mobile détecté"; break;
+                    case ConnectivityManager.TYPE_WIFI :
+                        sType = "Réseau wifi détecté"; break;
+                }
+
+            }
+        }
+        return bStatut;
     }
 }

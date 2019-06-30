@@ -7,7 +7,10 @@ import androidx.room.PrimaryKey;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.List;
+
 import fr.syned.sequence1_todolist.model.Profile;
+import fr.syned.sequence1_todolist.model.ToDoList;
 
 @Entity
 public class User {
@@ -19,6 +22,7 @@ public class User {
 
     @ColumnInfo(name = "todolists")
     private String toDoLists;
+
 
     public User(String username) {
         this.username = username;
@@ -54,4 +58,5 @@ public class User {
     public void setToDoLists(String toDoLists) {
         this.toDoLists = toDoLists;
     }
+
 }

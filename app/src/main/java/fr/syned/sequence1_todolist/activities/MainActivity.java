@@ -141,7 +141,7 @@ public class MainActivity extends BaseActivity {
             autoCompleteAdapter.add(username);
         }
     }
-    private boolean checkNetwork()
+    public boolean checkNetwork()
     {
         // On vérifie si le réseau est disponible,
         // si oui on change le statut du bouton de connexion

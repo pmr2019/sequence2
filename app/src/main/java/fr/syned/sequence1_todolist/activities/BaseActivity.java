@@ -69,7 +69,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void saveToJson() {
+    public void saveToJson() {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             String fileContent = gson.toJson(profilesList);
             FileOutputStream outputStream;
