@@ -45,12 +45,14 @@ import static java.lang.Float.valueOf;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "TEST" ;
     public static String USER;
+    String url;
     EditText edt_pseudo;
     EditText edt_mdp;
     Button btn_connexion;
     Button btn_connexionApi;
     ProfilListeToDo p;
     Intent choixListe;
+
 
     @Override
     protected void onStart() {
@@ -61,7 +63,8 @@ public class MainActivity extends AppCompatActivity {
         edt_pseudo.setText(settings.getString("pseudo",""));
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("urlApi","http://tomnab.fr/todo-api");
-        editor.commit();
+        editor.apply();
+        url = settings.getString("urlApi", "http://tomnab.fr/todo-api");
     }
 
     @Override
@@ -81,12 +84,13 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
                 SharedPreferences.Editor editor = settings.edit();
                 editor.putString("pseudo",edt_pseudo.getText().toString());
-                editor.commit();
+                editor.apply();
 
                 choixListe = new Intent(MainActivity.this, ChoixListActivity.class);
                 Bundle extras = new Bundle();
                 extras.putString("LOGIN", login);
                 extras.putInt("ID", btn_id);
+                choixListe.putExtras(extras);
                 startActivity(choixListe);
 
             }
@@ -101,16 +105,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-                String url = settings.getString("urlApi", "http://tomnab.fr/todo-api" );
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(url)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+                /*
+                ToDoApi interface_toDo = retrofit.create(ToDoApi.class);
 
-                Retrofit retrofit = new Retrofit.Builder().baseUrl(url).addConverterFactory(GsonConverterFactory.create()).build();
-                ToDoApi intereface_toDo = retrofit.create(ToDoApi.class);
-                intereface_toDo.authenticate("tom", "web").enqueue(new Callback<ReponseApi>() {
+                interface_toDo.authenticate("tom", "web").enqueue(new Callback<ReponseApi>() {
                     @Override
                     public void onResponse(Call<ReponseApi> call, Response<ReponseApi> response) {
                         if (response.isSuccessful() && response.body().success) {
-                            Log.i("TAG" ,"" + response.body().hash);²
+                            Log.i("TAG" ,"" + response.body().hash);
                         }
                     }
 
@@ -120,8 +126,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-
-/*
                 String login = edt_pseudo.getText().toString();
                 String mdp = edt_mdp.getText().toString();
                 int id_btn = v.getId();
@@ -132,7 +136,8 @@ public class MainActivity extends AppCompatActivity {
                 extras.putString("MDP", mdp);
                 extras.putInt("ID", id_btn);
 
-                startActivity(choixListe);*/
+                startActivity(choixListe);
+                */
             }
         });
 
@@ -168,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
         ConnectivityManager cnMngr = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cnMngr.getActiveNetworkInfo();
         String str_toast = "Aucun réseau détecté";
-        Boolean bool_Statut = false;
+        boolean bool_Statut = false;
         if (netInfo != null) {
             NetworkInfo.State netState = netInfo.getState();
             if (netState.compareTo(NetworkInfo.State.CONNECTED) == 0) {

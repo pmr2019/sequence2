@@ -57,7 +57,8 @@ public class ChoixListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_choix_list);
 
         Intent i = getIntent();
-        login = i.getStringExtra(MainActivity.USER);
+        Bundle extras = i.getExtras();
+        login = extras.getString("LOGIN");
 
         tv_bvnListe = findViewById(R.id.iTv_bienvenue);
         tv_bvnListe.setText("Listes de " + login);
