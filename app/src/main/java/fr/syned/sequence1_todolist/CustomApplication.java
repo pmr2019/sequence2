@@ -3,6 +3,8 @@ package fr.syned.sequence1_todolist;
 import android.app.Application;
 import android.util.Log;
 
+import androidx.room.Room;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -15,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.syned.sequence1_todolist.activities.database.AppDatabase;
 import fr.syned.sequence1_todolist.model.Profile;
 
 public class CustomApplication extends Application {
@@ -32,6 +35,8 @@ public class CustomApplication extends Application {
     public static final int PICK_CONTACT_REQUEST = 1;
     public static final String TAG = "ToDoList Application";
 
+    public static AppDatabase database;
+
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "onCreate: Custom App");
@@ -46,6 +51,9 @@ public class CustomApplication extends Application {
 //                }
 //            }
 //        }
+
+        database = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "user").build();
+
     }
 
     private List<Profile> getProfilesFromFile() {
