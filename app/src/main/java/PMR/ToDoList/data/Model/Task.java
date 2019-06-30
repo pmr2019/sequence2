@@ -8,7 +8,9 @@ import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-@Entity(foreignKeys = @ForeignKey(entity = ToDoList.class,
+import static androidx.room.ForeignKey.CASCADE;
+
+@Entity(foreignKeys = @ForeignKey(onDelete = CASCADE,entity = ToDoList.class,
         parentColumns = "idToDoList",
         childColumns = "keyToDoList"),
         tableName = "task_table")
@@ -17,29 +19,25 @@ public class Task implements Parcelable {
     @PrimaryKey(autoGenerate = false)
     private int idTask; //////////////////////////////////////////////
     private String label;
-    private int checked;
     private int keyToDoList;
+    private int checked;
 
 
     //CONSTRUCTEURS
 
-    @Ignore
-    public Task(int idTask, String label) {
+    public Task(int idTask, String label, int keyToDoList, int checked) {
         this.idTask = idTask;
         this.label = label;
-    }
-
-    public Task(int idTask, String label, int checked) {
-        this.idTask = idTask;
-        this.label = label;
+        this.keyToDoList = keyToDoList;
         this.checked = checked;
     }
 
     @Ignore
     protected Task(Parcel in) {
-        label = in.readString();
-        checked = in.readInt();
         idTask = in.readInt();
+        label = in.readString();
+        keyToDoList = in.readInt();
+        checked = in.readInt();
     }
 
     //GETTERS & SETTERS
@@ -81,21 +79,22 @@ public class Task implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.label);
-        dest.writeInt(this.checked);
         dest.writeInt(this.idTask);
+        dest.writeString(this.label);
+        dest.writeInt(this.keyToDoList);
+        dest.writeInt(this.checked);
     }
 
     //Methodes utiles
+
 
     @Override
     public String toString() {
         return "Task{" +
                 "idTask=" + idTask +
                 ", label='" + label + '\'' +
+                ", keyToDoList=" + keyToDoList +
                 ", checked=" + checked +
                 '}';
     }
-
-
 }

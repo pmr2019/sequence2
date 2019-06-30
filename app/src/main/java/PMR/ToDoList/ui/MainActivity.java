@@ -230,13 +230,13 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
                     break;
                 }
 
-            // MENU SETTINGS URL AVEC L'URL UTILISEE PAR L'API
+                // MENU SETTINGS URL AVEC L'URL UTILISEE PAR L'API
             case R.id.menu_settings_url:
 
                 Intent toSettingsURL = new Intent(MainActivity.this,SettingsURL.class);
                 startActivity(toSettingsURL);
-                    break;
-                }
+                break;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -313,8 +313,8 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
             ArrayList<String> donneesUser=new ArrayList<>();
             DataProvider dataProvider=new DataProvider();
             try {donneesUser.add(dataProvider.getHash(pseudo, password, "POST"));
-                 donneesUser.add(dataProvider.getId(pseudo,donneesUser.get(0),"GET"));
-                 return (donneesUser);
+                donneesUser.add(dataProvider.getId(pseudo,donneesUser.get(0),"GET"));
+                return (donneesUser);
             } catch (JSONException e) {
                 e.printStackTrace();
                 return null;
@@ -332,7 +332,6 @@ public class MainActivity extends AppCompatActivity implements NetworkStateRecei
             else {
                 myUser = new User (Integer.parseInt(donneesUser.get(1)),pseudo, password,donneesUser.get(0));
 
-                alerter(myUser.toString());
 
                 boolean estDansSettings=false;
 

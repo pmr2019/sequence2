@@ -20,6 +20,8 @@ import PMR.ToDoList.data.Model.ToDoList;
 import PMR.ToDoList.data.Model.User;
 import PMR.ToDoList.R;
 import PMR.ToDoList.data.api.DataProvider;
+import PMR.ToDoList.data.database.Database;
+import PMR.ToDoList.data.database.dao.ToDoListDao;
 
 import static PMR.ToDoList.ui.MainActivity.EXTRA_CONNEXIONOK;
 import static PMR.ToDoList.ui.MainActivity.EXTRA_LOGIN;
@@ -56,6 +58,7 @@ public class ToDoListActivity extends AppCompatActivity {
     // GESTION DE LA CONNEXION
     private Boolean connexionOk;
 
+    ToDoListDao toDoListDao;
 
     //Fonction pour la création de toasts pour le débug notamment.
     private void alerter(String s) {
@@ -75,6 +78,11 @@ public class ToDoListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_todolist);
 
         buildToolbar();
+
+        /*
+        On initialise le dao
+         */
+        toDoListDao= Database.getDatabase(this).toDoListDao();
 
         /*
         On récupère le login passé depuis la main activité dans l'intent. S'il correspond
@@ -105,6 +113,7 @@ public class ToDoListActivity extends AppCompatActivity {
         // On récupère les informations du SQL pour les afficher
 
         else {
+            textInsertToDoList.setEnabled(false);
             btnInsertToDoList.setEnabled(false);
 
             ArrayList<ToDoList> myToDoList=getToDoListsFromSQL(user);
@@ -127,7 +136,7 @@ public class ToDoListActivity extends AppCompatActivity {
 
                     AsyncTask task3 = new PostAsyncTask();    //on appelle l'asynctask qui récupère
                     task3.execute();                          //la liste des ToDoLists --> petit
-                                                              //défaut, réinitialise le layout
+                    //défaut, réinitialise le layout
 
                     toDoListAdapter.notifyItemInserted(toDoListAdapter.getItemCount()-1);
                 }
@@ -141,19 +150,15 @@ public class ToDoListActivity extends AppCompatActivity {
     // FONCTIONS SQL
 
     private ArrayList<ToDoList> getToDoListsFromSQL(User user) {
-        /*
-        A ecrire
-         */
-        alerter("getToDoListsFromSQL OK");
-
-        return new ArrayList<>();
+        return (ArrayList<ToDoList>)toDoListDao.getAllUserToDoLists(user.getIdUser());
     }
 
     private void saveToDoListsToSQL(ArrayList<ToDoList> myToDoList) {
-        /*
-        A ecrire
-         */
-        alerter("saveToDoLitsToSQL OK");
+        toDoListDao.deleteAllUserToDoLists(myToDoList);
+        toDoListDao.deleteAllToDoLists();
+        for (int i = 0; i < myToDoList.size(); i++) {
+            toDoListDao.insert(myToDoList.get(i));
+        }
     }
 
     public void buildRecyclerView(ArrayList<ToDoList> list){
@@ -178,7 +183,7 @@ public class ToDoListActivity extends AppCompatActivity {
                 intent.putExtra(EXTRA_TODOLIST, user.getToDoLists().get(position));
                 intent.putExtra(EXTRA_CONNEXIONOK,connexionOk.toString());
                 startActivity(intent);
-                }
+            }
 
         });
     }
@@ -195,15 +200,11 @@ public class ToDoListActivity extends AppCompatActivity {
 
     public class PostAsyncTask extends AsyncTask<Object, Void, ArrayList<ToDoList>> {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
 
         @Override
         protected ArrayList<ToDoList> doInBackground(Object... objects) {
             try {
-                return (new DataProvider()).getToDoLists(user.getHash(), "GET");
+                return (new DataProvider()).getToDoLists(user.getHash(), "GET",user.getIdUser());
             } catch (JSONException e) {
                 e.printStackTrace();
                 return new ArrayList<>();

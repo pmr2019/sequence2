@@ -10,7 +10,9 @@ import androidx.room.PrimaryKey;
 
 import java.util.ArrayList;
 
-@Entity(foreignKeys = @ForeignKey(entity = User.class,
+import static androidx.room.ForeignKey.CASCADE;
+
+@Entity(foreignKeys = @ForeignKey(onDelete = CASCADE,entity = User.class,
         parentColumns = "idUser",
         childColumns = "keyUser"),
         tableName = "toDoList_table")
@@ -26,16 +28,18 @@ public class ToDoList implements Parcelable {
 
     // CONSTRUCTEURS
 
-    public ToDoList(int idToDoList, String label) {
+    public ToDoList(int idToDoList, String label, int keyUser) {
         this.idToDoList = idToDoList;
         this.label = label;
+        this.keyUser = keyUser;
         this.tasksList = new ArrayList<>();
     }
 
     @Ignore
-    public ToDoList(int idToDoList, String label, ArrayList<Task> tasksList) {
+    public ToDoList(int idToDoList, String label, int keyUser, ArrayList<Task> tasksList) {
         this.idToDoList = idToDoList;
         this.label = label;
+        this.keyUser = keyUser;
         this.tasksList = tasksList;
     }
 
@@ -43,6 +47,7 @@ public class ToDoList implements Parcelable {
     protected ToDoList(Parcel in) {
         idToDoList = in.readInt();
         label = in.readString();
+        keyUser = in.readInt();
         tasksList= new ArrayList<>();
         in.readTypedList(this.tasksList, Task.CREATOR);
     }
@@ -99,6 +104,7 @@ public class ToDoList implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.idToDoList);
         dest.writeString(this.label);
+        dest.writeInt(this.keyUser);
         dest.writeTypedList(this.tasksList);
     }
 
@@ -138,8 +144,8 @@ public class ToDoList implements Parcelable {
         return "ToDoList{" +
                 "idToDoList=" + idToDoList +
                 ", label='" + label + '\'' +
+                ", keyUser=" + keyUser +
                 ", tasksList=" + tasksList +
                 '}';
     }
-
 }

@@ -2,9 +2,11 @@ package PMR.ToDoList.data.database.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import PMR.ToDoList.data.Model.Task;
@@ -15,10 +17,10 @@ public interface TaskDao {
     @Insert
     void insert(Task task);
 
-    @Query("DELETE FROM task_table")
-    void deleteAllUsers();
+    @Delete
+    void deleteAllToDOListTasks(ArrayList<Task> ToDoListTasks);
 
-    @Query("SELECT * from task_table ORDER BY idTask ASC")
-    LiveData<List<Task>> getAllTasks();
+    @Query("SELECT * from task_table INNER JOIN toDoList_table ON (keyToDoList=idToDoList)WHERE keyToDoList=:toDoListId ORDER BY idTask ASC")
+    List<Task> getAllToDoListTasks(int toDoListId);
 
 }

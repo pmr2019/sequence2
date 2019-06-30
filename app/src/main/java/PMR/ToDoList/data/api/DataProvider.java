@@ -1,6 +1,7 @@
 package PMR.ToDoList.data.api;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -120,7 +121,7 @@ public class DataProvider {
     //Fonction permettant de générer la portion d'URL (String) necessaire à la récupération d'une
     //liste de ToDoLists à partir d'un hash
 
-    public ArrayList<ToDoList> getToDoLists (String hash, String methode) throws JSONException {
+    public ArrayList<ToDoList> getToDoLists (String hash, String methode, int keyUser) throws JSONException {
 
         String qs = "lists?hash=" + hash;
         String response = requete (qs, methode);
@@ -136,7 +137,7 @@ public class DataProvider {
             int id = ToDoList.getInt("id");
             String label = ToDoList.getString("label");
 
-            ToDoList myToDoList = new ToDoList(id, label);
+            ToDoList myToDoList = new ToDoList(id, label,keyUser);
             myToDoLists.add(myToDoList);
         }
 
@@ -164,7 +165,7 @@ public class DataProvider {
             String url = task.getString("url");
             int checked = task.getInt("checked");
 
-            Task myTask = new Task(idTask, labelTask, checked);
+            Task myTask = new Task(idTask, labelTask,id, checked);
             myTasks.add(myTask);
         }
 

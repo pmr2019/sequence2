@@ -21,6 +21,8 @@ import PMR.ToDoList.data.Model.Task;
 import PMR.ToDoList.data.Model.ToDoList;
 import PMR.ToDoList.R;
 import PMR.ToDoList.data.api.DataProvider;
+import PMR.ToDoList.data.database.Database;
+import PMR.ToDoList.data.database.dao.TaskDao;
 
 import static PMR.ToDoList.ui.MainActivity.EXTRA_CONNEXIONOK;
 import static PMR.ToDoList.ui.ToDoListActivity.EXTRA_HASH;
@@ -51,6 +53,9 @@ public class TasksActivity extends AppCompatActivity {
     //PARTIE GESTION DE LA CONNEXION
     private Boolean connexionOk;
 
+    //BASE DE DONNEES
+    private TaskDao taskDao;
+
     private void alerter(String s) {
         Toast myToast = Toast.makeText(this, s, Toast.LENGTH_SHORT);
         myToast.show();
@@ -75,7 +80,11 @@ public class TasksActivity extends AppCompatActivity {
 
         if (connexionOk) hash = intentTaskActivity.getStringExtra(EXTRA_HASH);
 
-//        alerter(connexionOk.toString());
+/*
+        On initialise le dao
+         */
+        taskDao= Database.getDatabase(this).taskDao();
+
 
         // On récupère une référence sur les inputs
         btnInsertTask=findViewById(R.id.btnInsertTask);
@@ -94,6 +103,7 @@ public class TasksActivity extends AppCompatActivity {
         // On récupère les informations du SQL pour les afficher
 
         else {
+            textInsertTask.setEnabled(false);
             btnInsertTask.setEnabled(false);
 
             ArrayList<Task> myTasks = getTasksFromSQL(todolist);
@@ -129,18 +139,15 @@ public class TasksActivity extends AppCompatActivity {
     }
 
     private ArrayList<Task> getTasksFromSQL(ToDoList todolist) {
-        /*
-        A ecrire
-         */
-        alerter("getTasksFromSQL OK");
-        return (new ArrayList<>());
+        return (ArrayList<Task>)taskDao.getAllToDoListTasks(todolist.getIdToDoList());
+
     }
 
     private void saveTasksToSQL(ArrayList<Task> myTasks) {
-        /*
-        A ecrire
-         */
-        alerter("saveTasksToSQL OK");
+        taskDao.deleteAllToDOListTasks(myTasks);
+        for (int i = 0; i < myTasks.size(); i++) {
+            taskDao.insert(myTasks.get(i));
+        }
     }
 
     public void buildRecyclerView(ArrayList<Task> list){
@@ -172,11 +179,13 @@ public class TasksActivity extends AppCompatActivity {
                     task4.execute();
 
                 }
-                else {todolist.getTasksList().get(position).setChecked(1);}
-                    taskChecked = todolist.getTasksList().get(position);
+                else {
+                    todolist.getTasksList().get(position).setChecked(1);
+                }
+                taskChecked = todolist.getTasksList().get(position);
 
-                    AsyncTask task4 = new PostAsyncTaskChecked();
-                    task4.execute();
+                AsyncTask task4 = new PostAsyncTaskChecked();
+                task4.execute();
             }
         });
     }
