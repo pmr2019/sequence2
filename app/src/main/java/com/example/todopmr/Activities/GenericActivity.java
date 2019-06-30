@@ -12,7 +12,10 @@ import android.widget.Toast;
 
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
+import com.example.todopmr.Modele.ListeToDo;
+import com.example.todopmr.Modele.ProfilListeToDo;
 import com.example.todopmr.ReponsesRetrofit.ReponseDeBase;
 import com.example.todopmr.ReponsesRetrofit.ReponseHash;
 import com.example.todopmr.ReponsesRetrofit.ReponseItem;
@@ -20,7 +23,9 @@ import com.example.todopmr.ReponsesRetrofit.ReponseItems;
 import com.example.todopmr.ReponsesRetrofit.ReponseList;
 import com.example.todopmr.ReponsesRetrofit.ReponseLists;
 import com.example.todopmr.ReponsesRetrofit.ReponseUsers;
+import com.example.todopmr.Room.AppDatabase;
 
+import java.util.List;
 import java.util.Locale;
 
 import retrofit2.Call;
@@ -40,6 +45,8 @@ public class GenericActivity extends AppCompatActivity {
     public ToDoApiInterface toDoInterface;
     private String urlAPI;
     private String hash;
+    private List<ProfilListeToDo> users;
+    private List<ListeToDo> lists;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +85,7 @@ public class GenericActivity extends AppCompatActivity {
             }
             @Override
             public void onFailure(Call<ReponseUsers> call, Throwable t) {
-                alerter("Il y a un problème...");
+                alerter("Il y a un problème : afficher pseudos");
             }
         });
     }
@@ -174,7 +181,7 @@ public class GenericActivity extends AppCompatActivity {
         //Check = 1 veut dire oui
         Call<ReponseItem> checkItem(@Path("idListe") int idListe, @Path("idItem") int idItem, @Query("hash") String hash, @Query("check") int etat);
 
-        @DELETE("lists/{idList}")
+        @DELETE("lists/{idListe}")
         //Renvoie version, success, status
         Call<ReponseDeBase> supressList(@Path("idListe") int idListe, @Query("hash") String hash);
 

@@ -5,6 +5,7 @@
 
     <!-- MainActivity -->
     <string name="OK">Access</string>
+    <string name="hs">Connect Without Wifi</string>
     <string name="nom">Name :</string>
     <string name="pseudo">Login</string>
     <string name="mdp">Password :</string>

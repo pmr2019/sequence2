@@ -4,23 +4,29 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
+import com.example.todopmr.Modele.ItemToDo;
 import com.example.todopmr.Modele.ListeToDo;
 import com.example.todopmr.R;
 import com.example.todopmr.RecyclerView.ListAdapter;
 import com.example.todopmr.ReponsesRetrofit.ReponseDeBase;
+import com.example.todopmr.ReponsesRetrofit.ReponseItems;
 import com.example.todopmr.ReponsesRetrofit.ReponseList;
 import com.example.todopmr.ReponsesRetrofit.ReponseLists;
+import com.example.todopmr.Room.AppDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,13 +49,15 @@ public class CheckListActivity extends GenericActivity implements ListAdapter.Ac
 
     //Objets en cours
     private ListAdapter adapterEnCours;
-    private ArrayList<ListeToDo> listesUserCourant;
+    private ArrayList<ListeToDo> listesUserCourant = new ArrayList<>();
 
     //Langue de l'application
     private String languageToLoad;
 
     private String hash;
     private String historique;
+    private AppDatabase database;
+    private Boolean reseau;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +68,7 @@ public class CheckListActivity extends GenericActivity implements ListAdapter.Ac
         SharedPreferences settings  = PreferenceManager.getDefaultSharedPreferences(this);
         languageToLoad = settings.getString("langue", "");
         actualiserLangue(languageToLoad);
+        database = AppDatabase.getDatabase(this);
 
         setContentView(R.layout.activity_check_list);
 
@@ -71,33 +80,67 @@ public class CheckListActivity extends GenericActivity implements ListAdapter.Ac
         hash = settings.getString("hash", "");
         historique = settings.getString("historique", "");
         pseudo = settings.getString("pseudo","");
+        reseau = settings.getBoolean("reseau", true);
 
         txt_bienvenue.setText(txt_bienvenue.getText().toString() + " " + pseudo + " !");
 
-        affichageListes(hash);
+        if (reseau) {
+            affichageListes(hash);
 
-        // Lors du clic sur le bouton d'ajout
-        btn_ajout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String label = edt_liste.getText().toString();
-                ajouterListe(hash, label);
+            // Lors du clic sur le bouton d'ajout
+            btn_ajout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String label = edt_liste.getText().toString();
+                    ajouterListe(hash, label);
+                }
+            });
+        }
+
+        else {
+            affichageListesViaSQL();
+            btn_ajout.setEnabled(false);
+        }
+    }
+
+    public void affichageListesViaSQL() {
+        new Thread(){
+            public void run() {
+                List<ListeToDo> listeUser = database.listeDao().getAll();
+                for (ListeToDo list : listeUser) {
+                    listesUserCourant.add(list);
+                }
             }
-        });
+        }.start();
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(CheckListActivity.this));
+        adapterEnCours = new ListAdapter(listesUserCourant, CheckListActivity.this);
+        recyclerView.setAdapter(adapterEnCours);
+        recyclerView.addItemDecoration(new DividerItemDecoration(CheckListActivity.this, LinearLayout.VERTICAL));
     }
 
     /*
     On affiche les listes de l'utilisateur courant.
      */
     public void affichageListes(String hash) {
+        new Thread(){
+            public void run() {
+                database.listeDao().clean();
+            }
+        }.start();
         toDoInterface.recupLists(hash).enqueue(new Callback<ReponseLists>() {
             @Override
             public void onResponse(Call<ReponseLists> call, Response<ReponseLists> response) {
                 if (response.isSuccessful() && response.body().success) {
-                    List<ListeToDo> lists = response.body().lists;
-                    listesUserCourant = new ArrayList<>();
-                    for (int i=0 ; i<lists.size() ; i++) {
-                        listesUserCourant.add(lists.get(i));
+                    List<ListeToDo> allLists = response.body().lists;
+                    for (int i=0 ; i<allLists.size() ; i++) {
+                        final ListeToDo list_i = allLists.get(i);
+                        listesUserCourant.add(allLists.get(i));
+                        new Thread(){
+                            public void run() {
+                                database.listeDao().createListe(list_i);
+                            }
+                        }.start();
                     }
                     RecyclerView recyclerView = findViewById(R.id.recyclerView);
                     recyclerView.setLayoutManager(new LinearLayoutManager(CheckListActivity.this));
@@ -109,7 +152,7 @@ public class CheckListActivity extends GenericActivity implements ListAdapter.Ac
             }
             @Override
             public void onFailure(Call<ReponseLists> call, Throwable t) {
-                alerter("Il y a un problème...");
+                alerter("Il y a un problème : affichage listes");
             }
         });
     }
@@ -129,7 +172,7 @@ public class CheckListActivity extends GenericActivity implements ListAdapter.Ac
             }
             @Override
             public void onFailure(Call<ReponseList> call, Throwable t) {
-                alerter("Il y a un problème...");
+                alerter("Il y a un problème : ajout liste");
             }
         });
     }
@@ -142,11 +185,14 @@ public class CheckListActivity extends GenericActivity implements ListAdapter.Ac
         if (keyCode == KeyEvent.KEYCODE_BACK) {
 
             //Mise à jour des SharedPreferences
-            afficherPseudos(hash);
+            if (reseau) {
+                afficherPseudos(hash);
+            }
             SharedPreferences newSettings = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = newSettings.edit();
             editor.putString("pseudo", pseudo);
             editor.putString("hash", hash);
+            editor.putBoolean("reseau", reseau);
             editor.putString("langue", languageToLoad);
             editor.commit();
 
@@ -167,13 +213,16 @@ public class CheckListActivity extends GenericActivity implements ListAdapter.Ac
         String titreListe = listeClicked.getTitreListeToDo();
 
         //Mise à jour des SharedPreferences
-        afficherPseudos(hash);
+        if (reseau) {
+            afficherPseudos(hash);
+        }
         SharedPreferences newSettings = PreferenceManager.getDefaultSharedPreferences(CheckListActivity.this);
         SharedPreferences.Editor editor = newSettings.edit();
         editor.putInt("idListe", idListe);
         editor.putString("titreListe", titreListe);
         editor.putString("pseudo", pseudo);
         editor.putString("hash", hash);
+        editor.putBoolean("reseau", reseau);
         editor.putString("langue", languageToLoad);
         editor.commit();
 
@@ -187,19 +236,24 @@ public class CheckListActivity extends GenericActivity implements ListAdapter.Ac
      */
     @Override
     public void onClickDeleteButtonListe(ListeToDo listeToDelete) {
-        int idListe = listeToDelete.getIdListe();
-        toDoInterface.supressList(idListe, hash).enqueue(new Callback<ReponseDeBase>() {
-            @Override
-            public void onResponse(Call<ReponseDeBase> call, Response<ReponseDeBase> response) {
-                if (response.isSuccessful() && response.body().success) {
-                    alerter("Liste supprimée");
+        if (reseau) {
+            int idListe = listeToDelete.getIdListe();
+            toDoInterface.supressList(idListe, hash).enqueue(new Callback<ReponseDeBase>() {
+                @Override
+                public void onResponse(Call<ReponseDeBase> call, Response<ReponseDeBase> response) {
+                    if (response.isSuccessful() && response.body().success) {
+                        alerter("Liste supprimée");
+                    }
                 }
-            }
-            @Override
-            public void onFailure(Call<ReponseDeBase> call, Throwable t) {
-                alerter("Il y a un problème...");
-            }
-        });
+                @Override
+                public void onFailure(Call<ReponseDeBase> call, Throwable t) {
+                    alerter("Il y a un problème : Liste supprimée");
+                }
+            });
+        }
+        else {
+            Toast.makeText(CheckListActivity.this, "Impossible de supprimer une liste hors connexion", Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

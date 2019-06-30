@@ -5,6 +5,7 @@
 
     <!-- MainActivity -->
     <string name="OK">Accéder</string>
+    <string name="hs">Connexion Hors Wifi</string>
     <string name="nom">Nom :</string>
     <string name="mdp">Mot de passe :</string>
     <string name="pseudo">Pseudo</string>

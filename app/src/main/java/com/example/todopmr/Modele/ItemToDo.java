@@ -1,39 +1,68 @@
 package com.example.todopmr.Modele;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
 /*
+        (foreignKeys = @ForeignKey(entity = ListeToDo.class,
+        parentColumns = "idListe",
+        childColumns = "listeId")
+ */
+
+/*
 Classe de définition d'un item.
  */
+@Entity
 public class ItemToDo implements Serializable {
 
     @SerializedName("label")
+    @ColumnInfo(name = "label")
     private String description;
 
     @SerializedName("checked")
+    @ColumnInfo(name = "checked")
     private int fait;
 
-    @SerializedName("id")
+    @SerializedName("idItem")
+    @PrimaryKey
     private int idItem;
+
+    @ColumnInfo(name = "listeId")
+    private int listeId;
 
     private static int id00 = 0;
 
     /*
     Constructeur avec tous les arguments.
     */
-    public ItemToDo(String description, int fait) {
+    @Ignore
+    public ItemToDo(String description, int fait, int idListe, int id) {
         this.setDescription(description);
         this.setFait(fait);
-        this.idItem= id00 ++;
+        this.listeId = idListe;
+        this.idItem = id;
     }
 
-    /*
-    Constructeur avec la description uniquement.
-    */
+    @Ignore
     public ItemToDo(String description) {
-        this(description, 0);
+        this.description = description;
+    }
+
+    @Ignore
+    public ItemToDo(String description, int id) {
+        this.idItem = id;
+        this.description = description;
+    }
+
+    public ItemToDo() {
+        super();
     }
 
     /*
@@ -64,11 +93,20 @@ public class ItemToDo implements Serializable {
         this.fait = fait;
     }
 
-    /*
-    Renvoie la valeur de l'identifiant de l'item.
-    */
     public int getIdItem() {
         return idItem;
+    }
+
+    public void setIdItem(int id) {
+        this.idItem = id;
+    }
+
+    public int getListeId() {
+        return listeId;
+    }
+
+    public void setListeId(int idListe) {
+        this.listeId = idListe;
     }
 
     @Override

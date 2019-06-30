@@ -5,6 +5,7 @@
 
     <!-- MainActivity -->
     <string name="OK">Acceder</string>
+    <string name="hs">Coneccion sin Wifi</string>
     <string name="nom">Nombre :</string>
     <string name="mdp">Contrasena :</string>
     <string name="pseudo">Apodo</string>

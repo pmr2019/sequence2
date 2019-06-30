@@ -1,6 +1,12 @@
 package com.example.todopmr.Modele;
 
-import com.example.todopmr.Modele.ItemToDo;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Ignore;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -9,14 +15,28 @@ import java.util.ArrayList;
 /*
 Classe de définition d'une todolist.
  */
+@Entity
+/*
+(foreignKeys = @ForeignKey(entity = ProfilListeToDo.class,
+        parentColumns = "idProfil",
+        childColumns = "profilId")
+ */
+
 public class ListeToDo implements Serializable {
 
     @SerializedName("label")
+    @ColumnInfo(name = "label")
     private String titreListeToDo;
 
     @SerializedName("id")
+    @PrimaryKey
+    @ColumnInfo(name = "idListe")
     private int idListe;
 
+    @ColumnInfo(name = "profilId")
+    private int profilId;
+
+    @Ignore
     private ArrayList<ItemToDo> lesItems;
 
     private static int id0 = 0;
@@ -24,17 +44,23 @@ public class ListeToDo implements Serializable {
     /*
     Constructeur avec tous les arguments.
     */
-    public ListeToDo(String titreListeToDo, ArrayList<ItemToDo> lesItems) {
+    public ListeToDo(String titreListeToDo, ArrayList<ItemToDo> lesItems, int profilId, int id) {
         this.setTitreListeToDo(titreListeToDo);
         this.setLesItems(lesItems);
-        this.idListe = id0 ++;
+        this.profilId = profilId;
+        this.idListe = id;
     }
 
     /*
-    Constructeur avec le titre uniquement.
+    Constructeur avec le titre uniquement (et l'identifiant de l'utilisateur).
     */
-    public ListeToDo(String titreListeToDo) {
-        this(titreListeToDo, new ArrayList<ItemToDo>());
+    @Ignore
+    public ListeToDo(String titreListeToDo, int profilId, int listeId) {
+        this(titreListeToDo, new ArrayList<ItemToDo>(), profilId, listeId);
+    }
+
+    public ListeToDo() {
+        super();
     }
 
     /*
@@ -65,16 +91,25 @@ public class ListeToDo implements Serializable {
         this.lesItems = lesItems;
     }
 
-    /*
-    Renvoie la valeur de l'identifiant de la liste.
-    */
     public int getIdListe() {
-        return this.idListe;
+        return idListe;
+    }
+
+    public void setIdListe(int id) {
+        this.idListe = id;
+    }
+
+    public int getProfilId() {
+        return profilId;
+    }
+
+    public void setProfilId(int profilId) {
+        this.profilId = profilId;
     }
 
     /*
-    Ajoute un item donné en paramètre à l'attribut lesItems.
-     */
+                Ajoute un item donné en paramètre à l'attribut lesItems.
+                 */
     public void ajouterItem(ItemToDo unItem) {
         this.lesItems.add(unItem);
     }

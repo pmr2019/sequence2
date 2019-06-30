@@ -10,8 +10,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.room.Room;
+
 import com.example.todopmr.R;
 import com.example.todopmr.ReponsesRetrofit.ReponseHash;
+import com.example.todopmr.Room.AppDatabase;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -26,12 +29,14 @@ public class MainActivity extends GenericActivity {
     private EditText edtPseudo;
     private EditText edtPassword;
     private Button btnOK;
+    private Button btnHorsWifi;
 
     //Attributs de sauvegarde des informations
     private String pseudo;
     private String password;
     private String hash;
     private String urlAPI;
+    private Boolean reseau;
 
     //Langue de l'application
     private String languageToLoad;
@@ -50,16 +55,15 @@ public class MainActivity extends GenericActivity {
         setContentView(R.layout.activity_main);
 
         btnOK = findViewById(R.id.btnOK);
+        btnHorsWifi = findViewById(R.id.btnHorsWifi);
         edtPseudo = findViewById(R.id.edtPseudo);
         edtPassword = findViewById(R.id.edtPassword);
 
-        if (hash != "") {
-
-        }
-
         //On vérifie la connexion au réseau
         //Le bouton n'est pas actif si l'utilisateur n'est pas connecté au réseau
-        btnOK.setEnabled(verifReseau());
+        reseau = verifReseau();
+        btnOK.setEnabled(reseau);
+        btnHorsWifi.setEnabled(!reseau);
 
         // Lors du clic sur le champ de saisi du pseudo
         edtPseudo.setOnClickListener(new View.OnClickListener() {
@@ -107,6 +111,7 @@ public class MainActivity extends GenericActivity {
                                 final SharedPreferences.Editor editor = newSettings.edit();
                                 editor.putString("pseudo", pseudo);
                                 editor.putString("hash", hash);
+                                editor.putBoolean("reseau", reseau);
                                 editor.putString("langue", languageToLoad);
                                 editor.putString("urlAPI", urlAPI);
                                 editor.commit();
@@ -122,10 +127,39 @@ public class MainActivity extends GenericActivity {
 
                         @Override
                         public void onFailure(Call<ReponseHash> call, Throwable t) {
-                            alerter("Il y a un problème...");
+                            alerter("Il y a un problème : authentification");
                         }
                     });
+                }
+            }
+        });
 
+        btnHorsWifi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pseudo = edtPseudo.getText().toString();
+                password = edtPassword.getText().toString();
+
+                //Si le pseudo est vide
+                if (pseudo.isEmpty()) {
+                    alerter(getString(R.string.pseudo_vide));
+                }
+
+                //Si le mdp est vide
+                else if (password.isEmpty()) {
+                    alerter(getString(R.string.password_vide));
+                }
+                else {
+                    SharedPreferences newSettings = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                    final SharedPreferences.Editor editor = newSettings.edit();
+                    editor.putString("pseudo", pseudo);
+                    editor.putBoolean("reseau", reseau);
+                    editor.putString("langue", languageToLoad);
+                    editor.commit();
+
+                    //Vers CheckListActivity
+                    Intent accesCheckList = new Intent(MainActivity.this, CheckListActivity.class);
+                    startActivity(accesCheckList);
                 }
             }
         });
@@ -151,11 +185,14 @@ public class MainActivity extends GenericActivity {
         //Une seule option dans le menu : préférences
 
         //Mise à jour des SharedPreferences
-        afficherPseudos(hash);
+        if (reseau) {
+            afficherPseudos(hash);
+        }
         SharedPreferences newSettings = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
         final SharedPreferences.Editor editor = newSettings.edit();
         editor.putString("pseudo", pseudo);
         editor.putString("hash", hash);
+        editor.putBoolean("reseau", reseau);
         editor.putString("langue", languageToLoad);
         editor.commit();
 
@@ -164,5 +201,4 @@ public class MainActivity extends GenericActivity {
         startActivity(toSettingsActivity);
         return super.onOptionsItemSelected(item);
     }
-
 }

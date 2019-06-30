@@ -4,12 +4,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,6 +23,7 @@ import com.example.todopmr.RecyclerView.ItemAdapter;
 import com.example.todopmr.ReponsesRetrofit.ReponseDeBase;
 import com.example.todopmr.ReponsesRetrofit.ReponseItem;
 import com.example.todopmr.ReponsesRetrofit.ReponseItems;
+import com.example.todopmr.Room.AppDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +48,7 @@ public class ShowListActivity extends GenericActivity implements ItemAdapter.Act
 
     //Objets en cours
     private ItemAdapter adapterEnCours;
-    private ArrayList<ItemToDo> itemsListeCourante;
+    private ArrayList<ItemToDo> itemsListeCourante = new ArrayList<>();
 
 
     //Langue de l'application
@@ -53,6 +56,8 @@ public class ShowListActivity extends GenericActivity implements ItemAdapter.Act
 
     private String hash;
     private String historique;
+    private Boolean reseau;
+    private AppDatabase database;
 
 
     @Override
@@ -64,6 +69,7 @@ public class ShowListActivity extends GenericActivity implements ItemAdapter.Act
         SharedPreferences settings  = PreferenceManager.getDefaultSharedPreferences(this);
         languageToLoad = settings.getString("langue", "");
         actualiserLangue(languageToLoad);
+        database = AppDatabase.getDatabase(this);
 
         setContentView(R.layout.activity_show_list);
 
@@ -77,34 +83,70 @@ public class ShowListActivity extends GenericActivity implements ItemAdapter.Act
         pseudo = settings.getString("pseudo","");
         idListe = settings.getInt("idListe", -1);
         titre = settings.getString("titreListe", "");
+        reseau = settings.getBoolean("reseau", true);
 
         txt_liste.setText(txt_liste.getText().toString() + " " + titre);
 
-        affichageItems(idListe, hash);
+        if (reseau) {
+            affichageItems(idListe, hash);
 
-        // Lors du clic sur le bouton d'ajout
-        btn_ajout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String description = edt_item.getText().toString();
-                ajouterItem(hash, description);
+            // Lors du clic sur le bouton d'ajout
+            btn_ajout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String description = edt_item.getText().toString();
+                    ajouterItem(hash, description);
+                }
+            });
+        }
+        else {
+            affichageItemsViaSQL();
+            btn_ajout.setEnabled(false);
+        }
+
+    }
+
+    public void affichageItemsViaSQL() {
+        new Thread(){
+            public void run() {
+                List<ItemToDo> itemsLists = database.itemDao().findbyListId(idListe);
+                for (ItemToDo item : itemsLists) {
+                    itemsListeCourante.add(item);
+                }
             }
-        });
-
+        }.start();
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(ShowListActivity.this));
+        adapterEnCours = new ItemAdapter(itemsListeCourante, ShowListActivity.this);
+        recyclerView.setAdapter(adapterEnCours);
+        recyclerView.addItemDecoration(new DividerItemDecoration(ShowListActivity.this, LinearLayout.VERTICAL));
     }
 
     /*
     Affichage des items de la liste dont l'id est sauvegardé, de l'utilisateur courant
      */
-    public void affichageItems(int idListe, String hash) {
+    public void affichageItems(final int idListe, String hash) {
+        /*
+        new Thread(){
+            public void run() {
+                database.itemDao().clean();
+            }
+        }.start();
+        */
         toDoInterface.recupItems(idListe, hash).enqueue(new Callback<ReponseItems>() {
             @Override
             public void onResponse(Call<ReponseItems> call, Response<ReponseItems> response) {
                 if (response.isSuccessful() && response.body().success) {
-                    List<ItemToDo> lists = response.body().items;
-                    itemsListeCourante = new ArrayList<>();
-                    for (int i=0 ; i<lists.size() ; i++) {
-                        itemsListeCourante.add(lists.get(i));
+                    List<ItemToDo> items = response.body().items;
+                    for (int i=0 ; i<items.size() ; i++) {
+                        final ItemToDo item_i = items.get(i);
+                        item_i.setListeId(idListe);
+                        itemsListeCourante.add(item_i);
+                        new Thread(){
+                            public void run() {
+                                database.itemDao().createItem(item_i);
+                            }
+                        }.start();
                     }
                     RecyclerView recyclerView = findViewById(R.id.recyclerView);
                     recyclerView.setLayoutManager(new LinearLayoutManager(ShowListActivity.this));
@@ -116,7 +158,7 @@ public class ShowListActivity extends GenericActivity implements ItemAdapter.Act
             }
             @Override
             public void onFailure(Call<ReponseItems> call, Throwable t) {
-                alerter("Il y a un problème...");
+                alerter("Il y a un problème : affichage Items");
             }
         });
     }
@@ -136,7 +178,7 @@ public class ShowListActivity extends GenericActivity implements ItemAdapter.Act
             }
             @Override
             public void onFailure(Call<ReponseItem> call, Throwable t) {
-                alerter("Il y a un problème...");
+                alerter("Il y a un problème : : ajouter Items");
             }
         });
     }
@@ -149,7 +191,9 @@ public class ShowListActivity extends GenericActivity implements ItemAdapter.Act
         if (keyCode == KeyEvent.KEYCODE_BACK) {
 
             //Mise à jour des SharedPreferences
-            afficherPseudos(hash);
+            if (reseau) {
+                afficherPseudos(hash);
+            }
             SharedPreferences newSettings = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = newSettings.edit();
             editor.putString("pseudo", pseudo);
@@ -188,7 +232,7 @@ public class ShowListActivity extends GenericActivity implements ItemAdapter.Act
             }
             @Override
             public void onFailure(Call<ReponseDeBase> call, Throwable t) {
-                alerter("Il y a un problème...");
+                alerter("Il y a un problème : Item supprimé");
             }
         });
     }
@@ -198,19 +242,24 @@ public class ShowListActivity extends GenericActivity implements ItemAdapter.Act
      */
     @Override
     public void onClickCheckButtonItem(ItemToDo itemToCheck) {
-        int idItem = itemToCheck.getIdItem();
-        int fait = itemToCheck.getFait();
-        toDoInterface.checkItem(idListe, idItem, hash, fait).enqueue(new Callback<ReponseItem>() {
-            @Override
-            public void onResponse(Call<ReponseItem> call, Response<ReponseItem> response) {
-                if (response.isSuccessful() && response.body().success) {
-                    alerter("Changement d'état");
+        if (reseau) {
+            int idItem = itemToCheck.getIdItem();
+            int fait = itemToCheck.getFait();
+            toDoInterface.checkItem(idListe, idItem, hash, fait).enqueue(new Callback<ReponseItem>() {
+                @Override
+                public void onResponse(Call<ReponseItem> call, Response<ReponseItem> response) {
+                    if (response.isSuccessful() && response.body().success) {
+                        alerter("Changement d'état");
+                    }
                 }
-            }
-            @Override
-            public void onFailure(Call<ReponseItem> call, Throwable t) {
-                alerter("Il y a un problème...");
-            }
-        });
+                @Override
+                public void onFailure(Call<ReponseItem> call, Throwable t) {
+                    alerter("Il y a un problème : Item checked");
+                }
+            });
+        }
+        else {
+            Toast.makeText(ShowListActivity.this, "Impossible de supprimer une liste hors connexion", Toast.LENGTH_SHORT).show();
+        }
     }
 }
