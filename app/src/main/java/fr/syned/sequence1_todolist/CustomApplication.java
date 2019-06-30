@@ -15,8 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.syned.sequence1_todolist.Model.Profile;
-import fr.syned.sequence1_todolist.Model.ToDoList;
+import fr.syned.sequence1_todolist.model.Profile;
 
 public class CustomApplication extends Application {
 

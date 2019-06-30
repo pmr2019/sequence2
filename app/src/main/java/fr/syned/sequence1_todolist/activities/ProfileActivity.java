@@ -1,4 +1,4 @@
-package fr.syned.sequence1_todolist.Activities;
+package fr.syned.sequence1_todolist.activities;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -13,9 +13,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters.SwipeToDelete.SwipeItemTouchHelper;
-import fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters.ToDoListAdapter;
-import fr.syned.sequence1_todolist.Model.Profile;
+import fr.syned.sequence1_todolist.activities.recyclerview.SwipeItemTouchHelper;
+import fr.syned.sequence1_todolist.activities.recyclerview.adapters.ToDoListAdapter;
+import fr.syned.sequence1_todolist.model.Profile;
 import fr.syned.sequence1_todolist.R;
 
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_HASH;

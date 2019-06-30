@@ -1,4 +1,4 @@
-package fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters;
+package fr.syned.sequence1_todolist.activities.recyclerview.adapters;
 
 import android.graphics.Paint;
 import android.util.Log;
@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import fr.syned.sequence1_todolist.Model.Task;
+import fr.syned.sequence1_todolist.model.Task;
 import fr.syned.sequence1_todolist.R;
 
 public class SubTaskAdapter extends RecyclerView.Adapter<SubTaskAdapter.SubTaskViewHolder> {

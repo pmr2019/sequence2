@@ -1,4 +1,4 @@
-package fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters;
+package fr.syned.sequence1_todolist.activities.recyclerview.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +12,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
-import fr.syned.sequence1_todolist.Model.Profile;
+import fr.syned.sequence1_todolist.model.Profile;
 import fr.syned.sequence1_todolist.R;
 
 public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder>{

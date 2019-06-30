@@ -1,4 +1,4 @@
-package fr.syned.sequence1_todolist.Activities;
+package fr.syned.sequence1_todolist.activities;
 
 import android.content.Context;
 import android.content.Intent;

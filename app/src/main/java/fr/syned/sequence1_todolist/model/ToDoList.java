@@ -1,9 +1,7 @@
-package fr.syned.sequence1_todolist.Model;
+package fr.syned.sequence1_todolist.model;
 
 import android.content.Context;
-import android.util.Log;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -23,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import fr.syned.sequence1_todolist.Activities.Network.RequestQueueInstance;
-import fr.syned.sequence1_todolist.Activities.ProfileActivity;
+import fr.syned.sequence1_todolist.activities.network.RequestQueueInstance;
+import fr.syned.sequence1_todolist.activities.ProfileActivity;
 
 public class ToDoList implements Serializable {
 

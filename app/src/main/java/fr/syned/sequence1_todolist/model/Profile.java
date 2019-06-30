@@ -1,4 +1,4 @@
-package fr.syned.sequence1_todolist.Model;
+package fr.syned.sequence1_todolist.model;
 
 import android.content.Context;
 import android.util.Log;
@@ -20,8 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import fr.syned.sequence1_todolist.Activities.Network.RequestQueueInstance;
-import fr.syned.sequence1_todolist.Activities.ProfileActivity;
+import fr.syned.sequence1_todolist.activities.network.RequestQueueInstance;
+import fr.syned.sequence1_todolist.activities.ProfileActivity;
 
 public class Profile implements Serializable {
     private String username;

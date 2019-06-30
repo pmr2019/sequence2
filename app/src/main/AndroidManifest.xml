@@ -14,17 +14,17 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:usesCleartextTraffic="true">
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
-        <activity android:name=".Activities.SettingsActivity"
+        <activity android:name=".activities.SettingsActivity"
             android:label="Settings"></activity>
         <activity
-            android:name=".Activities.ToDoListActivity"
+            android:name=".activities.ToDoListActivity"
             android:label="Tasks"
             android:theme="@style/NoActionBar" />
         <activity
-            android:name=".Activities.ProfileActivity"
+            android:name=".activities.ProfileActivity"
             android:label="ToDo Lists" />
         <activity
-            android:name=".Activities.MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>

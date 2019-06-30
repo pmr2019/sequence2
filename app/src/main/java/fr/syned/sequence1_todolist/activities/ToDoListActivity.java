@@ -1,4 +1,4 @@
-package fr.syned.sequence1_todolist.Activities;
+package fr.syned.sequence1_todolist.activities;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -11,15 +11,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.UUID;
 
-import fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters.SwipeToDelete.SwipeItemTouchHelper;
-import fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters.TaskAdapter;
-import fr.syned.sequence1_todolist.Model.ToDoList;
+import fr.syned.sequence1_todolist.activities.recyclerview.SwipeItemTouchHelper;
+import fr.syned.sequence1_todolist.activities.recyclerview.adapters.TaskAdapter;
+import fr.syned.sequence1_todolist.model.ToDoList;
 import fr.syned.sequence1_todolist.R;
 
-import static fr.syned.sequence1_todolist.Activities.ProfileActivity.profile;
-import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_ID;
+import static fr.syned.sequence1_todolist.activities.ProfileActivity.profile;
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_UUID;
-import static fr.syned.sequence1_todolist.CustomApplication.profilesList;
 
 public class ToDoListActivity extends BaseActivity {
 

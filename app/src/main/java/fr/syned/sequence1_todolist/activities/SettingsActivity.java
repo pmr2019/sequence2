@@ -1,15 +1,13 @@
-package fr.syned.sequence1_todolist.Activities;
+package fr.syned.sequence1_todolist.activities;
 
 import android.os.Bundle;
 
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
-import fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters.ProfileAdapter;
-import fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters.SwipeToDelete.SwipeItemTouchHelper;
-import fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters.ToDoListAdapter;
+import fr.syned.sequence1_todolist.activities.recyclerview.adapters.ProfileAdapter;
+import fr.syned.sequence1_todolist.activities.recyclerview.SwipeItemTouchHelper;
 import fr.syned.sequence1_todolist.R;
 
 import static fr.syned.sequence1_todolist.CustomApplication.profilesList;

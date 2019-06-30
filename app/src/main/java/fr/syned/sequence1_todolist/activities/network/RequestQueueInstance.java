@@ -1,4 +1,4 @@
-package fr.syned.sequence1_todolist.Activities.Network;
+package fr.syned.sequence1_todolist.activities.network;
 
 import android.content.Context;
 import android.graphics.Bitmap;

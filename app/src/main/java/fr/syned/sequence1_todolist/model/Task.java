@@ -1,20 +1,9 @@
-package fr.syned.sequence1_todolist.Model;
+package fr.syned.sequence1_todolist.model;
 
 import android.content.Context;
-import android.util.Log;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -23,8 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import fr.syned.sequence1_todolist.Activities.Network.RequestQueueInstance;
-import fr.syned.sequence1_todolist.Activities.ProfileActivity;
+import fr.syned.sequence1_todolist.activities.network.RequestQueueInstance;
 
 public class Task implements Serializable {
 

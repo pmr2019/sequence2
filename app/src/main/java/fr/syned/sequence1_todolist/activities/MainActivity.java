@@ -1,4 +1,4 @@
-package fr.syned.sequence1_todolist.Activities;
+package fr.syned.sequence1_todolist.activities;
 
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -20,8 +20,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import fr.syned.sequence1_todolist.Activities.Network.RequestQueueInstance;
-import fr.syned.sequence1_todolist.Model.Profile;
+import fr.syned.sequence1_todolist.activities.network.RequestQueueInstance;
+import fr.syned.sequence1_todolist.model.Profile;
 import fr.syned.sequence1_todolist.R;
 
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_HASH;

@@ -1,4 +1,4 @@
-package fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters;
+package fr.syned.sequence1_todolist.activities.recyclerview.adapters;
 
 import android.graphics.Paint;
 import android.util.Log;
@@ -17,8 +17,8 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.List;
 import java.util.UUID;
 
-import fr.syned.sequence1_todolist.Activities.ToDoListActivity;
-import fr.syned.sequence1_todolist.Model.Task;
+import fr.syned.sequence1_todolist.activities.ToDoListActivity;
+import fr.syned.sequence1_todolist.model.Task;
 import fr.syned.sequence1_todolist.R;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {

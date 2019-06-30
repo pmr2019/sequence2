@@ -1,4 +1,4 @@
-package fr.syned.sequence1_todolist.Activities.RecyclerViewAdapters;
+package fr.syned.sequence1_todolist.activities.recyclerview.adapters;
 
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -17,14 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import fr.syned.sequence1_todolist.Activities.ProfileActivity;
-import fr.syned.sequence1_todolist.Activities.ToDoListActivity;
-import fr.syned.sequence1_todolist.Model.Task;
-import fr.syned.sequence1_todolist.Model.ToDoList;
+import fr.syned.sequence1_todolist.activities.ToDoListActivity;
+import fr.syned.sequence1_todolist.model.Task;
+import fr.syned.sequence1_todolist.model.ToDoList;
 import fr.syned.sequence1_todolist.R;
 
-import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_ID;
-import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_PROFILE;
 import static fr.syned.sequence1_todolist.CustomApplication.EXTRA_UUID;
 
 public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ToDoListViewHolder> {
