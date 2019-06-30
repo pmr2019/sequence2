@@ -130,7 +130,7 @@ public class ToDoList implements Parcelable {
         int retour = -1;
         Boolean trouve = Boolean.FALSE;
         for (int i = 0; i < this.tasksList.size(); i++) {
-            if (this.tasksList.get(i).getLabel() == s) {
+            if (this.tasksList.get(i).getLabelTask() == s) {
                 retour = i;
                 i = this.tasksList.size();
                 trouve = Boolean.TRUE;

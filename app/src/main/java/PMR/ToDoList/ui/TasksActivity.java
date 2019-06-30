@@ -107,6 +107,10 @@ public class TasksActivity extends AppCompatActivity {
             btnInsertTask.setEnabled(false);
 
             ArrayList<Task> myTasks = getTasksFromSQL(todolist);
+            alerter(myTasks.get(0).toString());
+            alerter(myTasks.get(1).toString());
+            alerter(myTasks.get(2).toString());
+
             todolist.setTasksList(myTasks);
             buildRecyclerView(myTasks);
         }
@@ -139,7 +143,8 @@ public class TasksActivity extends AppCompatActivity {
     }
 
     private ArrayList<Task> getTasksFromSQL(ToDoList todolist) {
-        return (ArrayList<Task>)taskDao.getAllToDoListTasks(todolist.getIdToDoList());
+        ArrayList<Task> test = (ArrayList<Task>)taskDao.getAllToDoListTasks(todolist.getIdToDoList());
+        return (test);
 
     }
 
@@ -148,6 +153,11 @@ public class TasksActivity extends AppCompatActivity {
         for (int i = 0; i < myTasks.size(); i++) {
             taskDao.insert(myTasks.get(i));
         }
+
+        ArrayList<Task> test=getTasksFromSQL(todolist);
+        alerter(test.get(0).toString());
+        alerter(test.get(1).toString());
+        alerter(test.get(2).toString());
     }
 
     public void buildRecyclerView(ArrayList<Task> list){
@@ -161,31 +171,32 @@ public class TasksActivity extends AppCompatActivity {
 
         taskAdapter.setOnItemClickListener(new TasksAdapter.OnItemClickListener() {
 
-            //BOUTON QUAND ON CLIQUE SUR UNE CARD
-            @Override
-            public void onItemClick(int position) {
-                //On récupère la TODOLIST en question
-            }
 
             //BOUTON QUAND ON CLIQUE SUR UNE CHECKBOX
             @Override
             public void onCheckBoxClick(int position) {
+
+                // On change l'état de la checkbox
+
                 if (todolist.getTasksList().get(position).getChecked()==1) {
                     todolist.getTasksList().get(position).setChecked(0);
-                    taskChecked = todolist.getTasksList().get(position);
-
-                    //On crée une AsyncTask
-                    AsyncTask task4 = new PostAsyncTaskChecked();
-                    task4.execute();
-
                 }
                 else {
                     todolist.getTasksList().get(position).setChecked(1);
                 }
+
+                // On récupère la tâche sur laquelle on a cliqué
                 taskChecked = todolist.getTasksList().get(position);
 
-                AsyncTask task4 = new PostAsyncTaskChecked();
-                task4.execute();
+                // On traite des cas différents suivant la disponibilité de la connexion
+
+                if (connexionOk){
+                    AsyncTask task4 = new PostAsyncTaskChecked();
+                    task4.execute();
+                }
+
+
+
             }
         });
     }

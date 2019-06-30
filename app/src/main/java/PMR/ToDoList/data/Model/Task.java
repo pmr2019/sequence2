@@ -18,16 +18,16 @@ public class Task implements Parcelable {
 
     @PrimaryKey(autoGenerate = false)
     private int idTask; //////////////////////////////////////////////
-    private String label;
+    private String labelTask;
     private int keyToDoList;
     private int checked;
 
 
     //CONSTRUCTEURS
 
-    public Task(int idTask, String label, int keyToDoList, int checked) {
+    public Task(int idTask, String labelTask, int keyToDoList, int checked) {
         this.idTask = idTask;
-        this.label = label;
+        this.labelTask = labelTask;
         this.keyToDoList = keyToDoList;
         this.checked = checked;
     }
@@ -35,7 +35,7 @@ public class Task implements Parcelable {
     @Ignore
     protected Task(Parcel in) {
         idTask = in.readInt();
-        label = in.readString();
+        labelTask = in.readString();
         keyToDoList = in.readInt();
         checked = in.readInt();
     }
@@ -47,9 +47,9 @@ public class Task implements Parcelable {
 
     public void setIdTask(int idTask) { this.idTask = idTask; }
 
-    public String getLabel() { return label; }
+    public String getLabelTask() { return labelTask; }
 
-    public void setLabel(String label) { this.label = label; }
+    public void setLabelTask(String label) { this.labelTask = label; }
 
     public int getChecked() { return checked; }
 
@@ -80,7 +80,7 @@ public class Task implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.idTask);
-        dest.writeString(this.label);
+        dest.writeString(this.labelTask);
         dest.writeInt(this.keyToDoList);
         dest.writeInt(this.checked);
     }
@@ -92,7 +92,7 @@ public class Task implements Parcelable {
     public String toString() {
         return "Task{" +
                 "idTask=" + idTask +
-                ", label='" + label + '\'' +
+                ", label='" + labelTask + '\'' +
                 ", keyToDoList=" + keyToDoList +
                 ", checked=" + checked +
                 '}';

@@ -31,7 +31,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
     // INTERFACE ONITEMCLICKLISTENER POUR ECOUTER A L'INTERIEUR
 
     public interface OnItemClickListener {
-        void onItemClick(int position);
         void onCheckBoxClick(int position);
     }
 
@@ -52,7 +51,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
         Task task = tasks.get(position);
-        holder.nameTask.setText(task.getLabel());
+        holder.nameTask.setText(task.getLabelTask());
         if (task.getChecked()==1) holder.checkBoxTask.setChecked(Boolean.TRUE);
     }
 
@@ -72,20 +71,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
             super(itemView);
             nameTask = itemView.findViewById(R.id.textTask);
             checkBoxTask=itemView.findViewById(R.id.checkBoxTask);
-
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (taskListener !=null){
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION){
-                            taskListener.onItemClick(position);
-                        }
-                    }
-                }
-            });
-
 
             checkBoxTask.setOnClickListener(new View.OnClickListener() {
                 @Override
