@@ -111,41 +111,73 @@ public class ChoixListeActivity extends AppCompatActivity {
 
 //    TODO:完善异步
     private void syncGetAll(String hash) {
+        Log.d("testwei","syncgetAll");
 
-        dataProvider.syncGetUserId(hash, pseudo, new DataProvider.UserListener() {
+        dataProvider.getUserId(new DataProvider.GetUserIdListener() {
             @Override
-            public void onSuccess(String userIdConneted) {
-                userId = userIdConneted;
+            public void onSuccess(String userID) {
+                userId=userID;
                 syncGetLists(userId);
-
+                Log.d("testwei","syncgetAll01");
             }
 
             @Override
-            public void onError() {
+            public void onError(String userID) {
                 syncGetLists(userId);
-                alerter("pas de connexion");
+                alerter("pas de connexion1");
             }
         });
     }
 
     private void syncGetLists(String userId){
         findViewById(R.id.progess).setVisibility(View.VISIBLE);
-        dataProvider.syncGetLists(hash,userId,new DataProvider.ListsListener() {
-            @Override public void onSuccess(List<String> labelslist) {
-                for (int i = 0; i< labelslist.size(); i++) {
-                    listeAdapter.add(labelslist.get(i));
+
+
+        dataProvider.getLabelslist(userId, new DataProvider.GetListListener() {
+            @Override
+            public void onSuccess(List<String> label) {
+                Log.d("contenu",label.get(0));
+
+                //TODO 把labellist 加到adapter里
+                if(label!=null){
+
+                    for(int i=0;i<label.size();i++){
+                        Log.d("label",label.get(i));
+                        //TODO 添加有问题
+                        listeAdapter.add(label.get(i));
+                        Log.d("label",label.get(i));
+                        listeAdapter.notifyDataSetChanged();
+                    }
+                    findViewById(R.id.progess).setVisibility(View.GONE);
                 }
-                findViewById(R.id.progess).setVisibility(View.GONE);
             }
 
-            @Override public void onError(List<String> labelslistLocal) {
-                for (int i = 0; i< labelslistLocal.size(); i++) {
-                    listeAdapter.add(labelslistLocal.get(i));
-                }
+            @Override
+            public void onError(List<String> label) {
                 findViewById(R.id.progess).setVisibility(View.GONE);
-                alerter("pas de connexion");
             }
         });
+//         dataProvider.passLabelslist();
+
+
+
+
+//        ,new DataProvider.ListsListener() {
+//            @Override public void onSuccess(List<String> labelslist) {
+//                for (int i = 0; i< labelslist.size(); i++) {
+//                    listeAdapter.add(labelslist.get(i));
+//                }
+//                findViewById(R.id.progess).setVisibility(View.GONE);
+//            }
+//
+//            @Override public void onError(List<String> labelslistLocal) {
+//                for (int i = 0; i< labelslistLocal.size(); i++) {
+//                    listeAdapter.add(labelslistLocal.get(i));
+//                }
+//                findViewById(R.id.progess).setVisibility(View.GONE);
+//                alerter("pas de connexion2");
+//            }
+//        });
     }
 
 
@@ -173,7 +205,7 @@ public class ChoixListeActivity extends AppCompatActivity {
                     @Override
                     public void onError(List addFail) {
                         findViewById(R.id.progess).setVisibility(View.GONE);
-                        alerter("pas de connextion");
+                        alerter("pas de connextion3");
                     }
                 });
 
@@ -266,7 +298,7 @@ public class ChoixListeActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onFailure(Call call, Throwable t) {
-                                    alerter("pas de connexion");
+                                    alerter("pas de connexion4");
 //                                    convertToItems(hash,url,id);
                                 }
                             });

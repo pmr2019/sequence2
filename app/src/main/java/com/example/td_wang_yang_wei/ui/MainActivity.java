@@ -19,12 +19,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.td_wang_yang_wei.DataClass.ListeDeUtilisateur;
 import com.example.td_wang_yang_wei.DataClass.Utilisateur;
+import com.example.td_wang_yang_wei.DataProvider;
 import com.example.td_wang_yang_wei.R;
 import com.example.td_wang_yang_wei.api.Contenu;
 import com.example.td_wang_yang_wei.api.requestService;
 import com.example.td_wang_yang_wei.api.requestServiceFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -42,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText edtPseudo = null;
     private EditText edtPasse=null;
     private ListeDeUtilisateur listeDeUtilisateur;
+    private DataProvider dataProvider;
 
     //Alerter pour savoir le processus de la programme et alerter les utilisateurs
     public void alerter(String s) {
@@ -54,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        dataProvider=new DataProvider(this);
         //Connection les layouts avec des backends
         btnSign=findViewById(R.id.btnSign);
         btnOk=findViewById(R.id.btnOK);
@@ -85,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if(networkInfo!=null){
             btnSign.setEnabled(networkInfo.isConnected());
-                }
+        }
         else{
             btnSign.setEnabled(false);
         }
@@ -177,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Utilisateur u=listeDeUtilisateur.ChercheUtilisateur(pseudo);
                         if(u.verifierMotDePasse(pass))
                             ConvertToListe(u.getPseudo(),u.getHash(),listeDeUtilisateur.getUrl());
-                         else alerter("Revévifiez votre mot de passe");
+                        else alerter("Revévifiez votre mot de passe");
                     }else {
                         //Si cet utilisateur n'appartient pas à la liste de préférences
                         //on fait la connexion auprès de l'API Renvoie un hash sans délai d'expiration
@@ -192,12 +197,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         //si succès ajouter cet utilisateur dans la liste de préférences & entrer dans la liste correspondant
                         call.enqueue(new Callback<Contenu>() {
                             @Override
-                            public void onResponse(Call<Contenu> call, Response<Contenu> response) {
+                            public void onResponse(Call<Contenu> call, final Response<Contenu> response) {
                                 if(response.isSuccessful()){
                                     Log.d("test","hhhhhhh");
                                     //met à jour la liste de préférences
                                     listeDeUtilisateur.AjouterUtilisateur(new Utilisateur(pseudo,pass,response.body().hash));
                                     sauvegarderUtilisateur(listeDeUtilisateur);
+                                    //TODO getsynclist
+                                    dataProvider.syncGetUserId(response.body().hash, pseudo, new DataProvider.UserListener() {
+                                        @Override
+                                        public void onSuccess(String userId) {
+
+                                            dataProvider.syncGetLists(response.body().hash, userId, new DataProvider.ListsListener() {
+                                                @Override
+                                                public void onSuccess(List<String> lists) {
+                                                    alerter("list save");
+                                                }
+
+                                                @Override
+                                                public void onError(List<String> lists) {
+                                                    alerter("pas de connxions -2");
+                                                }
+                                            });
+                                            dataProvider.syncGetUserId(response.body().hash,pseudo, new DataProvider.UserListener() {
+                                                @Override
+                                                public void onSuccess(String userId) {
+                                                    alerter("id save");
+                                                }
+
+                                                @Override
+                                                public void onError() {
+
+                                                }
+                                            });
+
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            alerter("pas de connexion -1");
+                                        }
+                                    });
                                     ConvertToListe(pseudo,response.body().hash,listeDeUtilisateur.getUrl());
                                 }else alerter("le nom n'est pas ou le mot de passe est incorrect");
                                 Log.d("wuwuwu","NO");
@@ -205,20 +245,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                             @Override
                             public void onFailure(Call<Contenu> call, Throwable t) {
-                                alerter("pas de connexion");
+                                alerter("pas de connexion0");
                             }
                         });
                     }
                 }
-            break;
+                break;
 
             case R.id.edtPseudo:
                 alerter("saisir ton pseudo");
-            break;
+                break;
             case R.id.edtMotDePasse:
                 alerter("saisir ton mot de passe");
                 break;
-         }
+        }
     }
 
     /**
@@ -279,9 +319,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-                alerter("Menu Compte");
-                Intent account=new Intent(this, SettingsActivity.class);
-                startActivity(account);
+        alerter("Menu Compte");
+        Intent account=new Intent(this, SettingsActivity.class);
+        startActivity(account);
 
         return super.onOptionsItemSelected(item);
     }

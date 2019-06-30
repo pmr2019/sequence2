@@ -35,6 +35,7 @@ public class DataProvider {
     private final UserDao userDao;
     private final ListDao listDao;
     private final ItemDao itemDao;
+    private String userId="";
 
     //TODO:bug测试 之后改成动态url
     private String url="http://tomnab.fr/todo-api/";
@@ -67,7 +68,17 @@ public class DataProvider {
                         int delete = listDao.deleteAll();
                         Log.d("test",delete+"");
                         listDao.save(listsSave);
-                        getLabelslist(userIdConneted);
+                        getLabelslist(userIdConneted, new GetListListener() {
+                            @Override
+                            public void onSuccess(List<String> label) {
+
+                            }
+
+                            @Override
+                            public void onError(List<String> label) {
+
+                            }
+                        });
 
                         uiHandler.post(new Runnable() {
                             @Override public void run() {
@@ -76,7 +87,17 @@ public class DataProvider {
                         });
 
                     }else {
-                        getLabelslist(userIdConneted);
+                        getLabelslist(userIdConneted, new GetListListener() {
+                            @Override
+                            public void onSuccess(List<String> label) {
+
+                            }
+
+                            @Override
+                            public void onError(List<String> label) {
+
+                            }
+                        });
                         uiHandler.post(new Runnable() {
                             @Override public void run() {
                                 listener.onError(labelslist);
@@ -86,7 +107,17 @@ public class DataProvider {
                     }
 
                 } catch (IOException e) {
-                    getLabelslist(userIdConneted);
+                    getLabelslist(userIdConneted, new GetListListener() {
+                        @Override
+                        public void onSuccess(List<String> label) {
+
+                        }
+
+                        @Override
+                        public void onError(List<String> label) {
+
+                        }
+                    });
                     uiHandler.post(new Runnable() {
                         @Override public void run() {
                             listener.onError(labelslist);
@@ -111,6 +142,7 @@ public class DataProvider {
 
                         uiHandler.post(new Runnable() {
                             @Override public void run() {
+                                userId=userIdConneted;
                                 listener.onSuccess(userIdConneted);
                             }
                         });
@@ -138,12 +170,34 @@ public class DataProvider {
     }
 
 
-    public void getLabelslist(String userId){
-        labelslist.clear();
-        for (int i = 0; i< listDao.getAllLists().size(); i++) {
-            labelslist.add(listDao.findListByUserId(userId).get(i).getLabel());
-        }
+    public void getLabelslist(final String userId, final GetListListener listListener){
+        Future future=Utils.BACKGROUND.submit(new Runnable() {
+            @Override public void run() {
+                labelslist.clear();
+                for (int i = 0; i< listDao.findListByUserId(userId).size(); i++) {
+                    labelslist.add(listDao.findListByUserId(userId).get(i).getLabel());
+                }
+                listListener.onSuccess(labelslist);
+
+            }
+        });
+        futures.add(future);
+
+
     }
+
+    public void getUserId(final GetUserIdListener getUserIdListener){
+        Future future=Utils.BACKGROUND.submit(new Runnable() {
+            @Override public void run() {
+                getUserIdListener.onSuccess(userId);
+
+            }
+        });
+        futures.add(future);
+    }
+
+
+
 
     public void syncAddList(final String hash, final String userId, final String liste, final ListAddListener listener) {
 
@@ -256,7 +310,7 @@ public class DataProvider {
 
     public String syncGetListId(final String liste) {
 
-        Log.d("test777",id);
+        Log.d("test777",id+"");
         Future future = Utils.BACKGROUND.submit(new Runnable() {
             @Override public void run() {
                 id = listDao.findListByUserLabel(liste).getId();
@@ -280,7 +334,6 @@ public class DataProvider {
         for (Future future : futures) {
             if(!future.isDone()){
                 future.cancel(true);
-
             }
         }
         futures.clear();
@@ -312,6 +365,20 @@ public class DataProvider {
         public void onSuccess(List<String> label,List<String> f);
         @UiThread
         public void onError(List<String> label,List<String> f);
+    }
+
+    public interface GetListListener{
+        @UiThread
+        public void onSuccess(List<String> label);
+        @UiThread
+        public void onError(List<String> label);
+    }
+
+    public interface GetUserIdListener{
+        @UiThread
+        public void onSuccess(String userId);
+        @UiThread
+        public void onError(String userId);
     }
 
     private class ItemsState {
