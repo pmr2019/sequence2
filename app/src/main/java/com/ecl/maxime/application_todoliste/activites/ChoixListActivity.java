@@ -1,9 +1,6 @@
 package com.ecl.maxime.application_todoliste.activites;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,23 +9,22 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.ecl.maxime.application_todoliste.adapter.ListeToDoAdapter;
+import com.ecl.maxime.application_todoliste.data.DataProvider;
+import com.ecl.maxime.application_todoliste.data.Liste;
+import com.ecl.maxime.application_todoliste.adapters.ListeToDoAdapter;
 import com.ecl.maxime.application_todoliste.R;
-import com.ecl.maxime.application_todoliste.api_request.Liste;
-import com.ecl.maxime.application_todoliste.api_request.ListeDeListes;
+import com.ecl.maxime.application_todoliste.api_request.ListeResponseList;
 import com.ecl.maxime.application_todoliste.api_request.ServiceFactory;
 import com.ecl.maxime.application_todoliste.api_request.Services;
-import com.ecl.maxime.application_todoliste.classes.ListeToDo;
-import com.ecl.maxime.application_todoliste.classes.ProfileListeToDo;
-import com.ecl.maxime.application_todoliste.repos.ListesDataRepo;
+import com.ecl.maxime.application_todoliste.data.MyRoomDB;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,18 +33,14 @@ import retrofit2.Response;
 public class ChoixListActivity extends AppCompatActivity {
 
     private String hash;
-    private ProfileListeToDo user;
     private ListeToDoAdapter mAdapter;
-    // On peut maintenant appeler toutes les listes en local
-    // private Call<ListeDeListes> call_liste;
-    private ArrayList<Liste> listes;
     private Call<Void> call_ajout;
     private RecyclerView mRecyclerView;
     private EditText edt_ajout;
     private Button btn_ajout;
+    private DataProvider mDataProvider;
     public static final String LISTE_ID = "liste_id";
-    public static final String TITRE_LISTE = "titre_liste";
-    private ListesDataRepo listesDataRepo;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,52 +49,70 @@ public class ChoixListActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mDataProvider = new DataProvider(this);
+
+        Intent intent = getIntent();
+        hash = intent.getStringExtra(MainActivity.HASH);
         edt_ajout = findViewById(R.id.ed_nouvelle_liste);
         btn_ajout = findViewById(R.id.btn_liste);
         mRecyclerView = findViewById(R.id.list_listetodo);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        Intent intent = getIntent();
-        hash = intent.getStringExtra(MainActivity.HASH);
-
         mAdapter = new ListeToDoAdapter(new ArrayList<Liste>(0), new ListeToDoAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Liste listeToDo, int position) {
-                String id = listeToDo.getId();
-                String titreListe = listeToDo.getLabel();
+                int p = listeToDo.getId();
                 Intent i = new Intent(ChoixListActivity.this, ShowListActivity.class);
                 i.putExtra(MainActivity.HASH, hash);
-                i.putExtra(LISTE_ID, id);
-                i.putExtra(TITRE_LISTE, titreListe);
+                i.putExtra(LISTE_ID, p);
                 startActivity(i);
             }
         });
 
-        sync();
-
         mRecyclerView.setAdapter(mAdapter);
-        btn_ajout.setEnabled(false);
-        if (verifReseau()) btn_ajout.setEnabled(true);
+
         btn_ajout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String nom_liste = edt_ajout.getText().toString();
-                Liste new_liste = new Liste();
-                new_liste.setLabel(nom_liste);
-                listesDataRepo.createItem(new_liste);
-                ArrayList<Liste> lesListes = mAdapter.getLesListes();
-                lesListes.add(new_liste);
-                mAdapter.setLesListes(lesListes);
+                Liste new_listeResponse = new Liste();
+                new_listeResponse.setLabel(nom_liste);
+                List<Liste> lesListeResponses = mAdapter.getLesListes();
+                lesListeResponses.add(new_listeResponse);
+                mAdapter.setLesListes(lesListeResponses);
                 ajouterListe(nom_liste);
             }
         });
     }
 
+    private void sync() {
 
+        mDataProvider.syncLists(new DataProvider.ListesListener() {
+            @Override
+            public void onSuccess(List<Liste> lists) {
+                mAdapter.setLesListes(lists);
+            }
+            @Override
+            public void onError() {
+            }
+        }, hash);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        sync();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mDataProvider.stop();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // Inflate the menu; this adds mItemResponses to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -123,32 +133,7 @@ public class ChoixListActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void sync() {
-        //Services service = ServiceFactory.createService(Services.class);
-        //call_liste = service.getListes(hash);
-        //call_liste.enqueue(new Callback<ListeDeListes>() {
 
-
-
-        //    @Override
-        //    public void onResponse(Call<ListeDeListes> call, Response<ListeDeListes> response) {
-        //       if(response.isSuccessful()){
-        //            mAdapter.setLesListes(response.body().lists);
-        //        }
-        //    }
-
-        //    @Override
-        //    public void onFailure(Call<ListeDeListes> call, Throwable t) {
-        //        Toast.makeText(ChoixListActivity.this,"Erreur",Toast.LENGTH_LONG).show();
-        //    }
-        //});
-        String login = user.getLogin();
-        String mdp = user.getMdp();
-        listes = listesDataRepo.getListes(login, mdp);
-        if (listes != null) mAdapter.setLesListes(listes);
-        else Toast.makeText(ChoixListActivity.this,"Erreur",Toast.LENGTH_LONG).show();
-
-    }
 
     private void ajouterListe(final String label) {
         Services services = ServiceFactory.createService(Services.class);
@@ -166,39 +151,5 @@ public class ChoixListActivity extends AppCompatActivity {
             }
         });
     }
-    public boolean verifReseau()
-    {
-        // On vérifie si le réseau est disponible,
-        // si oui on change le statut du bouton de connexion
-        ConnectivityManager cnMngr = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cnMngr.getActiveNetworkInfo();
 
-        String sType = "Aucun réseau détecté";
-        Boolean bStatut = false;
-        if (netInfo != null)
-        {
-            NetworkInfo.State netState = netInfo.getState();
-
-            if (netState.compareTo(NetworkInfo.State.CONNECTED) == 0)
-            {
-                bStatut = true;
-                int netType= netInfo.getType();
-                switch (netType)
-                {
-                    case ConnectivityManager.TYPE_MOBILE :
-                        sType = "Réseau mobile détecté"; break;
-                    case ConnectivityManager.TYPE_WIFI :
-                        sType = "Réseau wifi détecté"; break;
-                }
-
-            }
-        }
-
-        this.alerter(sType);
-        return bStatut;
-    }
-    public void alerter(String s){
-        Toast toast = Toast.makeText(this, s, Toast.LENGTH_SHORT);
-        toast.show();
-    }
 }

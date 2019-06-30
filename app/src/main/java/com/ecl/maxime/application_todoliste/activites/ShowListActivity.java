@@ -1,8 +1,6 @@
 package com.ecl.maxime.application_todoliste.activites;
 
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,13 +9,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.ecl.maxime.application_todoliste.adapter.ItemToDoAdapter;
+import com.ecl.maxime.application_todoliste.adapters.Converter;
+import com.ecl.maxime.application_todoliste.data.DataProvider;
+import com.ecl.maxime.application_todoliste.data.Item;
+import com.ecl.maxime.application_todoliste.adapters.ItemToDoAdapter;
 import com.ecl.maxime.application_todoliste.R;
-import com.ecl.maxime.application_todoliste.api_request.Item;
-import com.ecl.maxime.application_todoliste.api_request.ListeItems;
+import com.ecl.maxime.application_todoliste.api_request.ItemResponse;
+import com.ecl.maxime.application_todoliste.api_request.ItemResponseList;
 import com.ecl.maxime.application_todoliste.api_request.ServiceFactory;
 import com.ecl.maxime.application_todoliste.api_request.Services;
-import com.ecl.maxime.application_todoliste.repos.ItemsDataRepo;
+import com.ecl.maxime.application_todoliste.data.Liste;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -25,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,15 +36,13 @@ public class ShowListActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private ItemToDoAdapter mAdapter;
-    //private Call<ListeItems> call_items;
+    private Call<ItemResponseList> call_items;
     private Call<Void> call_ajout, call_modif;
-    private ArrayList<Item> items;
-    private ItemsDataRepo itemsDataRepo;
     private String hash;
-    private String id;
+    private int id;
     private EditText edt_ajout;
     private Button btn_ajout;
-    private String titreListe;
+    private DataProvider mDataProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +51,7 @@ public class ShowListActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mDataProvider = new DataProvider(this);
         edt_ajout = findViewById(R.id.ed_nouvel_item);
         btn_ajout = findViewById(R.id.btn_item);
         mRecyclerView = findViewById(R.id.list_itemtodo);
@@ -58,8 +59,7 @@ public class ShowListActivity extends AppCompatActivity {
 
         Intent i = getIntent();
         hash = i.getStringExtra(MainActivity.HASH);
-        id = i.getStringExtra(ChoixListActivity.LISTE_ID);
-        titreListe = i.getStringExtra(ChoixListActivity.TITRE_LISTE);
+        id = i.getIntExtra(ChoixListActivity.LISTE_ID,0);
 
         mAdapter = new ItemToDoAdapter(new ArrayList<Item>(0), new ItemToDoAdapter.OnItemClickListener() {
             @Override
@@ -70,27 +70,22 @@ public class ShowListActivity extends AppCompatActivity {
                     modifItem(itemToDo.getId(), "0");
                 else
                     modifItem(itemToDo.getId(), "1");
-                itemsDataRepo.updateItem(itemToDo);
             }
         });
 
         sync();
 
         mRecyclerView.setAdapter(mAdapter);
-        btn_ajout.setEnabled(false);
-        if(verifReseau())btn_ajout.setEnabled(true);
-
 
         btn_ajout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String label = edt_ajout.getText().toString();
-                Item new_item = new Item();
-                new_item.setLabel(label);
-                itemsDataRepo.createItem(new_item);
-                ArrayList<Item> items = mAdapter.getLesItems();
-                items.add(new_item);
-                mAdapter.setLesItems(items);
+                Item new_itemResponse = new Item();
+                new_itemResponse.setLabel(label);
+                List<Item> itemResponses = mAdapter.getLesItems();
+                itemResponses.add(new_itemResponse);
+                mAdapter.setLesItems(itemResponses);
                 ajouterItem(label);
             }
         });
@@ -98,7 +93,7 @@ public class ShowListActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // Inflate the menu; this adds mItemResponses to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -120,22 +115,15 @@ public class ShowListActivity extends AppCompatActivity {
     }
 
     private void sync(){
-        //Services service = ServiceFactory.createService(Services.class);
-        //call_items = service.getListeItems(hash, id);
-        //call_items.enqueue(new Callback<ListeItems>() {
-        //    @Override
-        //    public void onResponse(Call<ListeItems> call, Response<ListeItems> response) {
-        //        mAdapter.setLesItems(response.body().items);
-        //    }
-
-        //    @Override
-        //    public void onFailure(Call<ListeItems> call, Throwable t) {
-        //        Toast.makeText(ShowListActivity.this,"Erreur",Toast.LENGTH_LONG).show();
-        //    }
-        //});
-
-        items = itemsDataRepo.getItems(titreListe);
-        mAdapter.setLesItems(items);
+        mDataProvider.syncItems(new DataProvider.ItemsListener() {
+            @Override
+            public void onSuccess(List<Item> items) {
+                mAdapter.setLesItems(items);
+            }
+            @Override
+            public void onError() {
+            }
+        }, hash, id);
     }
 
     private void ajouterItem(final String label){
@@ -155,53 +143,18 @@ public class ShowListActivity extends AppCompatActivity {
         });
     }
 
-    private void modifItem(String id_item, String check){
+    private void modifItem(long id_item, String check){
         Services service = ServiceFactory.createService(Services.class);
         call_modif = service.modifyItem(hash, id, id_item, check);
         call_modif.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                Toast.makeText(ShowListActivity.this,"Item modifié",Toast.LENGTH_LONG).show();
+                Toast.makeText(ShowListActivity.this,"ItemResponse modifié",Toast.LENGTH_LONG).show();
             }
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 Toast.makeText(ShowListActivity.this,"Erreur",Toast.LENGTH_LONG).show();
             }
         });
-    }
-    public boolean verifReseau()
-    {
-        // On vérifie si le réseau est disponible,
-        // si oui on change le statut du bouton de connexion
-        ConnectivityManager cnMngr = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cnMngr.getActiveNetworkInfo();
-
-        String sType = "Aucun réseau détecté";
-        Boolean bStatut = false;
-        if (netInfo != null)
-        {
-            NetworkInfo.State netState = netInfo.getState();
-
-            if (netState.compareTo(NetworkInfo.State.CONNECTED) == 0)
-            {
-                bStatut = true;
-                int netType= netInfo.getType();
-                switch (netType)
-                {
-                    case ConnectivityManager.TYPE_MOBILE :
-                        sType = "Réseau mobile détecté"; break;
-                    case ConnectivityManager.TYPE_WIFI :
-                        sType = "Réseau wifi détecté"; break;
-                }
-
-            }
-        }
-
-        this.alerter(sType);
-        return bStatut;
-    }
-    public void alerter(String s){
-        Toast toast = Toast.makeText(this, s, Toast.LENGTH_SHORT);
-        toast.show();
     }
 }

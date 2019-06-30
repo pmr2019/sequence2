@@ -1,4 +1,4 @@
-package com.ecl.maxime.application_todoliste.adapter;
+package com.ecl.maxime.application_todoliste.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,30 +8,30 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ecl.maxime.application_todoliste.data.Liste;
 import com.ecl.maxime.application_todoliste.R;
-import com.ecl.maxime.application_todoliste.api_request.Liste;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Max on 2019-05-19.
  */
 public class ListeToDoAdapter extends RecyclerView.Adapter<ListeToDoAdapter.ListItemViewHolder> {
 
-    private ArrayList<Liste> mLesListes;
+    private List<Liste> mLesListes;
     private final OnItemClickListener mListener;
 
-    public ListeToDoAdapter(ArrayList<Liste> lesListes, OnItemClickListener listener) {
+    public ListeToDoAdapter(List<Liste> lesListes, OnItemClickListener listener) {
         mLesListes = lesListes;
         mListener = listener;
     }
 
-    public void setLesListes(ArrayList<Liste> lesListes) {
+    public void setLesListes(List<Liste> lesListes) {
         mLesListes = lesListes;
         notifyDataSetChanged();
     }
 
-    public ArrayList<Liste> getLesListes() {
+    public List<Liste> getLesListes() {
         return mLesListes;
     }
 

@@ -1,6 +1,5 @@
 package com.ecl.maxime.application_todoliste.activites;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -11,9 +10,7 @@ import com.ecl.maxime.application_todoliste.R;
 import com.ecl.maxime.application_todoliste.api_request.Hashcode;
 import com.ecl.maxime.application_todoliste.api_request.ServiceFactory;
 import com.ecl.maxime.application_todoliste.api_request.Services;
-import com.ecl.maxime.application_todoliste.classes.ProfileListeToDo;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -38,8 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private Call<Hashcode> call;
     public static final String HASH = "hash";
     public static String BASE_URL;
-    private MainActivity activity;
-
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,42 +47,18 @@ public class MainActivity extends AppCompatActivity {
         edt_pseudo=findViewById(R.id.pseudo_edittext);
         edt_password=findViewById(R.id.password_edt);
         btn_ok=findViewById(R.id.btn_ok);
-
-        this.activity = this;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        BASE_URL = sharedPreferences.getString("api","");
-
-        btn_ok.setEnabled(false);
-
-        if (verifReseau())
-            btn_ok.setEnabled(true);
-
-        if (!verifReseau()){
-            AlertDialog.Builder myPopup = new AlertDialog.Builder(activity);
-            myPopup.setTitle("Pas d'internet");
-            myPopup.setMessage("Voulez-vous manipuler les donnéees en cache ?");
-            myPopup.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    Intent dao = new Intent(MainActivity.this, DaoActivity.class);
-                    startActivity(dao);
-                }
-            });
-            myPopup.setNegativeButton("Non", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-
-                }
-            });
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        BASE_URL = sharedPreferences.getString("api","http://tomnab.fr/todo-api/");
 
 
-        }
+        if (!verifReseau())
+            Toast.makeText(this, "Aucun réseau, manipulation des données en local", Toast.LENGTH_LONG).show();
 
 
         // Mise en place de l'écouteur
@@ -98,6 +70,11 @@ public class MainActivity extends AppCompatActivity {
                     String pseudo = edt_pseudo.getText().toString();
 
                     seConnecter(pseudo, password);
+                }
+                else {
+                    Intent i = new Intent(MainActivity.this, ChoixListActivity.class);
+                    i.putExtra(HASH, "d0807965f03543e7758c797bda812cbc");
+                    startActivity(i);
                 }
             }
         });
@@ -131,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        this.alerter(sType);
+        //this.alerter(sType);
         return bStatut;
     }
 
@@ -142,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // Inflate the menu; this adds mItemResponses to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -163,17 +140,15 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void seConnecter(final String login, final String mdp){
+    private void seConnecter(String login, String mdp){
         Services service = ServiceFactory.createService(Services.class);
         call = service.connexion(login, mdp);
         call.enqueue(new Callback<Hashcode>() {
             @Override
             public void onResponse(Call<Hashcode> call, Response<Hashcode> response) {
                 if (response.body() != null) {
-                    ProfileListeToDo user = new ProfileListeToDo(login, mdp);
                     Intent i = new Intent(MainActivity.this, ChoixListActivity.class);
                     i.putExtra(HASH, response.body().hash);
-                    i.putExtra(USER_SERVICE, user);
                     startActivity(i);
                 }
                 else {
@@ -187,6 +162,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 
 }

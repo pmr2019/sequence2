@@ -1,4 +1,4 @@
-package com.ecl.maxime.application_todoliste.adapter;
+package com.ecl.maxime.application_todoliste.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,30 +9,30 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ecl.maxime.application_todoliste.data.Item;
 import com.ecl.maxime.application_todoliste.R;
-import com.ecl.maxime.application_todoliste.api_request.Item;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Max on 2019-05-23.
  */
 public class ItemToDoAdapter extends RecyclerView.Adapter<ItemToDoAdapter.ItemViewHolder> {
 
-    private ArrayList<Item> mLesItems;
+    private List<Item> mLesItems;
     private final OnItemClickListener mListener;
 
-    public ItemToDoAdapter(ArrayList<Item> lesItems, OnItemClickListener listener) {
+    public ItemToDoAdapter(List<Item> lesItems, OnItemClickListener listener) {
         mLesItems = lesItems;
         mListener = listener;
     }
 
-    public void setLesItems(ArrayList<Item> lesItems) {
+    public void setLesItems(List<Item> lesItems) {
         mLesItems = lesItems;
         notifyDataSetChanged();
     }
 
-    public ArrayList<Item> getLesItems() {
+    public List<Item> getLesItems() {
         notifyDataSetChanged();
         return mLesItems;
     }
@@ -67,13 +67,13 @@ public class ItemToDoAdapter extends RecyclerView.Adapter<ItemToDoAdapter.ItemVi
             mCheckBox = itemView.findViewById(R.id.box_fait);
         }
 
-        public void bind(final Item itemToDo, final OnItemClickListener listener){
-            mTextView.setText(itemToDo.getLabel());
-            mCheckBox.setChecked(itemToDo.isChecked());
+        public void bind(final Item itemResponseToDo, final OnItemClickListener listener){
+            mTextView.setText(itemResponseToDo.getLabel());
+            mCheckBox.setChecked(itemResponseToDo.isChecked());
             mCheckBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listener.onItemClick(itemToDo);
+                    listener.onItemClick(itemResponseToDo);
                     }
                 }
             );

@@ -12,22 +12,31 @@ import retrofit2.http.Query;
  * Created by Max on 2019-06-17.
  */
 public interface Services {
+    /*
+    Chaque requête utile est ici répertoriée
+     */
 
+    // Connexion
     @POST("authenticate")
     Call<Hashcode> connexion(@Query("user") String user, @Query("password") String password);
 
+    // Obtenir l'ensemble des listesToDo
     @GET("lists")
-    Call<ListeDeListes> getListes(@Header("hash") String hash);
+    Call<ListeResponseList> getListes(@Header("hash") String hash);
 
+    // Ajouter une liste
     @POST("lists")
     Call<Void> addListe(@Header("hash") String hash, @Query("label") String label);
 
-    @GET("lists/{id}/items")
-    Call<ListeItems> getListeItems(@Header("hash") String hash, @Path("id") String id);
+    // Obtenir l'ensemble des mItemResponses d'une liste
+    @GET("lists/{id}/mItemResponses")
+    Call<ItemResponseList> getListeItems(@Header("hash") String hash, @Path("id") int id);
 
-    @POST("lists/{id}/items")
-    Call<Void> addItem(@Header("hash") String hash, @Path("id") String id, @Query("label") String label);
+    // Ajouter un item à une liste
+    @POST("lists/{id}/mItemResponses")
+    Call<Void> addItem(@Header("hash") String hash, @Path("id") long id, @Query("label") String label);
 
-    @PUT("lists/{id}/items/{id_item}")
-    Call<Void> modifyItem(@Header("hash") String hash, @Path("id") String id, @Path("id_item") String id_item, @Query("check") String check);
+    // Modifier un item
+    @PUT("lists/{id}/mItemResponses/{id_item}")
+    Call<Void> modifyItem(@Header("hash") String hash, @Path("id") long id, @Path("id_item") long id_item, @Query("check") String check);
 }
